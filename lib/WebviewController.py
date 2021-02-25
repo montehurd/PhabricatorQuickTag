@@ -10,7 +10,7 @@ class WebviewController:
         self.fetcher = fetcher
         self.sourceProjects = sourceProjects
         self.destinationProject = destinationProject
-        self.window = self.webview.create_window('Phabricator Quick Tag', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
+        self.window = self.webview.create_window('PHABRICATOR QUICK TAG : Quickly tag tickets from columns on various projects into any column on a destination project', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
         self.window.loaded += self.onDOMLoaded
         self.webview.start(self.expose, self.window, debug=True)
 
@@ -40,12 +40,6 @@ class WebviewController:
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
-    def headerHTML(self):
-        return f'''
-            <div class=main_title>🏷 Quick Tag 🏷</div>
-            <div class=main_subtitle>Quickly tag tickets from columns on various projects into any column on a destination project.</div>
-        '''
-
     def projectSummaryHTML(self, name, columns):
         return f'''
             <div class=project_summary>
@@ -61,8 +55,7 @@ class WebviewController:
             <div class=projects_summary>
                 <div class=projects_summary_header>
                     <div class=projects_summary_title>
-                        <b>⚙️ Current Configuration ⚙️</b>
-                        <br>( adjust by editing 'configuration.json' file )
+                        <b>⚙️&nbsp;&nbsp;Current Configuration</b>&nbsp;&nbsp;:&nbsp;&nbsp;adjust by editing '<i>configuration.json</i>' file
                     </div>
                 </div>
                 <div class=projects_summary_body>
@@ -90,7 +83,6 @@ class WebviewController:
 
     def mainDivInnerHTMLForProjects(self):
         return f'''
-            {self.headerHTML()}
             {self.summaryHTML()}
             {self.projectsHTML()}
         '''
