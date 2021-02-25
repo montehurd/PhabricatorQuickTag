@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+   <meta charset="UTF-8">
+   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+   <meta http-equiv="Pragma" content="no-cache">
+   <meta http-equiv="Expires" content="0">
+   <link rel="stylesheet" type="text/css" href="$TEMPLATE_CSS_URL">
+   <base href="$TEMPLATE_BASE_URL" target="_blank">
+   <style>
+     body {
+       background-color: #EBECEE;
+     }
+     div.ticket {
+       border: solid 1px #A1A6B0;
+       margin: 15px 50px 50px 50px;
+       padding: 5px 20px 20px 20px;
+       border-radius: 12px;
+       min-width: 740px;
+       background-color: white;
+     }
+     button.hide {
+       float: right;
+       margin-top: 20px;
+     }
+     button:not([class=selected]) {
+       background-color: white;
+       border: solid 1px #A1A6B0;
+       color: #777C89;
+     }
+     button, button:hover {
+       background-image: unset;
+       margin-right: 4px;
+       margin-bottom: 4px;
+     }
+     div.menus {
+       border-radius: 12px;
+       padding: 6pt;
+       margin-top: 20px;
+     }
+     span.buttonActionMessage {
+       color: gray;
+       margin-left: 25px;
+       font-size: 1.2em;
+       float: right;
+     }
+     div.menu {
+       margin: 8px 8px 8px 14px;
+     }
+     div.column_source {
+       font-size: 1.75em;
+       margin: 15px;
+       margin-top: 50px;
+     }
+     span.column_identifier {
+       font-style: italic;
+     }
+     div.column_subtitle {
+       margin-left: 30px;
+     }
+     div.main_title {
+       font-size: 2.0em;
+       text-align: center;
+       margin-top: 20px;
+     }
+     div.main_subtitle {
+       text-align: center;
+       font-size: 1.25em;
+       padding: 10px;
+       margin-bottom: 10px;
+     }
+     div.projects_summary {
+       color: #eee;
+     }
+     div.projects_summary_title {
+       text-align: center;
+       font-size: 1.2em;
+     }
+     div.projects_summary_header {
+       background-color: #222;
+       padding: 12px;
+     }
+     div.projects_summary_body {
+       background-color: #333;
+       padding: 12px;
+     }
+     div.projects_summary_body_buttons {
+       float: right;
+     }
+     div.project_summary {
+       margin-left: 20px;
+     }
+     span.project_summary_column, span.project_summary_project {
+     }
+     button, textarea, span.phui-tag-core {
+       border-radius: 8px;
+     }
+     .phui-tag-color-object {
+       border-color: #A1A6B0;
+     }
+     .loading-message{
+       text-align: center;
+       font-size: 1.5em;
+     }
+   </style>
+   <script>
+     const showButtonActionMessage = (ticketID, messageString) => document.querySelector(`span#buttonActionMessage$${ticketID}`).innerHTML = messageString
+     const updateMenuButtonsSelectionStyle = (menuID, ticketID, endpoint, key, value) => {
+       const buttonsSelector = `button[id^='$${menuID}:$${ticketID}:$${endpoint}:$${key}:']`
+       const buttonToBeSelectedID = `$${menuID}:$${ticketID}:$${endpoint}:$${key}:$${value}`
+       document.querySelectorAll(buttonsSelector).forEach(button => button.classList[button.id == buttonToBeSelectedID ? 'add' : 'remove']('selected'))
+     }
+     const buttonAction = (menuID, ticketID, endpoint, key, value, needsValueArgumentInArray, savesComment = true) => {
+       showButtonActionMessage(ticketID, '💾 Saving...')
+       const button = event.toElement
+       const commentTextArea = document.querySelector(`textarea#ticketID$${ticketID}`)
+       const comment = commentTextArea.value
+       const commentParameters = savesComment && comment ? `&transactions[1][type]=comment&transactions[1][value]=$${comment}` : ''
+       const arrayArgumentIndicator = needsValueArgumentInArray ? '[0]' : ''
+       // TODO: goofy to make url string below to just create an object again - fix to just make object directly
+       let params = Object.fromEntries(new URLSearchParams(`api.token=$TEMPLATE_API_TOKEN&output=json&transactions[0][type]=$${key}&transactions[0][value]$${arrayArgumentIndicator}=$${value}&objectIdentifier=T$${ticketID}$${commentParameters}`))
+       pywebview.api.fetchJSON(`/api/$${endpoint}`, params)
+       .then(response => {
+         if (response['error_code'] != null) throw Error()
+         return response['result']
+       })
+       .then(json => {
+         showButtonActionMessage(ticketID, '🎉 Success')
+         updateMenuButtonsSelectionStyle(menuID, ticketID, endpoint, key, value)
+         commentTextArea.value = ''
+       })
+       .catch(error => {
+         showButtonActionMessage(ticketID, '💩 Failure')
+       })
+     }
+   </script>
+  </head>
+  <body>
+   <div class="loading-message">
+   </div>
+   <div class="phabricator-remarkup">
+   </div>
+  </body>
+  </html>

@@ -1,0 +1,20 @@
+{
+    "configuration": {
+        "url": "http://phabricator.local.com",
+        "token": "api-z6kriicn2kat3kxvb4h4jnmn3sfk",
+        "sourceProjects": [
+            {
+                "name": "Test-Project",
+                "ticketSourceColumns": ["Needs-QA"]
+            },
+            {
+                "name": "Test-Project2",
+                "ticketSourceColumns": ["Needs-Some-QA"]
+            }
+        ],
+        "destinationProject": {
+            "name": "QTE-TestingOverview",
+            "ignoreColumns": ["Parking"]
+        }
+    }
+}
