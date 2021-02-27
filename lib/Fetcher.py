@@ -18,8 +18,13 @@ class Fetcher:
             response = urllib.request.urlopen(request)
         except urllib.error.URLError as e:
             print(e)
-        page = response.read()
-        return json.loads(page.decode('utf-8'))
+
+        pageJSON = json.loads(response.read().decode('utf-8'))
+
+        if pageJSON.get('error_code') != None:
+            print(f'\nfetchJSON Error:\n\t{pageJSON}\n')
+
+        return pageJSON
 
     def fetchColumnPHID(self, name, projectPHID):
         result = self.fetchJSON('/api/project.column.search', {
