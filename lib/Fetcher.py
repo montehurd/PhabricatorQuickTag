@@ -16,8 +16,8 @@ class Fetcher:
         request = urllib.request.Request(url = f'{self.baseURL}{filePath}', headers = headers, data = data.encode('utf-8'), method='POST')
         try:
             response = urllib.request.urlopen(request)
-        except HTTPError as e:
-            print('Error code: ', e.code)
+        except urllib.error.URLError as e:
+            print(e)
         page = response.read()
         return json.loads(page.decode('utf-8'))
 
@@ -99,7 +99,7 @@ class Fetcher:
         request = urllib.request.Request(url = f'{self.baseURL}{fileName}', headers = headers, method='GET')
         try:
             response = urllib.request.urlopen(request)
-        except HTTPError as e:
-            print('Error code: ', e.code)
+        except urllib.error.URLError as e:
+            print(e)
         page = response.read()
         return page.decode('utf-8')
