@@ -108,3 +108,47 @@ class Fetcher:
             print(e)
         page = response.read()
         return page.decode('utf-8')
+
+    # hit endpoint returning boolean result
+    def callEndpoint(self, path, key, value, objectIdentifier, comment = None, needsValueArgumentInArray = False):
+        values = {
+            'api.token': self.apiToken,
+            'transactions[0][type]': key,
+            f'''transactions[0][value]{'[0]' if needsValueArgumentInArray else ''}''': value,
+            'objectIdentifier': objectIdentifier,
+            'output': 'json'
+        }
+        print(values)
+        if comment != None:
+            values['transactions[1][type]'] = 'comment'
+            values['transactions[1][value]'] = comment
+
+        data = urllib.parse.urlencode(values)
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+        }
+        request = urllib.request.Request(url = f'{self.baseURL}{path}', headers = headers, data = data.encode('utf-8'), method='POST')
+
+        try:
+            response = urllib.request.urlopen(request)
+        except urllib.error.URLError as e:
+            return False
+        else:
+            pageJSON = json.loads(response.read().decode('utf-8'))
+            if pageJSON.get('error_code') != None:
+                print(f'\ncallEndpoint Error:\n\t{pageJSON}\n')
+                return False
+            return True
+
+        # try:
+        #     response = urllib.request.urlopen(request)
+        # except urllib.error.URLError as e:
+        #     print(e)
+        #
+        # pageJSON = json.loads(response.read().decode('utf-8'))
+        #
+        # if pageJSON.get('error_code') != None:
+        #     raise Exception(f'\nfetchJSON Error:\n\t{pageJSON}\n')
+        #
+        # return pageJSON

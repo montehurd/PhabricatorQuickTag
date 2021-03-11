@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
-import re
+import re, json
+# from ButtonMenuFactory import ButtonMenuFactory
 
 class Column:
     def __init__(self, name, project, phid=None, menus=[], fetcher = None):
@@ -12,6 +13,9 @@ class Column:
         self.ticketsHTMLIncludingWrapperDivsAndMenus = ''
         self.menus = menus
         self.fetcher = fetcher
+        # self.newMenusHTML = 'BEEP'
+
+        self.menuHTMLLambdas = []
 
     def fetchPHID(self):
         self.phid = self.fetcher.fetchColumnPHID(self.name, self.project.phid)
@@ -103,11 +107,40 @@ TICKET_END'''
         menus = ''.join(
             list(map(lambda menu: self.menuHTML(ticketID, menu, ticketJSON), self.menus))
         )
+
+        # print('\n\n======')
+        # print('COLUMNS: From manifest:')
+        # for column in self.project.columns:
+        #     print(f'''\t{column.name} : {column.phid}''')
+        # print('COLUMNS: Current column on source project:')
+        # for column in self.project.buttonsMenuColumns:
+        #     print(f'''\t{column.name} : {column.phid}''')
+        # print('======\n\n')
+
+        # print(self.project.buttonsMenuColumnNames)
+        # print(json.dumps(self.project.buttonsMenuColumns, indent=4))
+
+
+                # <br>{ButtonMenuFactory(self.fetcher).ticketPriorityButtonMenuHTML(ticketID, ticketJSON)}<br><br>
+                # <br>{ButtonMenuFactory(self.fetcher).ticketStatusButtonMenuHTML(ticketID, ticketJSON)}<br><br>
+
+                # {self.newMenusHTML}
+
+
+# TODO:
+# pass column an array of 'menuHTMLLambdas', that way can curry project info in, then execute those lambdas here adding ticketID and ticketJSON
+
+
+        newMenuHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID, ticketJSON), self.menuHTMLLambdas)))
+
+
+
         return f'''
             <div class="menus phui-tag-core phui-tag-color-object">
                 <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
                 <h2>Quick options</h2>
                 {menus}
+                {newMenuHTML}
                 Comment: ( recorded with any <strong>Quick options</strong> chosen above )
                 <br>
                 <textarea id="ticketID{ticketID}" style="height: 70px; width: 100%;"></textarea>
