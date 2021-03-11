@@ -15,7 +15,6 @@ class WebviewController:
         self.window.loaded += self.onDOMLoaded
         self.webview.start(self.expose, self.window, debug=True)
 
-    # I think click handling can stay here... it's just the manifest that needs to be global (in ButtonManifests.py).
     # Actions can hit endpoints, update button states, hide/show tickets, etc.
     def performClickedButtonActions(self, buttonID):
         clickedButtonManifest = ButtonManifests.allButtonManifests[buttonID]
