@@ -57,12 +57,12 @@ TICKET_END'''
         self.tickets = self.ticketsByID.values()
 
     def __allMenusHTML(self, ticketID, ticketJSON):
-        newMenuHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID, ticketJSON), self.menuHTMLLambdas)))
+        menusHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID, ticketJSON), self.menuHTMLLambdas)))
         return f'''
             <div class="menus phui-tag-core phui-tag-color-object">
                 <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
                 <h2>Quick options</h2>
-                {newMenuHTML}
+                {menusHTML}
                 Comment: ( recorded with any <strong>Quick options</strong> chosen above )
                 <br>
                 <textarea id="ticketID{ticketID}" style="height: 70px; width: 100%;"></textarea>
