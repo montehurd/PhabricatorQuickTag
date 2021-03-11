@@ -3,6 +3,7 @@
 import Utilities, time, re
 from string import Template
 from ProjectsHydrator import ProjectsHydrator
+import webview, ButtonManifests
 
 class WebviewController:
     def __init__(self, webview, sourceProjects, destinationProject, fetcher):
@@ -13,6 +14,20 @@ class WebviewController:
         self.window = self.webview.create_window('PHABRICATOR QUICK TAG : Quickly tag tickets from columns on various projects into any column on a destination project', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
         self.window.loaded += self.onDOMLoaded
         self.webview.start(self.expose, self.window, debug=True)
+
+    # I think click handling can stay here... it's just the manifest that needs to be global (in ButtonManifests.py).
+    # Actions can hit endpoints, update button states, hide/show tickets, etc.
+    def performClickedButtonActions(self, buttonID):
+        clickedButtonManifest = ButtonManifests.allButtonManifests[buttonID]
+        for action in clickedButtonManifest.clickActions:
+            # if any action result is False execute the failure options and bail
+            if action() == False:
+                for failureAction in clickedButtonManifest.failureActions:
+                    failureAction()
+                return
+        # if here all actions succeeded, so execute success actions
+        for successAction in clickedButtonManifest.successActions:
+            successAction()
 
     def extractCSSURL(self):
         # HACK: grabbing the css url from the 'flag' page html. perhaps there's a better way? some API?
@@ -52,7 +67,6 @@ class WebviewController:
         sourcesSummaryHTML = ''.join(map(lambda project: self.projectSummaryHTML(project.name, project.columns), self.sourceProjects))
 
         return f'''
-            <div class=projects_summary>
                 <div class=projects_summary_header>
                     <div class=projects_summary_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>&nbsp;&nbsp;:&nbsp;&nbsp;adjust by editing '<i>configuration.json</i>' file
@@ -67,7 +81,6 @@ class WebviewController:
                     <div><b>Destination Columns:</b></div>
                     {self.projectSummaryHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumns)}
                 </div>
-            </div>
         '''
 
     def projectsHTML(self):
@@ -83,8 +96,12 @@ class WebviewController:
 
     def mainDivInnerHTMLForProjects(self):
         return f'''
-            {self.summaryHTML()}
-            {self.projectsHTML()}
+            <div class=projects_summary>
+                {self.summaryHTML()}
+            </div>
+            <div class=projects_tickets>
+                {self.projectsHTML()}
+            </div>
         '''
 
     def load(self):
@@ -112,8 +129,9 @@ class WebviewController:
         self.load()
 
     def reload(self):
+        ButtonManifests.clear()
         self.load()
 
     def expose(self, window):
-        window.expose(self.fetcher.fetchJSON) # expose to JS as 'pywebview.api.fetchJSON'
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
+        window.expose(self.performClickedButtonActions) # expose to JS as 'pywebview.api.performClickedButtonActions'

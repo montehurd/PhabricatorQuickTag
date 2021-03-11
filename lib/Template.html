@@ -92,37 +92,6 @@
        font-size: 1.5em;
      }
    </style>
-   <script>
-     const showButtonActionMessage = (ticketID, messageString) => document.querySelector(`span#buttonActionMessage$${ticketID}`).innerHTML = messageString
-     const updateMenuButtonsSelectionStyle = (menuID, ticketID, endpoint, key, value) => {
-       const buttonsSelector = `button[id^='$${menuID}:$${ticketID}:$${endpoint}:$${key}:']`
-       const buttonToBeSelectedID = `$${menuID}:$${ticketID}:$${endpoint}:$${key}:$${value}`
-       document.querySelectorAll(buttonsSelector).forEach(button => button.classList[button.id == buttonToBeSelectedID ? 'add' : 'remove']('selected'))
-     }
-     const buttonAction = (menuID, ticketID, endpoint, key, value, needsValueArgumentInArray, savesComment = true) => {
-       showButtonActionMessage(ticketID, '💾 Saving...')
-       const button = event.toElement
-       const commentTextArea = document.querySelector(`textarea#ticketID$${ticketID}`)
-       const comment = commentTextArea.value
-       const commentParameters = savesComment && comment ? `&transactions[1][type]=comment&transactions[1][value]=$${comment}` : ''
-       const arrayArgumentIndicator = needsValueArgumentInArray ? '[0]' : ''
-       // TODO: goofy to make url string below to just create an object again - fix to just make object directly
-       let params = Object.fromEntries(new URLSearchParams(`api.token=$TEMPLATE_API_TOKEN&output=json&transactions[0][type]=$${key}&transactions[0][value]$${arrayArgumentIndicator}=$${value}&objectIdentifier=T$${ticketID}$${commentParameters}`))
-       pywebview.api.fetchJSON(`/api/$${endpoint}`, params)
-       .then(response => {
-         if (response['error_code'] != null) throw Error()
-         return response['result']
-       })
-       .then(json => {
-         showButtonActionMessage(ticketID, '🎉 Success')
-         updateMenuButtonsSelectionStyle(menuID, ticketID, endpoint, key, value)
-         commentTextArea.value = ''
-       })
-       .catch(error => {
-         showButtonActionMessage(ticketID, '💩 Failure')
-       })
-     }
-   </script>
   </head>
   <body>
    <div class="loading-message">
