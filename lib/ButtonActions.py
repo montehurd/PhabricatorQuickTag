@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, urllib.parse, urllib.request, webview, re, Utilities, DataStore
+import json, urllib.parse, urllib.request, webview, re, Utilities, DataStore, ButtonStateCheckers
 
 class ButtonActions:
     def __init__(self, fetcher):
@@ -109,12 +109,21 @@ class ButtonActions:
 
     def toggleSourceProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectName):
         columnName = allColumnNames[indexOfColumnToToggle]
-        DataStore.toggleSourceProjectColumnInConfigurationJSON(columnName, indexOfColumnToToggle, projectName)
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        project = next(project for project in sourceProjects if project['name'] == projectName)
+        if ButtonStateCheckers.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
+            project['columns'].remove(columnName)
+        else:
+            project['columns'].insert(indexOfColumnToToggle, columnName)
         DataStore.saveCurrentConfiguration()
         return True
 
     def toggleDestinationProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle):
         columnName = allColumnNames[indexOfColumnToToggle]
-        DataStore.toggleDestinationProjectColumnInConfigurationJSON(columnName, indexOfColumnToToggle)
+        project = DataStore.getConfigurationValue('destinationProject')
+        if ButtonStateCheckers.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
+            project['ignoreColumns'].remove(columnName)
+        else:
+            project['ignoreColumns'].insert(indexOfColumnToToggle, columnName)
         DataStore.saveCurrentConfiguration()
         return True
