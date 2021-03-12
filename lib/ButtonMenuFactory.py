@@ -3,13 +3,13 @@
 from ButtonActions import ButtonActions
 from ButtonManifest import ButtonManifest
 import ButtonManifests
-import uuid, json
+import uuid, json, DataStore
 
-# def printSuccess():
-#     print('success!')
-#
-# def printFailure():
-#     print('failure!')
+def printSuccess():
+    print('success!')
+
+def printFailure():
+    print('failure!')
 
 class ButtonMenuFactory:
 
@@ -178,6 +178,43 @@ class ButtonMenuFactory:
             columnPHID = column.phid,
             isInitiallySelected = self.__currentColumnButtonStateChecker(column.phid, ticketJSON)
         ), columns))
+
+        ButtonManifests.add(buttonManifests)
+
+        return self.__wrapWithButtonMenuTag(
+            menuTitle = menuTitle,
+            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
+        )
+
+    # TODO: the configuration toggling below is hard-coded to edit "Source" projects, make that an option (once "Destination Project" is make plural)
+    def __toggleColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectName, isInitiallySelected = False):
+        return ButtonManifest(
+            id = buttonID,
+            title = title,
+            isInitiallySelected = isInitiallySelected,
+            clickActions = [
+                self.buttonActions.hideTickets,
+                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle, projectName=projectName :
+                    self.buttonActions.toggleColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectName)
+            ],
+            successActions = [
+                lambda buttonID=buttonID :
+                    self.buttonActions.toggleButton(buttonID)
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def toggleColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectName):
+        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleColumnInConfigurationJSONButtonManifest(
+            buttonID = self.__cssSafeGUID(),
+            title = indexAndColumnNameTuple[1],
+            indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
+            allColumnNames = allColumnNames,
+            projectName = projectName,
+            isInitiallySelected = DataStore.isColumnAlreadyPresentInSourceConfigurationJSON(indexAndColumnNameTuple[1], projectName)
+        ), enumerate(allColumnNames)))
 
         ButtonManifests.add(buttonManifests)
 

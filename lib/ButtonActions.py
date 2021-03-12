@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, urllib.parse, urllib.request, webview, re
+import json, urllib.parse, urllib.request, webview, re, Utilities, DataStore
 
 class ButtonActions:
     def __init__(self, fetcher):
@@ -106,3 +106,9 @@ class ButtonActions:
             comment = self.__getComment(ticketID),
             needsValueArgumentInArray = True
         )
+
+    def toggleColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectName):
+        columnName = allColumnNames[indexOfColumnToToggle]
+        DataStore.toggleColumnInSourceConfigurationJSON(columnName, indexOfColumnToToggle, projectName)
+        DataStore.saveCurrentConfiguration()
+        return True

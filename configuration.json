@@ -5,16 +5,24 @@
         "sourceProjects": [
             {
                 "name": "Test-Project",
-                "ticketSourceColumns": ["Needs-QA"]
+                "ticketSourceColumns": [
+                    "Backlog",
+                    "Needs-QA"
+                ]
             },
             {
                 "name": "Test-Project2",
-                "ticketSourceColumns": ["Needs-Some-QA"]
+                "ticketSourceColumns": [
+                    "Backlog",
+                    "Needs-Some-QA"
+                ]
             }
         ],
         "destinationProject": {
             "name": "QTE-TestingOverview",
-            "ignoreColumns": ["Parking"]
+            "ignoreColumns": [
+                "Parking"
+            ]
         }
     }
 }

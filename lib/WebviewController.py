@@ -1,9 +1,10 @@
 #!/usr/local/bin/python3
 
-import Utilities, time, re
+import Utilities, time, re, json
 from string import Template
 from ProjectsHydrator import ProjectsHydrator
 import webview, ButtonManifests
+from ButtonMenuFactory import ButtonMenuFactory
 
 class WebviewController:
     def __init__(self, webview, sourceProjects, destinationProject, fetcher):
@@ -63,7 +64,7 @@ class WebviewController:
         '''
 
     def summaryHTML(self):
-        sourcesSummaryHTML = ''.join(map(lambda project: self.projectSummaryHTML(project.name, project.columns), self.sourceProjects))
+        sourcesSummaryHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
 
         return f'''
                 <div class=projects_summary_header>

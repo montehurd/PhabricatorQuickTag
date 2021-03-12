@@ -12,6 +12,10 @@ def jsonFromFile(fileName):
         return json.load(f)
     return None
 
+def jsonToFile(fileName, data):
+    with open(fileName, 'w') as outfile:
+        json.dump(data, outfile, indent=4)
+
 def escapeBackticks(string):
     return string.replace('`', r'\`')
 

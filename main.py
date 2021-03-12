@@ -2,17 +2,10 @@
 
 import sys, webview
 sys.path.insert(0, './lib')
-import Utilities
 from Fetcher import Fetcher
 from Project import Project
 from WebviewController import WebviewController
-
-configurationJSON = None
-def getConfigurationValue(key):
-    global configurationJSON
-    if configurationJSON == None:
-        configurationJSON = Utilities.jsonFromFile('configuration.json')
-    return configurationJSON['configuration'][key]
+import DataStore
 
 def getDehydratedSourceProjects(fetcher):
     return list(map(lambda projectJSON:
@@ -21,18 +14,19 @@ def getDehydratedSourceProjects(fetcher):
             columnNames = projectJSON['ticketSourceColumns'],
             fetcher = fetcher
         ),
-        getConfigurationValue('sourceProjects')
+        DataStore.getConfigurationValue('sourceProjects')
     ))
 
 def getDehydratedDestinationProject(fetcher):
     return Project(
-        name = getConfigurationValue('destinationProject')['name'],
-        columnNamesToIgnoreForButtons = getConfigurationValue('destinationProject')['ignoreColumns'],
+        name = DataStore.getConfigurationValue('destinationProject')['name'],
+        columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns'],
         fetcher = fetcher
     )
 
 if __name__ == '__main__':
-    fetcher = Fetcher(getConfigurationValue('url'), getConfigurationValue('token'))
+    DataStore.loadConfiguration()
+    fetcher = Fetcher(DataStore.getConfigurationValue('url'), DataStore.getConfigurationValue('token'))
     webviewController = WebviewController(
         webview = webview,
         sourceProjects = getDehydratedSourceProjects(fetcher),
