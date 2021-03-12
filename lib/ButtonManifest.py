@@ -9,7 +9,14 @@ class ButtonManifest:
         self.successActions = successActions # executed if all 'clickAction' succeeded
         self.failureActions = failureActions # executed if any 'clickAction' failed
 
-    def html(self):
+    def html(self, cssClass = None):
+        classes = []
+        if cssClass != None:
+            classes.append(cssClass)
+        if self.isInitiallySelected:
+            classes.append('selected')
+        classAttribute = f'class="{" ".join(classes)}"' if len(classes) > 0 else ''
+
         return f"""
-            <button onclick="pywebview.api.performClickActions('{self.id}')" {'class="selected"' if self.isInitiallySelected else ''} id="{self.id}")">{self.title}</button>
+            <button onclick="pywebview.api.performClickActions('{self.id}')" {classAttribute} id="{self.id}")">{self.title}</button>
         """

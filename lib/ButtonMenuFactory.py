@@ -231,9 +231,8 @@ class ButtonMenuFactory:
         ButtonManifests.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
-            menuTitle = menuTitle,
+            menuTitle = f'''{menuTitle}{deleteButtonManifest.html(cssClass = 'delete')}''',
             menuButtons = f'''
-                {deleteButtonManifest.html()}
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             '''
         )
