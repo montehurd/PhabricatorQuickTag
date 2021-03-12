@@ -12,7 +12,7 @@ def getConfigurationValue(key):
     global configurationJSON
     return configurationJSON['configuration'][key]
 
-def isColumnAlreadyPresentInConfigurationJSON(parentKeyName, columnKeyName, columnName, projectName):
+def __isColumnAlreadyPresentInConfigurationJSON(parentKeyName, columnKeyName, columnName, projectName):
     global configurationJSON
     projects = configurationJSON['configuration'][parentKeyName]
     project = next(project for project in projects if project['name'] == projectName)
@@ -20,7 +20,7 @@ def isColumnAlreadyPresentInConfigurationJSON(parentKeyName, columnKeyName, colu
     return isColumnAlreadyPresent
 
 def isColumnAlreadyPresentInSourceConfigurationJSON(columnName, projectName):
-    return isColumnAlreadyPresentInConfigurationJSON('sourceProjects', 'ticketSourceColumns', columnName, projectName)
+    return __isColumnAlreadyPresentInConfigurationJSON('sourceProjects', 'ticketSourceColumns', columnName, projectName)
 
 def toggleColumnInSourceConfigurationJSON(columnName, columnInsertionIndex, projectName):
     global configurationJSON
