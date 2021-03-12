@@ -13,20 +13,18 @@ def getConfigurationValue(key):
     return configurationJSON['configuration'][key]
 
 def __isColumnPresentInConfigurationJSON(parentKeyName, columnKeyName, columnName, projectName):
-    global configurationJSON
-    projects = configurationJSON['configuration'][parentKeyName]
+    projects = getConfigurationValue(parentKeyName)
     project = next(project for project in projects if project['name'] == projectName)
     isColumnPresent = columnName in project[columnKeyName]
     return isColumnPresent
 
-def isColumnPresentInSourceConfigurationJSON(columnName, projectName):
+def isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
     return __isColumnPresentInConfigurationJSON('sourceProjects', 'columns', columnName, projectName)
 
-def toggleColumnInSourceConfigurationJSON(columnName, columnInsertionIndex, projectName):
-    global configurationJSON
-    sourceProjects = configurationJSON['configuration']['sourceProjects']
+def toggleSourceProjectColumnInConfigurationJSON(columnName, columnInsertionIndex, projectName):
+    sourceProjects = getConfigurationValue('sourceProjects')
     project = next(project for project in sourceProjects if project['name'] == projectName)
-    if isColumnPresentInSourceConfigurationJSON(columnName, projectName):
+    if isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
         project['columns'].remove(columnName)
     else:
         project['columns'].insert(columnInsertionIndex, columnName)

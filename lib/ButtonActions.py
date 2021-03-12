@@ -107,8 +107,8 @@ class ButtonActions:
             needsValueArgumentInArray = True
         )
 
-    def toggleColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectName):
+    def toggleSourceProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectName):
         columnName = allColumnNames[indexOfColumnToToggle]
-        DataStore.toggleColumnInSourceConfigurationJSON(columnName, indexOfColumnToToggle, projectName)
+        DataStore.toggleSourceProjectColumnInConfigurationJSON(columnName, indexOfColumnToToggle, projectName)
         DataStore.saveCurrentConfiguration()
         return True

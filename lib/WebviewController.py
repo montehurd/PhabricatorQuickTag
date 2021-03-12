@@ -64,7 +64,7 @@ class WebviewController:
         '''
 
     def summaryHTML(self):
-        sourcesSummaryHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
+        sourcesSummaryHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
 
         return f'''
                 <div class=projects_summary_header>

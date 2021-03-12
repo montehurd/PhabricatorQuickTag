@@ -186,8 +186,7 @@ class ButtonMenuFactory:
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
 
-    # TODO: the configuration toggling below is hard-coded to edit "Source" projects, make that an option (once "Destination Project" is make plural)
-    def __toggleColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectName, isInitiallySelected = False):
+    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectName, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
@@ -195,7 +194,7 @@ class ButtonMenuFactory:
             clickActions = [
                 self.buttonActions.hideTickets,
                 lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle, projectName=projectName :
-                    self.buttonActions.toggleColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectName)
+                    self.buttonActions.toggleSourceProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectName)
             ],
             successActions = [
                 lambda buttonID=buttonID :
@@ -206,14 +205,14 @@ class ButtonMenuFactory:
             ]
         )
 
-    def toggleColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectName):
-        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleColumnInConfigurationJSONButtonManifest(
+    def toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectName):
+        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
             buttonID = self.__cssSafeGUID(),
             title = indexAndColumnNameTuple[1],
             indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
             allColumnNames = allColumnNames,
             projectName = projectName,
-            isInitiallySelected = DataStore.isColumnPresentInSourceConfigurationJSON(indexAndColumnNameTuple[1], projectName)
+            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
         ), enumerate(allColumnNames)))
 
         ButtonManifests.add(buttonManifests)
