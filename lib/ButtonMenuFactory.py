@@ -213,7 +213,7 @@ class ButtonMenuFactory:
             indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
             allColumnNames = allColumnNames,
             projectName = projectName,
-            isInitiallySelected = DataStore.isColumnAlreadyPresentInSourceConfigurationJSON(indexAndColumnNameTuple[1], projectName)
+            isInitiallySelected = DataStore.isColumnPresentInSourceConfigurationJSON(indexAndColumnNameTuple[1], projectName)
         ), enumerate(allColumnNames)))
 
         ButtonManifests.add(buttonManifests)
