@@ -66,7 +66,7 @@ class ButtonMenuFactory:
     def __wrapWithButtonMenuTag(self, menuTitle, menuButtons):
         return f'''
             <div class="menu">
-                {menuTitle}:
+                {menuTitle}
                 <br>
                 <buttonmenu>
                     {menuButtons}
