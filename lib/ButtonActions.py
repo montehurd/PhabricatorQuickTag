@@ -87,6 +87,13 @@ class ButtonActions:
             }})
         ''')
 
+    def deleteMenu(self, buttonID):
+        self.__window().evaluate_js(f'''
+            var thisButton = document.querySelector("button#{buttonID}");
+            var menuDiv = thisButton.closest('div.menu');
+            menuDiv.remove()
+        ''')
+
     def addTicketToProject(self, ticketID, projectPHID):
         return self.fetcher.callEndpoint(
             path = '/api/maniphest.edit',
@@ -126,4 +133,12 @@ class ButtonActions:
         else:
             project['ignoreColumns'].insert(indexOfColumnToToggle, columnName)
         DataStore.saveCurrentConfiguration()
+        return True
+
+    def removeSourceProjectFromConfigurationJSON(self, projectName):
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        project = next(project for project in sourceProjects if project['name'] == projectName)
+        sourceProjects.remove(project)
+        DataStore.saveCurrentConfiguration()
+        DataStore.loadConfiguration()
         return True

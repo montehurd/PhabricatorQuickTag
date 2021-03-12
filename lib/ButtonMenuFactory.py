@@ -195,6 +195,27 @@ class ButtonMenuFactory:
             ]
         )
 
+    def __removeSourceProjectFromConfigurationJSONButtonManifest(self, projectName):
+        buttonID = self.__cssSafeGUID()
+        return ButtonManifest(
+            id = buttonID,
+            title = '🗑',
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.hideTickets,
+                lambda projectName=projectName :
+                    self.buttonActions.removeSourceProjectFromConfigurationJSON(projectName)
+            ],
+            successActions = [
+                lambda buttonID=buttonID :
+                    self.buttonActions.deleteMenu(buttonID),
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
     def toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectName):
         buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
             buttonID = self.__cssSafeGUID(),
@@ -204,12 +225,17 @@ class ButtonMenuFactory:
             projectName = projectName,
             isInitiallySelected = ButtonStateCheckers.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
         ), enumerate(allColumnNames)))
-
         ButtonManifests.add(buttonManifests)
+
+        deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectName)
+        ButtonManifests.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
-            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
+            menuButtons = f'''
+                {deleteButtonManifest.html()}
+                {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
+            '''
         )
 
     def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, isInitiallySelected = False):

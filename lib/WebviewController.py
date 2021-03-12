@@ -1,16 +1,16 @@
 #!/usr/local/bin/python3
 
-import Utilities, time, re, json
+import Utilities, time, re, json, webview, ButtonManifests, DataStore
 from string import Template
 from ProjectsHydrator import ProjectsHydrator
-import webview, ButtonManifests
 from ButtonMenuFactory import ButtonMenuFactory
+from Project import Project
 
 class WebviewController:
-    def __init__(self, window, sourceProjects, destinationProject, fetcher):
+    def __init__(self, window, fetcher):
         self.fetcher = fetcher
-        self.sourceProjects = sourceProjects
-        self.destinationProject = destinationProject
+        self.sourceProjects = []
+        self.destinationProject = None
         self.window = window
         self.window.loaded += self.onDOMLoaded
 
@@ -81,7 +81,26 @@ class WebviewController:
             </div>
         '''
 
+    def getDehydratedSourceProjects(self):
+        return list(map(lambda projectJSON:
+            Project(
+                name = projectJSON['name'],
+                columnNames = projectJSON['columns'],
+                fetcher = self.fetcher
+            ),
+            DataStore.getConfigurationValue('sourceProjects')
+        ))
+
+    def getDehydratedDestinationProject(self):
+        return Project(
+            name = DataStore.getConfigurationValue('destinationProject')['name'],
+            columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns'],
+            fetcher = self.fetcher
+        )
+
     def load(self):
+        self.sourceProjects = self.getDehydratedSourceProjects()
+        self.destinationProject = self.getDehydratedDestinationProject()
         self.window.load_html(self.getWrapperHTML())
         time.sleep(1.0)
 
@@ -107,6 +126,7 @@ class WebviewController:
 
     def reload(self):
         ButtonManifests.clear()
+        DataStore.loadConfiguration()
         self.load()
 
     def expose(self, window):
