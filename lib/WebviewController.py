@@ -7,27 +7,12 @@ import webview, ButtonManifests
 from ButtonMenuFactory import ButtonMenuFactory
 
 class WebviewController:
-    def __init__(self, webview, sourceProjects, destinationProject, fetcher):
-        self.webview = webview
+    def __init__(self, window, sourceProjects, destinationProject, fetcher):
         self.fetcher = fetcher
         self.sourceProjects = sourceProjects
         self.destinationProject = destinationProject
-        self.window = self.webview.create_window('PHABRICATOR QUICK TAG : Quickly tag tickets from columns on various projects into any column on a destination project', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
+        self.window = window
         self.window.loaded += self.onDOMLoaded
-        self.webview.start(self.expose, self.window, debug=True)
-
-    # Actions can hit endpoints, update button states, hide/show tickets, etc.
-    def performClickedButtonActions(self, buttonID):
-        clickedButtonManifest = ButtonManifests.allButtonManifests[buttonID]
-        for action in clickedButtonManifest.clickActions:
-            # if any action result is False execute the failure options and bail
-            if action() == False:
-                for failureAction in clickedButtonManifest.failureActions:
-                    failureAction()
-                return
-        # if here all actions succeeded, so execute success actions
-        for successAction in clickedButtonManifest.successActions:
-            successAction()
 
     def extractCSSURL(self):
         # HACK: grabbing the css url from the 'flag' page html. perhaps there's a better way? some API?
@@ -126,4 +111,3 @@ class WebviewController:
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
-        window.expose(self.performClickedButtonActions) # expose to JS as 'pywebview.api.performClickedButtonActions'

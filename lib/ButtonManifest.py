@@ -11,5 +11,5 @@ class ButtonManifest:
 
     def html(self):
         return f"""
-            <button onclick="pywebview.api.performClickedButtonActions('{self.id}')" {'class="selected"' if self.isInitiallySelected else ''} id="{self.id}")">{self.title}</button>
+            <button onclick="pywebview.api.performClickActions('{self.id}')" {'class="selected"' if self.isInitiallySelected else ''} id="{self.id}")">{self.title}</button>
         """
