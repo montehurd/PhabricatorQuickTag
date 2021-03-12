@@ -5,14 +5,14 @@
         "sourceProjects": [
             {
                 "name": "Test-Project",
-                "ticketSourceColumns": [
+                "columns": [
                     "Backlog",
                     "Needs-QA"
                 ]
             },
             {
                 "name": "Test-Project2",
-                "ticketSourceColumns": [
+                "columns": [
                     "Backlog",
                     "Needs-Some-QA"
                 ]

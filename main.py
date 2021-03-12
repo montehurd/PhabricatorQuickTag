@@ -11,7 +11,7 @@ def getDehydratedSourceProjects(fetcher):
     return list(map(lambda projectJSON:
         Project(
             name = projectJSON['name'],
-            columnNames = projectJSON['ticketSourceColumns'],
+            columnNames = projectJSON['columns'],
             fetcher = fetcher
         ),
         DataStore.getConfigurationValue('sourceProjects')
