@@ -18,6 +18,6 @@ class Project:
         self.phid = self.fetcher.fetchProjectPHID(self.name)
 
     def fetchButtonsMenuColumns(self):
-        columnsData = self.fetcher.fetchColumnsData(self, self.columnNamesToIgnoreForButtons)
+        columnsData = self.fetcher.fetchColumnsData(self)
         self.buttonsMenuColumnNames = list(map(lambda x: x['fields']['name'], columnsData))
         self.buttonsMenuColumns = list(map(lambda x: Column(x['fields']['name'], self, x['phid']), columnsData))

@@ -6,14 +6,12 @@
             {
                 "name": "Test-Project",
                 "columns": [
-                    "Backlog",
                     "Needs-QA"
                 ]
             },
             {
                 "name": "Test-Project2",
                 "columns": [
-                    "Backlog",
                     "Needs-Some-QA"
                 ]
             }

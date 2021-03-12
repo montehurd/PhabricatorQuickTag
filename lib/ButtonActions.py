@@ -112,3 +112,9 @@ class ButtonActions:
         DataStore.toggleSourceProjectColumnInConfigurationJSON(columnName, indexOfColumnToToggle, projectName)
         DataStore.saveCurrentConfiguration()
         return True
+
+    def toggleDestinationProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle):
+        columnName = allColumnNames[indexOfColumnToToggle]
+        DataStore.toggleDestinationProjectColumnInConfigurationJSON(columnName, indexOfColumnToToggle)
+        DataStore.saveCurrentConfiguration()
+        return True

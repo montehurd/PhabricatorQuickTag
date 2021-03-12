@@ -221,3 +221,38 @@ class ButtonMenuFactory:
             menuTitle = menuTitle,
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
+
+    def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, isInitiallySelected = False):
+        return ButtonManifest(
+            id = buttonID,
+            title = title,
+            isInitiallySelected = isInitiallySelected,
+            clickActions = [
+                self.buttonActions.hideTickets,
+                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle :
+                    self.buttonActions.toggleDestinationProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle)
+            ],
+            successActions = [
+                lambda buttonID=buttonID :
+                    self.buttonActions.toggleButton(buttonID)
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames):
+        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleDestinationProjectColumnInConfigurationJSONButtonManifest(
+            buttonID = self.__cssSafeGUID(),
+            title = indexAndColumnNameTuple[1],
+            indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
+            allColumnNames = allColumnNames,
+            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
+        ), enumerate(allColumnNames)))
+
+        ButtonManifests.add(buttonManifests)
+
+        return self.__wrapWithButtonMenuTag(
+            menuTitle = menuTitle,
+            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
+        )

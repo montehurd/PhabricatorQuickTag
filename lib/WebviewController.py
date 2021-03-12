@@ -55,21 +55,13 @@ class WebviewController:
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
-    def projectSummaryHTML(self, name, columns):
-        return f'''
-            <div class=project_summary>
-                <span class=project_summary_project>{name}</span> >
-                {', '.join(list(map(lambda column: f'<span class=project_summary_column>{column.name}</span>', columns)))}
-            </div>
-        '''
-
     def summaryHTML(self):
-        sourcesSummaryHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
-
+        sourcesHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
+        destinationHTML = ButtonMenuFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
         return f'''
                 <div class=projects_summary_header>
                     <div class=projects_summary_title>
-                        <b>⚙️&nbsp;&nbsp;Current Configuration</b>&nbsp;&nbsp;:&nbsp;&nbsp;adjust by editing '<i>configuration.json</i>' file
+                        <b>⚙️&nbsp;&nbsp;Current Configuration</b>
                     </div>
                 </div>
                 <div class=projects_summary_body>
@@ -77,9 +69,9 @@ class WebviewController:
                         <button onclick="pywebview.api.reload()">Reload</button>
                     </div>
                     <div><b>Ticket Sources:</b></div>
-                    {sourcesSummaryHTML}
+                    {sourcesHTML}
                     <div><b>Destination Columns:</b></div>
-                    {self.projectSummaryHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumns)}
+                    {destinationHTML}
                 </div>
         '''
 

@@ -24,11 +24,13 @@ class ProjectsHydrator:
             self.loadingMessageSetter(f"Fetching '{self.destinationProject.name}' columns")
             executor.submit(self.destinationProject.fetchButtonsMenuColumns(), ())
 
-            # there is only one destination project now, but making this an array in anticipation of adding ability for user to choose multiple destinations
-            addToDestinationColumnMenuHTMLLambdas = [
-                lambda ticketID, ticketJSON, columns=self.destinationProject.buttonsMenuColumns :
-                    ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
-            ]
+            addToDestinationColumnMenuHTMLLambdas = []
+            destinationColumns = list(filter(lambda column: (column.name not in self.destinationProject.columnNamesToIgnoreForButtons), self.destinationProject.buttonsMenuColumns))
+            if len(destinationColumns) > 0:
+                addToDestinationColumnMenuHTMLLambdas.append(
+                    lambda ticketID, ticketJSON, columns=destinationColumns :
+                        ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
+                )
 
             statusAndPriorityMenuHTMLLambda = [
                 lambda ticketID, ticketJSON :
