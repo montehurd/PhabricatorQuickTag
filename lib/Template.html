@@ -36,7 +36,6 @@
      button.delete {
        border: unset;
        padding: 0px;
-       padding-left: 5px;
        background-color: transparent;
      }
      div.menus {
@@ -51,7 +50,13 @@
        float: right;
      }
      div.menu {
-       margin: 8px 8px 8px 14px;
+       margin: 8px 0px 8px 0px;
+       padding-left: 14px;
+       padding-right: 14px;
+     }
+     div.menu_highlighted {
+       background-color: #333;
+       border-radius: 8px;
      }
      div.column_source {
        font-size: 1.75em;
@@ -77,7 +82,7 @@
      div.projects_summary_body {
        border-top: dashed 1px #666;
        background-color: #222;
-       padding: 12px;
+       padding: 10px;
      }
      div.projects_summary_body_buttons {
        float: right;
@@ -96,6 +101,10 @@
      .loading-message{
        text-align: center;
        font-size: 1.5em;
+     }
+     div.right_project_menu {
+       visibility: hidden;
+       float: right;
      }
    </style>
   </head>

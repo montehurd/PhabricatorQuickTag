@@ -47,12 +47,12 @@ class WebviewController:
                 <div class=projects_summary_header>
                     <div class=projects_summary_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>
+                        <div class=projects_summary_body_buttons>
+                            <button onclick="pywebview.api.reload()">Reload</button>
+                        </div>
                     </div>
                 </div>
                 <div class=projects_summary_body>
-                    <div class=projects_summary_body_buttons>
-                        <button onclick="pywebview.api.reload()">Reload</button>
-                    </div>
                     <div><b>Ticket Sources:</b></div>
                     {sourcesHTML}
                     <div><b>Destination Columns:</b></div>

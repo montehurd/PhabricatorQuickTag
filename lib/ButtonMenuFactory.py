@@ -63,14 +63,24 @@ class ButtonMenuFactory:
             ]
         )
 
-    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons):
+    def __rightProjectMenuDiv(self, deleteProjectButtonHTML):
         return f'''
-            <div class="menu">
+            <div class="right_project_menu">
+                {deleteProjectButtonHTML}
+            </div>
+        '''
+
+    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, deleteProjectButtonHTML = ''):
+        rightProjectMenuDiv = self.__rightProjectMenuDiv(deleteProjectButtonHTML = deleteProjectButtonHTML) if showRightProjectMenu else ''
+        mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.projects_summary_body div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.projects_summary_body div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"''' if showRightProjectMenu else ''
+        return f'''
+            <div class="menu" {mouseOverAndOut}>
                 {menuTitle}
                 <br>
                 <buttonmenu>
                     {menuButtons}
                 </buttonmenu>
+                {rightProjectMenuDiv}
             </div>
         '''
 
@@ -231,10 +241,12 @@ class ButtonMenuFactory:
         ButtonManifests.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
-            menuTitle = f'''{menuTitle}{deleteButtonManifest.html(cssClass = 'delete')}''',
+            menuTitle = f'''{menuTitle}''',
             menuButtons = f'''
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
-            '''
+            ''',
+            showRightProjectMenu = True,
+            deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
         )
 
     def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, isInitiallySelected = False):
