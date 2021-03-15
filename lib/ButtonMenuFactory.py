@@ -72,7 +72,7 @@ class ButtonMenuFactory:
 
     def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, deleteProjectButtonHTML = ''):
         rightProjectMenuDiv = self.__rightProjectMenuDiv(deleteProjectButtonHTML = deleteProjectButtonHTML) if showRightProjectMenu else ''
-        mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.projects_summary_body div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.projects_summary_body div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"''' if showRightProjectMenu else ''
+        mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"''' if showRightProjectMenu else ''
         return f'''
             <div class="menu" {mouseOverAndOut}>
                 {menuTitle}
@@ -209,7 +209,7 @@ class ButtonMenuFactory:
         buttonID = self.__cssSafeGUID()
         return ButtonManifest(
             id = buttonID,
-            title = '🗑',
+            title = 'Remove',
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.hideTickets,

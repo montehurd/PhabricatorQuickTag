@@ -43,6 +43,7 @@ class WebviewController:
     def summaryHTML(self):
         sourcesHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
         destinationHTML = ButtonMenuFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
+        mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
         return f'''
                 <div class=projects_summary_header>
                     <div class=projects_summary_title>
@@ -53,9 +54,19 @@ class WebviewController:
                     </div>
                 </div>
                 <div class=projects_summary_body>
-                    <div><b>Ticket Sources:</b></div>
+                    <div class=project_summary_heading {mouseOverAndOut}>
+                        <div class=right_project_menu>
+                            <button class=add>Add</button>
+                        </div>
+                        <b>Ticket Sources:</b>
+                    </div>
                     {sourcesHTML}
-                    <div><b>Destination Columns:</b></div>
+                    <div class=project_summary_heading {mouseOverAndOut}>
+                        <div class=right_project_menu>
+                            <button class=add>Change</button>
+                        </div>
+                        <b>Destination Columns:</b>
+                    </div>
                     {destinationHTML}
                 </div>
         '''
