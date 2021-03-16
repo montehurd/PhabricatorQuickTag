@@ -94,6 +94,9 @@ class ButtonActions:
             menuDiv.remove()
         ''')
 
+    def reloadConfigurationUI(self):
+        self.__window().evaluate_js('pywebview.api.reloadConfigurationUI()')
+
     def addTicketToProject(self, ticketID, projectPHID):
         return self.fetcher.callEndpoint(
             path = '/api/maniphest.edit',

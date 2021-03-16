@@ -46,7 +46,7 @@ class WebviewController:
                     <div class=projects_configuration_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>
                         <div class=projects_configuration_body_buttons>
-                            <button onclick="pywebview.api.reload()">Reload</button>
+                            <button onclick="pywebview.api.reload()">Reload Tickets</button>
                         </div>
                     </div>
                 </div>
@@ -125,11 +125,11 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load()
 
-    def reloadConfiguration(self):
+    def reloadConfigurationUI(self):
         ButtonManifests.clear()
         DataStore.loadConfiguration()
         self.load(hydrateTickets = False)
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
-        window.expose(self.reloadConfiguration) # expose to JS as 'pywebview.api.reloadConfiguration'
+        window.expose(self.reloadConfigurationUI) # expose to JS as 'pywebview.api.reloadConfigurationUI'

@@ -219,6 +219,7 @@ class ButtonMenuFactory:
             successActions = [
                 lambda buttonID=buttonID :
                     self.buttonActions.deleteMenu(buttonID),
+                # self.buttonActions.reloadConfigurationUI,
                 printSuccess
             ],
             failureActions = [
