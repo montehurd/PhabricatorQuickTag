@@ -52,6 +52,11 @@ class ProjectsHydrator:
             project.buttonsMenuColumns = self.fetchColumns(project)
             project.buttonsMenuColumnNames = list(map(lambda column: column.name, project.buttonsMenuColumns))
 
+            currentSourceColumnMenuHTMLLambda = [
+                lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
+                    ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
+            ]
+
             # make column object for each column name
             project.columns = []
             for columnName in project.columnNames:
@@ -70,17 +75,7 @@ class ProjectsHydrator:
                 column.ticketsByID = ticketsByID
                 # print(json.dumps(self.ticketsByID, indent=4))
                 column.tickets = column.ticketsByID.values()
-
-            currentSourceColumnMenuHTMLLambda = [
-                lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
-                    ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
-            ]
-
-            # safe to append all menu lambdas to column here:
-            for column in project.columns:
                 column.menuHTMLLambdas = currentSourceColumnMenuHTMLLambda + column.menuHTMLLambdas + addToDestinationColumnMenuHTMLLambdas + statusAndPriorityMenuHTMLLambda
-
-            # fetch column tickets html for their remarkup
-            for column in project.columns:
+                # fetch column tickets html for their remarkup
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets html")
                 column.fetchTicketsHTML(self.destinationProject.name)
