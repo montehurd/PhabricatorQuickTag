@@ -37,28 +37,28 @@ class WebviewController:
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
-    def projectsSummaryHTML(self):
+    def projectsConfigurationHTML(self):
         sourcesHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
         destinationHTML = ButtonMenuFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
         mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
         return f'''
-                <div class=projects_summary_header>
-                    <div class=projects_summary_title>
+                <div class=projects_configuration_header>
+                    <div class=projects_configuration_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>
-                        <div class=projects_summary_body_buttons>
+                        <div class=projects_configuration_body_buttons>
                             <button onclick="pywebview.api.reload()">Reload</button>
                         </div>
                     </div>
                 </div>
-                <div class=projects_summary_body>
-                    <div class=project_summary_heading {mouseOverAndOut}>
+                <div class=projects_configuration_body>
+                    <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
                             <button class=add>Add</button>
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
-                    <div class=project_summary_heading {mouseOverAndOut}>
+                    <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
                             <button class=add>Change</button>
                         </div>
@@ -111,7 +111,7 @@ class WebviewController:
         self.setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
-        self.setInnerHTML('div.projects_summary', self.projectsSummaryHTML())
+        self.setInnerHTML('div.projects_configuration', self.projectsConfigurationHTML())
         self.setInnerHTML('div.projects_tickets', self.projectsTicketsHTML())
 
     def onDOMLoaded(self):
