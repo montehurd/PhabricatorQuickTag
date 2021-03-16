@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, subprocess, asyncio
+import json
 
 def stringFromFile(fileName):
     with open(fileName, 'r') as f:
@@ -19,13 +19,7 @@ def jsonToFile(fileName, data):
 def escapeBackticks(string):
     return string.replace('`', r'\`')
 
-def callAsyncFuncSynchronously(asyncFunc):
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    tasks = [loop.create_task(asyncFunc)]
-    loop.run_until_complete(asyncio.wait(tasks))
-    loop.close()
-
+# import subprocess
 # def sendToBrowser(string, extension):
 #     filePath = f'/tmp/browser.tmp.{extension}'
 #     f = open(filePath, 'wt', encoding='utf-8')

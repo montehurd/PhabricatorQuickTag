@@ -83,8 +83,7 @@ class WebviewController:
         return list(map(lambda projectJSON:
             Project(
                 name = projectJSON['name'],
-                columnNames = projectJSON['columns'],
-                fetcher = self.fetcher
+                columnNames = projectJSON['columns']
             ),
             DataStore.getConfigurationValue('sourceProjects')
         ))
@@ -92,8 +91,7 @@ class WebviewController:
     def getDehydratedDestinationProject(self):
         return Project(
             name = DataStore.getConfigurationValue('destinationProject')['name'],
-            columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns'],
-            fetcher = self.fetcher
+            columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
 
     def load(self):
@@ -103,14 +101,12 @@ class WebviewController:
         time.sleep(1.0)
 
         self.setLoadingMessage('Beginning data retrieval')
-        Utilities.callAsyncFuncSynchronously(
-            ProjectsHydrator(
-                sourceProjects = self.sourceProjects,
-                destinationProject = self.destinationProject,
-                fetcher = self.fetcher,
-                loadingMessageSetter = self.setLoadingMessage
-            ).hydrateProjects()
-        )
+        ProjectsHydrator(
+            sourceProjects = self.sourceProjects,
+            destinationProject = self.destinationProject,
+            fetcher = self.fetcher,
+            loadingMessageSetter = self.setLoadingMessage
+        ).hydrateProjects()
 
         self.setLoadingMessage('')
 
