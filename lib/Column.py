@@ -12,6 +12,7 @@ class Column:
         self.fetcher = fetcher
         self.menuHTMLLambdas = []
         self.__ticketsRemarkup = ''
+        self.ticketsByID = []
 
     @property
     def ticketsRemarkup(self):
