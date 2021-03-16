@@ -11,6 +11,18 @@ class Column:
         self.ticketsHTMLIncludingWrapperDivsAndMenus = ''
         self.fetcher = fetcher
         self.menuHTMLLambdas = []
+        self.__ticketsRemarkup = ''
+
+    @property
+    def ticketsRemarkup(self):
+        return ''.join(map(lambda item:
+f'''TICKET_START:{item['id']}:
+= T{item['id']} =
+== {item['fields']['name']} ==
+
+{item['fields']['description']['raw']}
+TICKET_END'''
+        , self.tickets))
 
     def __addWrapperDivAndMenuToTicketHTML(self, match):
         ticketID = match.group(1)
@@ -24,23 +36,12 @@ class Column:
             </div>
         '''
 
-    def __allTicketsRemarkup(self):
-        # https://secure.phabricator.com/book/phabricator/article/remarkup/
-        return ''.join(map(lambda item:
-f'''TICKET_START:{item['id']}:
-= T{item['id']} =
-== {item['fields']['name']} ==
-
-{item['fields']['description']['raw']}
-TICKET_END'''
-        , self.tickets))
-
     def fetchTicketsHTML(self, destinationProjectName):
         ticketsHTML = f"""
             <div class=column_subtitle>
                 {len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} currently in <b>{self.project.name} > {self.name}</b> not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(self.tickets) == 0 else ':'}
             </div>
-            {self.fetcher.fetchHTMLFromColumnTicketsRemarkup(self.__allTicketsRemarkup())}
+            {self.fetcher.fetchHTMLFromColumnTicketsRemarkup(self.ticketsRemarkup)}
         """
 
         self.ticketsHTMLIncludingWrapperDivsAndMenus = re.sub(pattern=r'TICKET_START:(.*?):(.*?)TICKET_END', repl=self.__addWrapperDivAndMenuToTicketHTML, string=ticketsHTML, flags=re.DOTALL)
