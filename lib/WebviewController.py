@@ -34,9 +34,6 @@ class WebviewController:
             """
         )
 
-    def setMainDivInnerHTML(self, html):
-        return self.setInnerHTML('div.phabricator-remarkup', html)
-
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
@@ -82,16 +79,6 @@ class WebviewController:
         print(f'Page HTML assembled')
         return ''.join(html)
 
-    def mainDivInnerHTMLForProjects(self):
-        return f'''
-            <div class=projects_summary>
-                {self.summaryHTML()}
-            </div>
-            <div class=projects_tickets>
-                {self.projectsHTML()}
-            </div>
-        '''
-
     def getDehydratedSourceProjects(self):
         return list(map(lambda projectJSON:
             Project(
@@ -125,11 +112,11 @@ class WebviewController:
             ).hydrateProjects()
         )
 
-        # can start inner html generation now that projects are hydrated
-        mainDivInnerHTML = self.mainDivInnerHTMLForProjects()
-
         self.setLoadingMessage('')
-        self.setMainDivInnerHTML(mainDivInnerHTML)
+
+        # can start html generation now that projects are hydrated
+        self.setInnerHTML('div.projects_summary', self.summaryHTML())
+        self.setInnerHTML('div.projects_tickets', self.projectsHTML())
 
     def onDOMLoaded(self):
         self.window.loaded -= self.onDOMLoaded # unsubscribe event listener
