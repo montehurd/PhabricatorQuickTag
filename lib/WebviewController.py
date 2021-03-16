@@ -37,7 +37,7 @@ class WebviewController:
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
-    def summaryHTML(self):
+    def projectsSummaryHTML(self):
         sourcesHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
         destinationHTML = ButtonMenuFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
         mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
@@ -68,7 +68,7 @@ class WebviewController:
                 </div>
         '''
 
-    def projectsHTML(self):
+    def projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
         html = []
@@ -115,8 +115,8 @@ class WebviewController:
         self.setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
-        self.setInnerHTML('div.projects_summary', self.summaryHTML())
-        self.setInnerHTML('div.projects_tickets', self.projectsHTML())
+        self.setInnerHTML('div.projects_summary', self.projectsSummaryHTML())
+        self.setInnerHTML('div.projects_tickets', self.projectsTicketsHTML())
 
     def onDOMLoaded(self):
         self.window.loaded -= self.onDOMLoaded # unsubscribe event listener
