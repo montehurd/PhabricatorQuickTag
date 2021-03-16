@@ -58,16 +58,11 @@ class ProjectsHydrator:
             ]
 
             # make column object for each column name
-            project.columns = []
-            for columnName in project.columnNames:
-                project.columns.append( Column(name = columnName, project = project, phid = None, fetcher = self.fetcher) )
-            # fetch column phids
+            project.columns = list(map(lambda columnName: Column(name = columnName, project = project, phid = None, fetcher = self.fetcher), project.columnNames))
+
             for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' id")
                 column.phid = self.fetcher.fetchColumnPHID(column.name, column.project.phid)
-
-            # fetch column tickets
-            for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets")
                 tickets = list(self.fetcher.fetchColumnTickets(column.phid))
                 # dict with ticketID as key and ticketJSON as value (excluding tickets already tagged with destinationProjectPHID)
