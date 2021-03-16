@@ -6,7 +6,6 @@ class Project:
         self.columnNames = columnNames
         self.phid = None
         self.columns = []
-        self.ticketsByID = []
         self.buttonsMenuColumnNames = []
         self.buttonsMenuColumns = []
         self.columnNamesToIgnoreForButtons = columnNamesToIgnoreForButtons
