@@ -94,7 +94,7 @@ class WebviewController:
             columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
 
-    def load(self):
+    def load(self, hydrateTickets = True):
         self.sourceProjects = self.getDehydratedSourceProjects()
         self.destinationProject = self.getDehydratedDestinationProject()
         self.window.load_html(self.getWrapperHTML())
@@ -106,12 +106,14 @@ class WebviewController:
             destinationProject = self.destinationProject,
             fetcher = self.fetcher,
             loadingMessageSetter = self.setLoadingMessage
-        ).hydrateProjects()
+        ).hydrateProjects(hydrateTickets = hydrateTickets)
 
         self.setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
         self.setInnerHTML('div.projects_configuration', self.projectsConfigurationHTML())
+        if not hydrateTickets:
+            return
         self.setInnerHTML('div.projects_tickets', self.projectsTicketsHTML())
 
     def onDOMLoaded(self):
@@ -123,5 +125,11 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load()
 
+    def reloadConfiguration(self):
+        ButtonManifests.clear()
+        DataStore.loadConfiguration()
+        self.load(hydrateTickets = False)
+
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
+        window.expose(self.reloadConfiguration) # expose to JS as 'pywebview.api.reloadConfiguration'
