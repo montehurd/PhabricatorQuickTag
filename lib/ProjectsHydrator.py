@@ -16,7 +16,7 @@ class ProjectsHydrator:
         columnsData = self.fetcher.fetchColumnsData(project)
         return list(map(lambda x: Column(x['fields']['name'], project, x['phid']), columnsData))
 
-    def hydrateProjects(self):
+    def hydrateProjects(self, hydrateTickets = True):
         # fetch destination project phid and columns
 
         self.loadingMessageSetter(f"Fetching '{self.destinationProject.name}' id")
@@ -64,6 +64,8 @@ class ProjectsHydrator:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' id")
                 column.phid = self.fetcher.fetchColumnPHID(column.name, column.project.phid)
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets")
+                if not hydrateTickets: # if only reloading the configuration UI the ticket hydration below is not needed
+                    continue
                 tickets = list(self.fetcher.fetchColumnTickets(column.phid))
                 # dict with ticketID as key and ticketJSON as value (excluding tickets already tagged with destinationProjectPHID)
                 ticketsByID = dict((x['id'], x) for x in tickets if not self.destinationProject.phid in x['attachments']['projects']['projectPHIDs'])
