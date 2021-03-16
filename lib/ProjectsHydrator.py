@@ -59,7 +59,8 @@ class ProjectsHydrator:
             # fetch column phids
             for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' id")
-                column.fetchPHID()
+                column.phid = self.fetcher.fetchColumnPHID(column.name, column.project.phid)
+
             # fetch column tickets
             for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets")

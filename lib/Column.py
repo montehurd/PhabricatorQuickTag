@@ -12,9 +12,6 @@ class Column:
         self.fetcher = fetcher
         self.menuHTMLLambdas = []
 
-    def fetchPHID(self):
-        self.phid = self.fetcher.fetchColumnPHID(self.name, self.project.phid)
-
     def __addWrapperDivAndMenuToTicketHTML(self, match):
         ticketID = match.group(1)
         ticketHTML = match.group(2)
