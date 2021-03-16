@@ -64,7 +64,12 @@ class ProjectsHydrator:
             # fetch column tickets
             for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets")
-                column.fetchTickets(self.destinationProject.phid)
+                tickets = list(self.fetcher.fetchColumnTickets(column.phid))
+                # dict with ticketID as key and ticketJSON as value (excluding tickets already tagged with destinationProjectPHID)
+                ticketsByID = dict((x['id'], x) for x in tickets if not self.destinationProject.phid in x['attachments']['projects']['projectPHIDs'])
+                column.ticketsByID = ticketsByID
+                # print(json.dumps(self.ticketsByID, indent=4))
+                column.tickets = column.ticketsByID.values()
 
             currentSourceColumnMenuHTMLLambda = [
                 lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :

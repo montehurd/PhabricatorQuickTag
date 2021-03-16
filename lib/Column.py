@@ -45,14 +45,6 @@ TICKET_END'''
 
         self.ticketsHTMLIncludingWrapperDivsAndMenus = re.sub(pattern=r'TICKET_START:(.*?):(.*?)TICKET_END', repl=self.__addWrapperDivAndMenuToTicketHTML, string=ticketsHTML, flags=re.DOTALL)
 
-    def fetchTickets(self, destinationProjectPHID):
-        tickets = list(self.fetcher.fetchColumnTickets(self.phid))
-        # dict with ticketID as key and ticketJSON as value (excluding tickets already tagged with destinationProjectPHID)
-        ticketsByID = dict((x['id'], x) for x in tickets if not destinationProjectPHID in x['attachments']['projects']['projectPHIDs'])
-        self.ticketsByID = ticketsByID
-        # print(json.dumps(self.ticketsByID, indent=4))
-        self.tickets = self.ticketsByID.values()
-
     def __allMenusHTML(self, ticketID, ticketJSON):
         menusHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID, ticketJSON), self.menuHTMLLambdas)))
         return f'''
