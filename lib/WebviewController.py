@@ -53,14 +53,14 @@ class WebviewController:
                 <div class=projects_configuration_body>
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add>Add Project</button>
+                            <button class=add>Add Source Project</button>
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add>Change Project</button>
+                            <button class=add>Change Destination Project</button>
                         </div>
                         <b>Destination Columns:</b>
                     </div>
