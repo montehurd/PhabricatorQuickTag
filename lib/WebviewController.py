@@ -146,6 +146,7 @@ class WebviewController:
         print(f'Save Project Choice: {projectName}, Mode: {mode}')
         self.hideTickets()
         self.hideProjectSearch()
+        self.reloadConfigurationUI()
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
