@@ -1,192 +1,192 @@
 <!DOCTYPE html>
-  <html>
-  <head>
-   <meta charset="UTF-8">
-   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-   <meta http-equiv="Pragma" content="no-cache">
-   <meta http-equiv="Expires" content="0">
-   <link rel="stylesheet" type="text/css" href="$TEMPLATE_CSS_URL">
-   <base href="$TEMPLATE_BASE_URL" target="_blank">
-   <style>
-     body {
-       background-color: #EBECEE;
-     }
-     div.ticket {
-       border: solid 1px #A1A6B0;
-       margin: 15px 50px 50px 50px;
-       padding: 5px 20px 20px 20px;
-       border-radius: 12px;
-       min-width: 740px;
-       background-color: white;
-     }
-     button.hide {
-       float: right;
-       margin-top: 20px;
-     }
-     button:not([class=selected]) {
-       background-color: white;
-       border: solid 1px #A1A6B0;
-       color: #777C89;
-     }
-     button, button:hover {
-       background-image: unset;
-       margin-right: 4px;
-       margin-bottom: 4px;
-     }
-     button.delete, button.add {
-       border: unset;
-       padding: 0px;
-       background-color: transparent;
-       color: #fff;
-     }
-     div.menus {
-       border-radius: 12px;
-       padding: 6pt;
-       margin-top: 20px;
-     }
-     span.buttonActionMessage {
-       color: gray;
-       margin-left: 25px;
-       font-size: 1.2em;
-       float: right;
-     }
-     div.menu {
-       margin: 0px;
-       padding-left: 24px;
-       padding-right: 24px;
-     }
-     div.menu_highlighted {
-       background-color: #333;
-       border-radius: 8px;
-     }
-     div.column_source {
-       font-size: 1.75em;
-       margin: 15px;
-       margin-top: 50px;
-     }
-     span.column_identifier {
-       font-style: italic;
-     }
-     div.column_subtitle {
-       margin-left: 30px;
-     }
-     div.projects_configuration {
-       color: #eee;
-     }
-     div.projects_configuration_title {
-       font-size: 1.2em;
-     }
-     div.projects_configuration_header {
-       background-color: #222;
-       padding: 12px;
-     }
-     div.projects_configuration_body {
-       border-top: dashed 1px #666;
-       background-color: #222;
-       padding: 10px;
-     }
-     div.projects_configuration_body_buttons {
-       float: right;
-     }
-     div.project_configuration {
-       margin-left: 20px;
-     }
-     span.project_configuration_column, span.project_configuration_project {
-     }
-     div.project_configuration_heading {
-       padding: 5px 24px 5px 8px;
-     }
-     button, textarea, span.phui-tag-core {
-       border-radius: 8px;
-     }
-     .phui-tag-color-object {
-       border-color: #A1A6B0;
-     }
-     .loading-message{
-       text-align: center;
-       font-size: 1.5em;
-     }
-     div.right_project_menu {
-       visibility: hidden;
-       float: right;
-     }
-     div.projects_search_centered_panel {
-        width: 600px;
-        height: 400px;
-        position: fixed;
-        background-color: #eee;
-        top: 50%;
-        left: 50%;
-        margin-top: -200px;
-        margin-left: -300px;
-        padding: 25px;
-        border-radius: 12px;
-        border: solid 1px #A1A6B0;
-        display: none;
-      }
-      button.projects_search_hide {
-        float: right;
-        margin-right: -10px;
-        margin-top: -10px;
-      }
-      div.projects_search_title {
-        font-weight: bold;
-        font-size: 1.2em;
-        color: #444;
-      }
-      .projects_search_textbox {
-        width: 300px;
-      }
-      div.blurry_overlay {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        left: 0;
-        top: 0;
-        display: none;
-        background-color: #000;
-        opacity: 75%;
-      }
-      div.projects_search_results {
-        overflow-y: auto;
-        overflow-x: hidden;
-        height: 85%;
-        width: 100%;
-      }
-      div.projects_search_result {
-        width: 100%;
-        margin-top: 8px;
-        background-color: #ddd;
-        padding: 10px;
-        cursor: pointer;
-      }
-      div.projects_search_result:hover {
-        background-color: #ccc;
-      }
-   </style>
-  </head>
-  <body>
-   <div class="loading-message">
-   </div>
-   <div class="phabricator-remarkup">
-     <div class=projects_configuration>
-     </div>
-     <div class=projects_tickets>
-     </div>
-     <div class="blurry_overlay" onclick="pywebview.api.hideProjectSearch()"></div>
-     <div class="projects_search_centered_panel">
-       <button class="projects_search_hide" onclick="pywebview.api.hideProjectSearch()">Hide</button>
-       <form>
-         <div class="projects_search_title">Find Project</div>
-         <input type="hidden" id="projects_search_mode">
-         <input class="projects_search_textbox" type="text">
-       </form>
-       <div class="projects_search_results">
-         <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project</div>
-         <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project2</div>
-         <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">QTE-TestingOverview</div>
-       </div>
-     </div>
-   </div>
-  </body>
-  </html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <link rel="stylesheet" type="text/css" href="$TEMPLATE_CSS_URL">
+  <base href="$TEMPLATE_BASE_URL" target="_blank">
+  <style>
+  body {
+    background-color: #EBECEE;
+  }
+  div.ticket {
+    border: solid 1px #A1A6B0;
+    margin: 15px 50px 50px 50px;
+    padding: 5px 20px 20px 20px;
+    border-radius: 12px;
+    min-width: 740px;
+    background-color: white;
+  }
+  button.hide {
+    float: right;
+    margin-top: 20px;
+  }
+  button:not([class=selected]) {
+    background-color: white;
+    border: solid 1px #A1A6B0;
+    color: #777C89;
+  }
+  button, button:hover {
+    background-image: unset;
+    margin-right: 4px;
+    margin-bottom: 4px;
+  }
+  button.delete, button.add {
+    border: unset;
+    padding: 0px;
+    background-color: transparent;
+    color: #fff;
+  }
+  div.menus {
+    border-radius: 12px;
+    padding: 6pt;
+    margin-top: 20px;
+  }
+  span.buttonActionMessage {
+    color: gray;
+    margin-left: 25px;
+    font-size: 1.2em;
+    float: right;
+  }
+  div.menu {
+    margin: 0px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  div.menu_highlighted {
+    background-color: #333;
+    border-radius: 8px;
+  }
+  div.column_source {
+    font-size: 1.75em;
+    margin: 15px;
+    margin-top: 50px;
+  }
+  span.column_identifier {
+    font-style: italic;
+  }
+  div.column_subtitle {
+    margin-left: 30px;
+  }
+  div.projects_configuration {
+    color: #eee;
+  }
+  div.projects_configuration_title {
+    font-size: 1.2em;
+  }
+  div.projects_configuration_header {
+    background-color: #222;
+    padding: 12px;
+  }
+  div.projects_configuration_body {
+    border-top: dashed 1px #666;
+    background-color: #222;
+    padding: 10px;
+  }
+  div.projects_configuration_body_buttons {
+    float: right;
+  }
+  div.project_configuration {
+    margin-left: 20px;
+  }
+  span.project_configuration_column, span.project_configuration_project {
+  }
+  div.project_configuration_heading {
+    padding: 5px 24px 5px 8px;
+  }
+  button, textarea, span.phui-tag-core {
+    border-radius: 8px;
+  }
+  .phui-tag-color-object {
+    border-color: #A1A6B0;
+  }
+  .loading-message{
+    text-align: center;
+    font-size: 1.5em;
+  }
+  div.right_project_menu {
+    visibility: hidden;
+    float: right;
+  }
+  div.projects_search_centered_panel {
+    width: 600px;
+    height: 400px;
+    position: fixed;
+    background-color: #eee;
+    top: 50%;
+    left: 50%;
+    margin-top: -200px;
+    margin-left: -300px;
+    padding: 25px;
+    border-radius: 12px;
+    border: solid 1px #A1A6B0;
+    display: none;
+  }
+  button.projects_search_hide {
+    float: right;
+    margin-right: -10px;
+    margin-top: -10px;
+  }
+  div.projects_search_title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #444;
+  }
+  .projects_search_textbox {
+    width: 300px;
+  }
+  div.blurry_overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: none;
+    background-color: #000;
+    opacity: 75%;
+  }
+  div.projects_search_results {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 85%;
+    width: 100%;
+  }
+  div.projects_search_result {
+    width: 100%;
+    margin-top: 8px;
+    background-color: #ddd;
+    padding: 10px;
+    cursor: pointer;
+  }
+  div.projects_search_result:hover {
+    background-color: #ccc;
+  }
+  </style>
+</head>
+<body>
+  <div class="loading-message">
+  </div>
+  <div class="phabricator-remarkup">
+    <div class=projects_configuration>
+    </div>
+    <div class=projects_tickets>
+    </div>
+    <div class="blurry_overlay" onclick="pywebview.api.hideProjectSearch()"></div>
+    <div class="projects_search_centered_panel">
+      <button class="projects_search_hide" onclick="pywebview.api.hideProjectSearch()">Hide</button>
+      <form>
+        <div class="projects_search_title">Find Project</div>
+        <input type="hidden" id="projects_search_mode">
+        <input class="projects_search_textbox" type="text">
+      </form>
+      <div class="projects_search_results">
+        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project</div>
+        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project2</div>
+        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">QTE-TestingOverview</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
