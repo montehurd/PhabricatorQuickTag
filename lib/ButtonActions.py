@@ -53,7 +53,7 @@ class ButtonActions:
         )
 
     def hideTickets(self):
-        self.__window().evaluate_js('document.querySelector("div.projects_tickets").style.visibility = "hidden"')
+        self.__window().evaluate_js('pywebview.api.hideTickets()')
 
     def showTickets(self):
         self.__window().evaluate_js('document.querySelector("div.projects_tickets").style.visibility = "visible"')

@@ -130,6 +130,9 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load(hydrateTickets = False)
 
+    def hideTickets(self):
+        self.window.evaluate_js(f"document.querySelector('div.projects_tickets').style.visibility = 'hidden';")
+
     def showProjectSearch(self, mode):
         self.window.evaluate_js(f"""
             document.querySelector('input#projects_search_mode').value = '{mode}';
@@ -141,6 +144,7 @@ class WebviewController:
 
     def saveProjectSearchChoice(self, projectName, mode):
         print(f'Save Project Choice: {projectName}, Mode: {mode}')
+        self.hideTickets()
         self.hideProjectSearch()
 
     def expose(self, window):
@@ -149,3 +153,4 @@ class WebviewController:
         window.expose(self.showProjectSearch) # expose to JS as 'pywebview.api.showProjectSearch'
         window.expose(self.hideProjectSearch) # expose to JS as 'pywebview.api.hideProjectSearch'
         window.expose(self.saveProjectSearchChoice) # expose to JS as 'pywebview.api.saveProjectSearchChoice'
+        window.expose(self.hideTickets) # expose to JS as 'pywebview.api.hideTickets'
