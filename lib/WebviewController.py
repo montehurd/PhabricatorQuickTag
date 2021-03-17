@@ -150,7 +150,7 @@ class WebviewController:
         else:
             print(f'Unhandled mode: "{mode}"')
             return
-        self.hideTickets()
+        # self.hideTickets()
         self.hideProjectSearch()
         self.reloadConfigurationUI()
 
