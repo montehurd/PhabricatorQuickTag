@@ -125,8 +125,14 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load(hydrateTickets = hydrateTickets)
 
-    def projectSearchTermEntered(self, searchTerm):
-        print(f'searchTerm: {searchTerm}')
+    def projectSearchTermEntered(self, searchTerm, mode):
+        searchResultsSelector = 'div.projects_search_results'
+        if len(searchTerm.strip()) == 0:
+            self.setInnerHTML(searchResultsSelector, '')
+        else:
+            projectNames = self.fetcher.fetchProjectNamesMatchingSearchTerm(searchTerm)
+            projectSearchResultButtonsHTML = ''.join(map(lambda projectName: ButtonMenuFactory(self.fetcher).projectSearchResultButtonHTML(projectName, mode), projectNames))
+            self.setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'

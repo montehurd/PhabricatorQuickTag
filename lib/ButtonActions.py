@@ -72,14 +72,13 @@ class ButtonActions:
               <form>
                 <div class="projects_search_title">Find Project</div>
                 <input class="projects_search_textbox" type="text"
-                   onchange="pywebview.api.projectSearchTermEntered(this.value);"
+                   onchange="pywebview.api.projectSearchTermEntered(this.value, '{mode}');"
                    onpaste="this.onchange();"
                    oninput="this.onchange();"
                    autocomplete="off"
                 >
               </form>
               <div class="projects_search_results">
-                <button class="projects_search_result">Test123</button>
               </div>
             `;
         """)

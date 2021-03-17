@@ -44,6 +44,13 @@ class Fetcher:
         # todo: add console print message here if 'projects' doesn't contain one element - output the 'name' in the message so the user knows which project can't be found
         return projects[0]['phid']
 
+    def fetchProjectNamesMatchingSearchTerm(self, searchTerm):
+        result = self.fetchJSON('/api/project.search', {
+            'api.token' : self.apiToken,
+            'constraints[query]' : searchTerm
+        })
+        return list(map(lambda x: x['fields']['name'], result['result']['data']))
+
     # Prefix 'name' with:
     #   '@' for User
     #   '#' for Project
