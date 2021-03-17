@@ -141,22 +141,20 @@ class ButtonMenuFactory:
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
 
-    def __ticketAddToColumnButtonManifest(self, buttonID, title, ticketID, projectPHID, columnPHID, isInitiallySelected = False):
+    def __ticketToggleColumnButtonManifest(self, buttonID, title, ticketID, projectPHID, columnPHID, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
-            isInitiallySelected = isInitiallySelected, # maybe could make the button toggle by checking isInitiallySelected and if so use click only the 'removeTicketFromColumn' clickAction (would need to write a 'removeTicketFromColumn' action) - would have to use the existing 'toggleButton' success action instead of selectButton
+            isInitiallySelected = isInitiallySelected,
             clickActions = [
-                lambda ticketID=ticketID, projectPHID=projectPHID :
-                    self.buttonActions.addTicketToProject(ticketID, projectPHID),
-                lambda ticketID=ticketID, columnPHID=columnPHID :
-                    self.buttonActions.addTicketToColumn(ticketID, columnPHID)
+                lambda ticketID=ticketID, projectPHID=projectPHID, columnPHID=columnPHID, buttonID=buttonID :
+                    self.buttonActions.toggleTicketOnProjectColumn(ticketID, projectPHID, columnPHID, buttonID)
             ],
             successActions = [
                 lambda ticketID=ticketID :
                     self.buttonActions.showTicketSuccess(ticketID),
                 lambda buttonID=buttonID :
-                    self.buttonActions.selectButton(buttonID),
+                    self.buttonActions.toggleButton(buttonID),
                 lambda buttonID=buttonID :
                     self.buttonActions.deselectOtherButtonsInMenu(buttonID),
                 lambda buttonID=buttonID :
@@ -170,7 +168,7 @@ class ButtonMenuFactory:
 
     def ticketAddToColumnButtonMenuHTML(self, menuTitle, ticketID, ticketJSON, columns):
         # print(json.dumps(ticketJSON, indent=4))
-        buttonManifests = list(map(lambda column: self.__ticketAddToColumnButtonManifest(
+        buttonManifests = list(map(lambda column: self.__ticketToggleColumnButtonManifest(
             buttonID = self.__cssSafeGUID(),
             title = column.name,
             ticketID = f'T{ticketID}',

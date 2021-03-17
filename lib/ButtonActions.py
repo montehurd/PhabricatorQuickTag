@@ -74,6 +74,9 @@ class ButtonActions:
             }}
         ''')
 
+    def isButtonSelected(self, buttonID):
+        return self.__window().evaluate_js(f'document.querySelector("button#{buttonID}").classList.contains("selected")')
+
     def deselectOtherButtonsInMenu(self, buttonID):
         self.__window().evaluate_js(f'''
             var thisButton = document.querySelector("button#{buttonID}");
@@ -101,6 +104,16 @@ class ButtonActions:
         return self.fetcher.callEndpoint(
             path = '/api/maniphest.edit',
             key = 'projects.add',
+            value = projectPHID,
+            objectIdentifier = ticketID,
+            comment = None,
+            needsValueArgumentInArray = True
+        )
+
+    def removeTicketFromProject(self, ticketID, projectPHID):
+        return self.fetcher.callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'projects.remove',
             value = projectPHID,
             objectIdentifier = ticketID,
             comment = None,
@@ -144,4 +157,15 @@ class ButtonActions:
         sourceProjects.remove(project)
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
+        return True
+
+    def toggleTicketOnProjectColumn(self, ticketID, projectPHID, columnPHID, buttonID):
+        if self.isButtonSelected(buttonID):
+            if not self.removeTicketFromProject(ticketID, projectPHID):
+                return False
+        else:
+            if not self.addTicketToProject(ticketID, projectPHID):
+                return False
+            if not self.addTicketToColumn(ticketID, columnPHID):
+                return False
         return True
