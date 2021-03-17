@@ -124,7 +124,8 @@
     border: solid 1px #A1A6B0;
     display: none;
   }
-  button.projects_search_hide {
+
+  div.projects_search_centered_panel button:first-of-type {
     float: right;
     margin-right: -10px;
     margin-top: -10px;
@@ -153,15 +154,15 @@
     height: 85%;
     width: 100%;
   }
-  div.projects_search_result {
+  button.projects_search_result {
     width: 100%;
-    margin-top: 8px;
+    margin: unset !important;
+    margin-right: unset !important;
+    margin-top: 10px !important;
+    text-align: unset;
     background-color: #ddd;
     padding: 10px;
-    cursor: pointer;
-  }
-  div.projects_search_result:hover {
-    background-color: #ccc;
+
   }
   </style>
 </head>
@@ -173,19 +174,8 @@
     </div>
     <div class=projects_tickets>
     </div>
-    <div class="blurry_overlay" onclick="pywebview.api.hideProjectSearch()"></div>
+    <div class="blurry_overlay" onclick="this.style.display = 'none'; document.querySelector('div.projects_search_centered_panel').style.display = 'none';"></div>
     <div class="projects_search_centered_panel">
-      <button class="projects_search_hide" onclick="pywebview.api.hideProjectSearch()">Hide</button>
-      <form>
-        <div class="projects_search_title">Find Project</div>
-        <input type="hidden" id="projects_search_mode">
-        <input class="projects_search_textbox" type="text">
-      </form>
-      <div class="projects_search_results">
-        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project</div>
-        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">Test-Project2</div>
-        <div class="projects_search_result" onclick="pywebview.api.saveProjectSearchChoice(this.innerHTML, document.querySelector('input#projects_search_mode').value)">QTE-TestingOverview</div>
-      </div>
     </div>
   </div>
 </body>

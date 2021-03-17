@@ -46,21 +46,21 @@ class WebviewController:
                     <div class=projects_configuration_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>
                         <div class=projects_configuration_body_buttons>
-                            <button onclick="pywebview.api.reload()">Reload Tickets</button>
+                            {ButtonMenuFactory(self.fetcher).reloadButtonHTML()}
                         </div>
                     </div>
                 </div>
                 <div class=projects_configuration_body>
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add onclick="pywebview.api.showProjectSearch('source')">Add Source Project</button>
+                            {ButtonMenuFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add Source Project', mode = 'source')}
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add onclick="pywebview.api.showProjectSearch('destination')">Change Destination Project</button>
+                            {ButtonMenuFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Change Destination Project', mode = 'destination')}
                         </div>
                         <b>Destination Columns:</b>
                     </div>
@@ -120,44 +120,10 @@ class WebviewController:
         self.window.loaded -= self.onDOMLoaded # unsubscribe event listener
         self.load()
 
-    def reload(self):
+    def reload(self, hydrateTickets = True):
         ButtonManifests.clear()
         DataStore.loadConfiguration()
-        self.load()
-
-    def reloadConfigurationUI(self):
-        ButtonManifests.clear()
-        DataStore.loadConfiguration()
-        self.load(hydrateTickets = False)
-
-    def hideTickets(self):
-        self.window.evaluate_js(f"document.querySelector('div.projects_tickets').style.visibility = 'hidden';")
-
-    def showProjectSearch(self, mode):
-        self.window.evaluate_js(f"""
-            document.querySelector('input#projects_search_mode').value = '{mode}';
-            document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'block'}});
-        """)
-
-    def hideProjectSearch(self):
-        self.window.evaluate_js(f"document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'none'}});")
-
-    def saveProjectSearchChoice(self, projectName, mode):
-        if mode == 'destination':
-            DataStore.saveDestinationProject(projectName)
-        elif mode == 'source':
-            DataStore.saveSourceProject(projectName)
-        else:
-            print(f'Unhandled mode: "{mode}"')
-            return
-        # self.hideTickets()
-        self.hideProjectSearch()
-        self.reloadConfigurationUI()
+        self.load(hydrateTickets = hydrateTickets)
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
-        window.expose(self.reloadConfigurationUI) # expose to JS as 'pywebview.api.reloadConfigurationUI'
-        window.expose(self.showProjectSearch) # expose to JS as 'pywebview.api.showProjectSearch'
-        window.expose(self.hideProjectSearch) # expose to JS as 'pywebview.api.hideProjectSearch'
-        window.expose(self.saveProjectSearchChoice) # expose to JS as 'pywebview.api.saveProjectSearchChoice'
-        window.expose(self.hideTickets) # expose to JS as 'pywebview.api.hideTickets'

@@ -282,3 +282,91 @@ class ButtonMenuFactory:
             menuTitle = menuTitle,
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
+
+    def __showProjectSearchButtonManifest(self, title, mode):
+        hideButtonHTML = ButtonMenuFactory(self.fetcher).hideProjectSearchButtonHTML(title = 'Hide')
+        return ButtonManifest(
+            id = self.__cssSafeGUID(),
+            title = title,
+            isInitiallySelected = False,
+            clickActions = [
+                lambda mode=mode :
+                    self.buttonActions.showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML)
+            ],
+            successActions = [
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def showProjectSearchButtonHTML(self, title, mode):
+        buttonManifest = self.__showProjectSearchButtonManifest(title, mode)
+        ButtonManifests.add([buttonManifest])
+        return buttonManifest.html(cssClass = 'add')
+
+    def __hideProjectSearchButtonManifest(self, title):
+        return ButtonManifest(
+            id = self.__cssSafeGUID(),
+            title = title,
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.hideProjectSearch
+            ],
+            successActions = [
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def hideProjectSearchButtonHTML(self, title):
+        buttonManifest = self.__hideProjectSearchButtonManifest(title)
+        ButtonManifests.add([buttonManifest])
+        return buttonManifest.html()
+
+    def __projectSearchResultButtonManifest(self, projectName, mode):
+        return ButtonManifest(
+            id = self.__cssSafeGUID(),
+            title = projectName,
+            isInitiallySelected = False,
+            clickActions = [
+                lambda projectName=projectName, mode=mode :
+                    self.buttonActions.saveProjectSearchChoice(projectName, mode)
+            ],
+            successActions = [
+                self.buttonActions.hideProjectSearch,
+                self.buttonActions.reloadConfigurationUI
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def projectSearchResultButtonHTML(self, title, mode):
+        buttonManifest = self.__projectSearchResultButtonManifest(title, mode)
+        ButtonManifests.add([buttonManifest])
+        return buttonManifest.html(cssClass = 'projects_search_result')
+
+    def __reloadButtonManifest(self):
+        return ButtonManifest(
+            id = self.__cssSafeGUID(),
+            title = 'Reload Tickets',
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.reload
+            ],
+            successActions = [
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def reloadButtonHTML(self):
+        buttonManifest = self.__reloadButtonManifest()
+        ButtonManifests.add([buttonManifest])
+        return buttonManifest.html()

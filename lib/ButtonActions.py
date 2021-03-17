@@ -53,7 +53,7 @@ class ButtonActions:
         )
 
     def hideTickets(self):
-        self.__window().evaluate_js('pywebview.api.hideTickets()')
+        self.__window().evaluate_js("document.querySelector('div.projects_tickets').style.visibility = 'hidden';")
 
     def showTickets(self):
         self.__window().evaluate_js('document.querySelector("div.projects_tickets").style.visibility = "visible"')
@@ -63,6 +63,37 @@ class ButtonActions:
 
     def deselectButton(self, buttonID):
         self.__window().evaluate_js(f'document.querySelector("button#{buttonID}").classList.remove("selected")')
+
+    def showProjectSearch(self, mode, hideButtonHTML):
+        self.__window().evaluate_js(f"""
+            document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'block'}});
+            document.querySelector("div.projects_search_centered_panel").innerHTML = `
+              {hideButtonHTML}
+              <form>
+                <div class="projects_search_title">Find Project</div>
+                <input class="projects_search_textbox" type="text">
+              </form>
+              <div class="projects_search_results">
+                <button class="projects_search_result">Test123</button>
+              </div>
+            `;
+        """)
+
+        return True
+
+    def hideProjectSearch(self):
+        self.__window().evaluate_js(f"document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'none'}});")
+        return True
+
+    def saveProjectSearchChoice(self, projectName, mode):
+        if mode == 'destination':
+            DataStore.saveDestinationProject(projectName)
+        elif mode == 'source':
+            DataStore.saveSourceProject(projectName)
+        else:
+            print(f'Unhandled mode: "{mode}"')
+            return False
+        return True
 
     def toggleButton(self, buttonID):
         # print(f'''document.querySelector("button#{buttonID}").classList.contains("selected")''')
@@ -97,8 +128,11 @@ class ButtonActions:
             menuDiv.remove()
         ''')
 
+    def reload(self):
+        self.__window().evaluate_js('pywebview.api.reload();')
+
     def reloadConfigurationUI(self):
-        self.__window().evaluate_js('pywebview.api.reloadConfigurationUI()')
+        self.__window().evaluate_js('pywebview.api.reload(false);')
 
     def addTicketToProject(self, ticketID, projectPHID):
         return self.fetcher.callEndpoint(
