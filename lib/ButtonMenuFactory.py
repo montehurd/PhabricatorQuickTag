@@ -325,7 +325,7 @@ class ButtonMenuFactory:
     def hideProjectSearchButtonHTML(self, title):
         buttonManifest = self.__hideProjectSearchButtonManifest(title)
         ButtonManifests.add([buttonManifest])
-        return buttonManifest.html()
+        return buttonManifest.html(cssClass = 'projects_search_hide')
 
     def __projectSearchResultButtonManifest(self, projectName, mode):
         return ButtonManifest(
