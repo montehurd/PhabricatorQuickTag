@@ -15,3 +15,19 @@ def getConfigurationValue(key):
 def saveCurrentConfiguration():
     global __configurationJSON
     Utilities.jsonToFile('configuration.json', __configurationJSON)
+
+def saveDestinationProject(projectName):
+    destinationProject = getConfigurationValue('destinationProject')
+    destinationProject['name'] = projectName
+    saveCurrentConfiguration()
+
+def saveSourceProject(projectName):
+    sourceProjects = getConfigurationValue('sourceProjects')
+    if not any(project['name'] == projectName for project in sourceProjects):
+        sourceProjects.insert(0, {
+            'name': projectName,
+            'columns': []
+        })
+        saveCurrentConfiguration()
+    else:
+        print(f'{projectName} already exists in project sources')

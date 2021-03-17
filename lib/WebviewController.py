@@ -143,7 +143,13 @@ class WebviewController:
         self.window.evaluate_js(f"document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'none'}});")
 
     def saveProjectSearchChoice(self, projectName, mode):
-        print(f'Save Project Choice: {projectName}, Mode: {mode}')
+        if mode == 'destination':
+            DataStore.saveDestinationProject(projectName)
+        elif mode == 'source':
+            DataStore.saveSourceProject(projectName)
+        else:
+            print(f'Unhandled mode: "{mode}"')
+            return
         self.hideTickets()
         self.hideProjectSearch()
         self.reloadConfigurationUI()
