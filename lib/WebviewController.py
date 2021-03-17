@@ -53,14 +53,14 @@ class WebviewController:
                 <div class=projects_configuration_body>
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add>Add Source Project</button>
+                            <button class=add onclick="pywebview.api.showProjectSearch('source')">Add Source Project</button>
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            <button class=add>Change Destination Project</button>
+                            <button class=add onclick="pywebview.api.showProjectSearch('destination')">Change Destination Project</button>
                         </div>
                         <b>Destination Columns:</b>
                     </div>
@@ -130,6 +130,22 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load(hydrateTickets = False)
 
+    def showProjectSearch(self, mode):
+        self.window.evaluate_js(f"""
+            document.querySelector('input#projects_search_mode').value = '{mode}';
+            document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'block'}});
+        """)
+
+    def hideProjectSearch(self):
+        self.window.evaluate_js(f"document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'none'}});")
+
+    def saveProjectSearchChoice(self, projectName, mode):
+        print(f'Save Project Choice: {projectName}, Mode: {mode}')
+        self.hideProjectSearch()
+
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
         window.expose(self.reloadConfigurationUI) # expose to JS as 'pywebview.api.reloadConfigurationUI'
+        window.expose(self.showProjectSearch) # expose to JS as 'pywebview.api.showProjectSearch'
+        window.expose(self.hideProjectSearch) # expose to JS as 'pywebview.api.hideProjectSearch'
+        window.expose(self.saveProjectSearchChoice) # expose to JS as 'pywebview.api.saveProjectSearchChoice'
