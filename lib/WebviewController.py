@@ -125,5 +125,9 @@ class WebviewController:
         DataStore.loadConfiguration()
         self.load(hydrateTickets = hydrateTickets)
 
+    def projectSearchTermEntered(self, searchTerm):
+        print(f'searchTerm: {searchTerm}')
+
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
+        window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
