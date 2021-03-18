@@ -53,16 +53,16 @@ class WebviewController:
                 <div class=projects_configuration_body>
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add Source Project', mode = 'source')}
+                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source')}
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Change Destination Project', mode = 'destination')}
+                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination')}
                         </div>
-                        <b>Destination Columns:</b>
+                        <b>Ticket Destination Columns:</b> (optional)
                     </div>
                     {destinationHTML}
                 </div>
