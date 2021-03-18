@@ -33,6 +33,7 @@ button.delete, button.add {
   padding: 0px;
   background-color: transparent;
   color: #fff;
+  margin-right: -10px
 }
 
 div.menus {
@@ -89,7 +90,7 @@ div.projects_configuration_header {
 div.projects_configuration_body {
   border-top: dashed 1px #666;
   background-color: #222;
-  padding: 10px;
+  padding: 2px 16px 10px 16px;
 }
 
 div.projects_configuration_body_buttons {
@@ -106,6 +107,7 @@ span.project_configuration_column, span.project_configuration_project {
 
 div.project_configuration_heading {
   padding: 5px 24px 5px 8px;
+  margin-top: 8px;
 }
 
 button, textarea, span.phui-tag-core {
@@ -140,6 +142,17 @@ div.projects_search_hide_container {
   float: right;
 }
 
+span.project_configuration_title {
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-block;
+}
+
+span.project_configuration_description {
+  margin-left: 8px;
+  color: #888;
+}
+
 div.projects_search_title {
   font-weight: bold;
   font-size: 1.2em;
@@ -172,12 +185,14 @@ div.projects_search_results {
 button.projects_search_result {
   width: 99%;
   margin: unset !important;
-  margin-top: 8px !important;
+  margin-top: 4px !important;
   text-align: unset;
   background-color: #fff;
   padding: 10px;
+  border-radius: 2px;
 }
 
 button.projects_search_result:hover {
-  background-color: #f6f6f6;
+  background-color: #ddd;
+  color: black;
 }
