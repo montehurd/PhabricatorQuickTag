@@ -4,7 +4,7 @@ import sys, webview
 sys.path.insert(0, './lib')
 from Fetcher import Fetcher
 from WebviewController import WebviewController
-import DataStore, ButtonManifests
+import DataStore, ButtonManifestRegistry
 
 if __name__ == '__main__':
     DataStore.loadConfiguration()
@@ -14,5 +14,5 @@ if __name__ == '__main__':
         window = window,
         fetcher = fetcher
     )
-    window.expose(ButtonManifests.performClickActions) # expose to JS as 'pywebview.api.performClickActions'
+    window.expose(ButtonManifestRegistry.performClickActions) # expose to JS as 'pywebview.api.performClickActions'
     webview.start(webviewController.expose, window, debug=True)

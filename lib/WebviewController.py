@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import Utilities, time, re, json, webview, ButtonManifests, DataStore
+import Utilities, time, re, json, webview, ButtonManifestRegistry, DataStore
 from string import Template
 from ProjectsHydrator import ProjectsHydrator
 from ButtonFactory import ButtonFactory
@@ -121,7 +121,7 @@ class WebviewController:
         self.load()
 
     def reload(self, hydrateTickets = True):
-        ButtonManifests.clear()
+        ButtonManifestRegistry.clear()
         DataStore.loadConfiguration()
         self.load(hydrateTickets = hydrateTickets)
 

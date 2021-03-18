@@ -2,7 +2,7 @@
 
 from ButtonActions import ButtonActions
 from ButtonManifest import ButtonManifest
-import ButtonManifests, ButtonStateCheckers
+import ButtonManifestRegistry, ButtonStateCheckers
 import uuid, json, DataStore
 
 def printSuccess():
@@ -93,7 +93,7 @@ class ButtonFactory:
             isInitiallySelected = ticketJSON['fields']['priority']['name'] == priority['name']
         ), ButtonFactory.__prioritiesData))
 
-        ButtonManifests.add(buttonManifests)
+        ButtonManifestRegistry.add(buttonManifests)
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
@@ -134,7 +134,7 @@ class ButtonFactory:
             isInitiallySelected = ticketJSON['fields']['status']['name'] == status['name']
         ), ButtonFactory.__statusesData))
 
-        ButtonManifests.add(buttonManifests)
+        ButtonManifestRegistry.add(buttonManifests)
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
@@ -177,7 +177,7 @@ class ButtonFactory:
             isInitiallySelected = ButtonStateCheckers.isColumnPHIDPresentInTicketJSON(column.phid, ticketJSON)
         ), columns))
 
-        ButtonManifests.add(buttonManifests)
+        ButtonManifestRegistry.add(buttonManifests)
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
@@ -234,10 +234,10 @@ class ButtonFactory:
             projectName = projectName,
             isInitiallySelected = ButtonStateCheckers.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
         ), enumerate(allColumnNames)))
-        ButtonManifests.add(buttonManifests)
+        ButtonManifestRegistry.add(buttonManifests)
 
         deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectName)
-        ButtonManifests.add([deleteButtonManifest])
+        ButtonManifestRegistry.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = f'''{menuTitle}''',
@@ -276,7 +276,7 @@ class ButtonFactory:
             isInitiallySelected = not ButtonStateCheckers.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
         ), enumerate(allColumnNames)))
 
-        ButtonManifests.add(buttonManifests)
+        ButtonManifestRegistry.add(buttonManifests)
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
@@ -303,7 +303,7 @@ class ButtonFactory:
 
     def showProjectSearchButtonHTML(self, title, mode):
         buttonManifest = self.__showProjectSearchButtonManifest(title, mode)
-        ButtonManifests.add([buttonManifest])
+        ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
     def __hideProjectSearchButtonManifest(self, title):
@@ -324,7 +324,7 @@ class ButtonFactory:
 
     def hideProjectSearchButtonHTML(self, title):
         buttonManifest = self.__hideProjectSearchButtonManifest(title)
-        ButtonManifests.add([buttonManifest])
+        ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'projects_search_hide')
 
     def __projectSearchResultButtonManifest(self, projectName, mode):
@@ -347,7 +347,7 @@ class ButtonFactory:
 
     def projectSearchResultButtonHTML(self, title, mode):
         buttonManifest = self.__projectSearchResultButtonManifest(title, mode)
-        ButtonManifests.add([buttonManifest])
+        ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'projects_search_result')
 
     def __reloadButtonManifest(self):
@@ -368,5 +368,5 @@ class ButtonFactory:
 
     def reloadButtonHTML(self):
         buttonManifest = self.__reloadButtonManifest()
-        ButtonManifests.add([buttonManifest])
+        ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html()
