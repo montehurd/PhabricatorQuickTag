@@ -31,3 +31,12 @@ def saveSourceProject(projectName):
         saveCurrentConfiguration()
     else:
         print(f'{projectName} already exists in project sources')
+
+def isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
+    projects = getConfigurationValue('sourceProjects')
+    project = next(project for project in projects if project['name'] == projectName)
+    isColumnPresent = columnName in project['columns']
+    return isColumnPresent
+
+def isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
+    return columnName in getConfigurationValue('destinationProject')['ignoreColumns']

@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, urllib.parse, urllib.request, webview, re, Utilities, DataStore, ButtonStateCheckers
+import json, urllib.parse, urllib.request, webview, re, Utilities, DataStore
 
 class ButtonActions:
     def __init__(self, fetcher):
@@ -174,7 +174,7 @@ class ButtonActions:
         columnName = allColumnNames[indexOfColumnToToggle]
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
         project = next(project for project in sourceProjects if project['name'] == projectName)
-        if ButtonStateCheckers.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
+        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
             project['columns'].remove(columnName)
         else:
             project['columns'].insert(indexOfColumnToToggle, columnName)
@@ -184,7 +184,7 @@ class ButtonActions:
     def toggleDestinationProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle):
         columnName = allColumnNames[indexOfColumnToToggle]
         project = DataStore.getConfigurationValue('destinationProject')
-        if ButtonStateCheckers.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
+        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
             project['ignoreColumns'].remove(columnName)
         else:
             project['ignoreColumns'].insert(indexOfColumnToToggle, columnName)

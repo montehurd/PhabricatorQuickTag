@@ -2,7 +2,7 @@
 
 from ButtonActions import ButtonActions
 from ButtonManifest import ButtonManifest
-import ButtonManifestRegistry, ButtonStateCheckers
+import ButtonManifestRegistry
 import uuid, json, DataStore
 
 def printSuccess():
@@ -166,6 +166,15 @@ class ButtonFactory:
             ]
         )
 
+    def __isColumnPHIDPresentInTicketJSON(self, columnPHID, ticketJSON):
+        boards = ticketJSON['attachments']['columns']['boards']
+        arrayOfColumnPHIDArrays = map(lambda board:
+            map(lambda column: column['phid'], board['columns']),
+            boards.values()
+        )
+        arrayOfColumnPHIDs = [item for sublist in arrayOfColumnPHIDArrays for item in sublist]
+        return columnPHID in arrayOfColumnPHIDs
+
     def ticketAddToColumnButtonMenuHTML(self, menuTitle, ticketID, ticketJSON, columns):
         # print(json.dumps(ticketJSON, indent=4))
         buttonManifests = list(map(lambda column: self.__ticketToggleColumnButtonManifest(
@@ -174,7 +183,7 @@ class ButtonFactory:
             ticketID = f'T{ticketID}',
             projectPHID = column.project.phid,
             columnPHID = column.phid,
-            isInitiallySelected = ButtonStateCheckers.isColumnPHIDPresentInTicketJSON(column.phid, ticketJSON)
+            isInitiallySelected = self.__isColumnPHIDPresentInTicketJSON(column.phid, ticketJSON)
         ), columns))
 
         ButtonManifestRegistry.add(buttonManifests)
@@ -232,7 +241,7 @@ class ButtonFactory:
             indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
             allColumnNames = allColumnNames,
             projectName = projectName,
-            isInitiallySelected = ButtonStateCheckers.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
+            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
         ), enumerate(allColumnNames)))
         ButtonManifestRegistry.add(buttonManifests)
 
@@ -273,7 +282,7 @@ class ButtonFactory:
             title = indexAndColumnNameTuple[1],
             indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
             allColumnNames = allColumnNames,
-            isInitiallySelected = not ButtonStateCheckers.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
+            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
         ), enumerate(allColumnNames)))
 
         ButtonManifestRegistry.add(buttonManifests)
