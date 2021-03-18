@@ -199,6 +199,14 @@ class ButtonActions:
         DataStore.loadConfiguration()
         return True
 
+    def removeDestinationProjectFromConfigurationJSON(self):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['name'] = None
+        destinationProject['ignoreColumns'] = []
+        DataStore.saveCurrentConfiguration()
+        DataStore.loadConfiguration()
+        return True
+
     def toggleTicketOnProjectColumn(self, ticketID, projectPHID, columnPHID, buttonID):
         if self.isButtonSelected(buttonID):
             if not self.removeTicketFromProject(ticketID, projectPHID):

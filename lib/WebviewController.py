@@ -39,7 +39,7 @@ class WebviewController:
 
     def projectsConfigurationHTML(self):
         sourcesHTML = ''.join(map(lambda project: ButtonFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
-        destinationHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
+        destinationHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
         mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
         return f'''
                 <div class=projects_configuration_header>
@@ -89,6 +89,10 @@ class WebviewController:
         ))
 
     def getDehydratedDestinationProject(self):
+        if 'name' not in DataStore.getConfigurationValue('destinationProject').keys():
+            return None
+        if DataStore.getConfigurationValue('destinationProject')['name'] == None:
+            return None
         return Project(
             name = DataStore.getConfigurationValue('destinationProject')['name'],
             columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']

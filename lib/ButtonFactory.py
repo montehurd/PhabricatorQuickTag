@@ -226,7 +226,26 @@ class ButtonFactory:
             successActions = [
                 lambda buttonID=buttonID :
                     self.buttonActions.deleteMenu(buttonID),
-                # self.buttonActions.reloadConfigurationUI,
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def __removeDestinationProjectFromConfigurationJSONButtonManifest(self):
+        buttonID = self.__cssSafeGUID()
+        return ButtonManifest(
+            id = buttonID,
+            title = 'Remove',
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.hideTickets,
+                self.buttonActions.removeDestinationProjectFromConfigurationJSON
+            ],
+            successActions = [
+                lambda buttonID=buttonID :
+                    self.buttonActions.deleteMenu(buttonID),
                 printSuccess
             ],
             failureActions = [
@@ -284,12 +303,16 @@ class ButtonFactory:
             allColumnNames = allColumnNames,
             isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
         ), enumerate(allColumnNames)))
-
         ButtonManifestRegistry.add(buttonManifests)
+
+        deleteButtonManifest = self.__removeDestinationProjectFromConfigurationJSONButtonManifest()
+        ButtonManifestRegistry.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
-            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
+            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests)),
+            showRightProjectMenu = True,
+            deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
         )
 
     def __showProjectSearchButtonManifest(self, title, mode):

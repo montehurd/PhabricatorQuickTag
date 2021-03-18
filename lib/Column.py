@@ -38,10 +38,12 @@ TICKET_END '''
             ticketsHTMLByID[ticketID] = ticketHTML.strip()
         return ticketsHTMLByID
 
-    def __headingHTML(self, destinationProjectName):
+    def __headingHTML(self, destinationProjectName = None):
+        ticketsInSourceProjectString = f"""{len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} currently in <b>{self.project.name} > {self.name}</b>"""
+        destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(self.tickets) == 0 else ''}""" if destinationProjectName != None else ''
         return f"""
             <div class=column_subtitle>
-                {len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} currently in <b>{self.project.name} > {self.name}</b> not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(self.tickets) == 0 else ':'}
+                {ticketsInSourceProjectString}{destinationProjectString}:
             </div>
         """
 
@@ -67,7 +69,7 @@ TICKET_END '''
             </div>
       '''
 
-    def fetchTicketsHTML(self, destinationProjectName):
+    def fetchTicketsHTML(self, destinationProjectName = None):
         ticketsHTMLByID = self.__fetchTicketsHTMLByID()
         wrappedTicketsHTML = ''.join([self.__wrappedTicketHTML(ticketID, ticketHTML) for ticketID, ticketHTML in ticketsHTMLByID.items()])
         self.ticketsHTMLIncludingWrapperDivsAndMenus = f'''
