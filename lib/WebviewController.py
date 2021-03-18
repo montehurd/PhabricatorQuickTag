@@ -38,7 +38,7 @@ class WebviewController:
         )
 
     def __setLoadingMessage(self, message):
-        return self.__setInnerHTML('div.loading-message', message)
+        self.window.set_title(f"""Phabricator Quick Tag{' : ' if len(message.strip()) > 0 else ''}{message}""")
 
     def __setConfigurationButtonsHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', ButtonFactory(self.fetcher).reloadButtonHTML())

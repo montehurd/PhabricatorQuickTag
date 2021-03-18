@@ -9,7 +9,7 @@ import DataStore, ButtonManifestRegistry
 if __name__ == '__main__':
     DataStore.loadConfiguration()
     fetcher = Fetcher(DataStore.getConfigurationValue('url'), DataStore.getConfigurationValue('token'))
-    window = webview.create_window('PHABRICATOR QUICK TAG : Quickly tag tickets from columns on various projects into any column on a destination project', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
+    window = webview.create_window('', html='Loading...', resizable=True, width=1280, height=1024, fullscreen=False)
     webviewController = WebviewController(
         window = window,
         fetcher = fetcher
