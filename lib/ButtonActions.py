@@ -156,7 +156,7 @@ class ButtonActions:
             key = 'projects.remove',
             value = projectPHID,
             objectIdentifier = ticketID,
-            comment = None,
+            comment = self.__getComment(ticketID),
             needsValueArgumentInArray = True
         )
 
