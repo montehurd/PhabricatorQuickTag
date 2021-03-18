@@ -74,7 +74,7 @@ class ButtonActions:
                     {title}
                 </div>
                 <input class="projects_search_textbox" type="text"
-                   placeholder="Enter project search term here"
+                   placeholder="Enter project title search term here"
                    onchange="pywebview.api.projectSearchTermEntered(this.value, '{mode}');"
                    onpaste="this.onchange();"
                    oninput="this.onchange();"
