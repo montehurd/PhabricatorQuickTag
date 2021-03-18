@@ -3,7 +3,7 @@
 import Utilities, time, re, json, webview, ButtonManifests, DataStore
 from string import Template
 from ProjectsHydrator import ProjectsHydrator
-from ButtonMenuFactory import ButtonMenuFactory
+from ButtonFactory import ButtonFactory
 from Project import Project
 
 class WebviewController:
@@ -38,29 +38,29 @@ class WebviewController:
         return self.setInnerHTML('div.loading-message', message)
 
     def projectsConfigurationHTML(self):
-        sourcesHTML = ''.join(map(lambda project: ButtonMenuFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
-        destinationHTML = ButtonMenuFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
+        sourcesHTML = ''.join(map(lambda project: ButtonFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
+        destinationHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames)
         mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
         return f'''
                 <div class=projects_configuration_header>
                     <div class=projects_configuration_title>
                         <b>⚙️&nbsp;&nbsp;Current Configuration</b>
                         <div class=projects_configuration_body_buttons>
-                            {ButtonMenuFactory(self.fetcher).reloadButtonHTML()}
+                            {ButtonFactory(self.fetcher).reloadButtonHTML()}
                         </div>
                     </div>
                 </div>
                 <div class=projects_configuration_body>
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            {ButtonMenuFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add Source Project', mode = 'source')}
+                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add Source Project', mode = 'source')}
                         </div>
                         <b>Ticket Sources:</b>
                     </div>
                     {sourcesHTML}
                     <div class=project_configuration_heading {mouseOverAndOut}>
                         <div class=right_project_menu>
-                            {ButtonMenuFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Change Destination Project', mode = 'destination')}
+                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Change Destination Project', mode = 'destination')}
                         </div>
                         <b>Destination Columns:</b>
                     </div>
@@ -131,7 +131,7 @@ class WebviewController:
             self.setInnerHTML(searchResultsSelector, '')
         else:
             projectNames = self.fetcher.fetchProjectNamesMatchingSearchTerm(searchTerm)
-            projectSearchResultButtonsHTML = ''.join(map(lambda projectName: ButtonMenuFactory(self.fetcher).projectSearchResultButtonHTML(projectName, mode), projectNames))
+            projectSearchResultButtonsHTML = ''.join(map(lambda projectName: ButtonFactory(self.fetcher).projectSearchResultButtonHTML(projectName, mode), projectNames))
             self.setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def expose(self, window):

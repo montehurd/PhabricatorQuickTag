@@ -11,7 +11,7 @@ def printSuccess():
 def printFailure():
     print('failure!')
 
-class ButtonMenuFactory:
+class ButtonFactory:
 
     __prioritiesData = []
     __statusesData = []
@@ -21,10 +21,10 @@ class ButtonMenuFactory:
         self.buttonActions = ButtonActions(self.fetcher)
 
         # use and check class vars size here so fetch only happens once no matter how many inits happen
-        if len(ButtonMenuFactory.__prioritiesData) == 0:
-            ButtonMenuFactory.__prioritiesData = self.fetcher.fetchPriorities()
-        if len(ButtonMenuFactory.__statusesData) == 0:
-            ButtonMenuFactory.__statusesData = self.fetcher.fetchStatuses()
+        if len(ButtonFactory.__prioritiesData) == 0:
+            ButtonFactory.__prioritiesData = self.fetcher.fetchPriorities()
+        if len(ButtonFactory.__statusesData) == 0:
+            ButtonFactory.__statusesData = self.fetcher.fetchStatuses()
 
     def __cssSafeGUID(self):
         return f'_{uuid.uuid4().hex}'
@@ -91,7 +91,7 @@ class ButtonMenuFactory:
             ticketID = f'T{ticketID}',
             value = priority['keywords'][0],
             isInitiallySelected = ticketJSON['fields']['priority']['name'] == priority['name']
-        ), ButtonMenuFactory.__prioritiesData))
+        ), ButtonFactory.__prioritiesData))
 
         ButtonManifests.add(buttonManifests)
 
@@ -132,7 +132,7 @@ class ButtonMenuFactory:
             ticketID = f'T{ticketID}',
             value = status['value'],
             isInitiallySelected = ticketJSON['fields']['status']['name'] == status['name']
-        ), ButtonMenuFactory.__statusesData))
+        ), ButtonFactory.__statusesData))
 
         ButtonManifests.add(buttonManifests)
 
@@ -284,7 +284,7 @@ class ButtonMenuFactory:
         )
 
     def __showProjectSearchButtonManifest(self, title, mode):
-        hideButtonHTML = ButtonMenuFactory(self.fetcher).hideProjectSearchButtonHTML(title = 'Hide')
+        hideButtonHTML = ButtonFactory(self.fetcher).hideProjectSearchButtonHTML(title = 'Hide')
         return ButtonManifest(
             id = self.__cssSafeGUID(),
             title = title,

@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 from Column import Column
-from ButtonMenuFactory import ButtonMenuFactory
+from ButtonFactory import ButtonFactory
 
 class ProjectsHydrator:
     def __init__(self, sourceProjects, destinationProject, fetcher = None, loadingMessageSetter = None):
@@ -31,14 +31,14 @@ class ProjectsHydrator:
         if len(destinationColumns) > 0:
             addToDestinationColumnMenuHTMLLambdas.append(
                 lambda ticketID, ticketJSON, columns=destinationColumns :
-                    ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
+                    ButtonFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
             )
 
         statusAndPriorityMenuHTMLLambda = [
             lambda ticketID, ticketJSON :
                 f'''
-                    {ButtonMenuFactory(self.fetcher).ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON)}
-                    {ButtonMenuFactory(self.fetcher).ticketPriorityButtonMenuHTML('Priority', ticketID, ticketJSON)}
+                    {ButtonFactory(self.fetcher).ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON)}
+                    {ButtonFactory(self.fetcher).ticketPriorityButtonMenuHTML('Priority', ticketID, ticketJSON)}
                 '''
         ]
 
@@ -54,7 +54,7 @@ class ProjectsHydrator:
 
             currentSourceColumnMenuHTMLLambda = [
                 lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
-                    ButtonMenuFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
+                    ButtonFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
             ]
 
             # make column object for each column name
