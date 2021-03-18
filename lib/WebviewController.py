@@ -40,36 +40,14 @@ class WebviewController:
     def setLoadingMessage(self, message):
         return self.setInnerHTML('div.loading-message', message)
 
-    def projectsConfigurationHTML(self):
-        sourcesHTML = ''.join(map(lambda project: ButtonFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
-        destinationHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
-        mouseOverAndOut = f''' onmouseover="this.classList.add('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');" onmouseout="this.classList.remove('menu_highlighted');this.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');"'''
-        return f'''
-                <div class=projects_configuration_header>
-                    <div class=projects_configuration_title>
-                        <b>⚙️&nbsp;&nbsp;Current Configuration</b>
-                        <div class=projects_configuration_body_buttons>
-                            {ButtonFactory(self.fetcher).reloadButtonHTML()}
-                        </div>
-                    </div>
-                </div>
-                <div class=projects_configuration_body>
-                    <div class=project_configuration_heading {mouseOverAndOut}>
-                        <div class=right_project_menu>
-                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source')}
-                        </div>
-                        <b>Ticket Sources:</b>
-                    </div>
-                    {sourcesHTML}
-                    <div class=project_configuration_heading {mouseOverAndOut}>
-                        <div class=right_project_menu>
-                            {ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination')}
-                        </div>
-                        <b>Ticket Destination Columns:</b> (optional)
-                    </div>
-                    {destinationHTML}
-                </div>
-        '''
+    def setConfigurationButtonsHTML(self):
+        self.setInnerHTML('div#projects_configuration_body_buttons', ButtonFactory(self.fetcher).reloadButtonHTML())
+        self.setInnerHTML('div#sources_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
+        self.setInnerHTML('div#destination_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
+        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: ButtonFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
+        self.setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
+        destinationProjectMenuButtonsHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
+        self.setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
 
     def projectsTicketsHTML(self):
         print(f'Fetching complete')
@@ -119,7 +97,7 @@ class WebviewController:
         self.setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
-        self.setInnerHTML('div.projects_configuration', self.projectsConfigurationHTML())
+        self.setConfigurationButtonsHTML()
         if not hydrateTickets:
             return
         self.setInnerHTML('div.projects_tickets', self.projectsTicketsHTML())
