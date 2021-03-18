@@ -20,14 +20,14 @@ class WebviewController:
         match = re.search(r'<link[^>]* rel="stylesheet"[^>]* href="([^"]*?core\.pkg\.css)"', html)
         return match.group(1)
 
-    def getWrapperHTML(self):
+    def getTemplateHTML(self):
         return Template(Utilities.stringFromFile('lib/Template.html')).substitute(
             TEMPLATE_BASE_URL = self.fetcher.baseURL,
             TEMPLATE_CSS_URL = self.extractCSSURL(),
             TEMPLATE_API_TOKEN = self.fetcher.apiToken
         )
 
-    def getCSS(self):
+    def getTemplateCSS(self):
         return Utilities.stringFromFile('lib/Template.css')
 
     def setInnerHTML(self, selector, html):
@@ -82,8 +82,8 @@ class WebviewController:
     def load(self, hydrateTickets = True):
         self.sourceProjects = self.getDehydratedSourceProjects()
         self.destinationProject = self.getDehydratedDestinationProject()
-        self.window.load_html(self.getWrapperHTML())
-        self.window.load_css(self.getCSS())
+        self.window.load_html(self.getTemplateHTML())
+        self.window.load_css(self.getTemplateCSS())
         time.sleep(1.0)
 
         self.setLoadingMessage('Beginning data retrieval')
