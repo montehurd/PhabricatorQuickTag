@@ -27,6 +27,9 @@ class WebviewController:
             TEMPLATE_API_TOKEN = self.fetcher.apiToken
         )
 
+    def getCSS(self):
+        return Utilities.stringFromFile('lib/Template.css')
+
     def setInnerHTML(self, selector, html):
         return self.window.evaluate_js(f"""
             document.querySelector('{selector}').innerHTML = `{Utilities.escapeBackticks(html)}`
@@ -102,6 +105,7 @@ class WebviewController:
         self.sourceProjects = self.getDehydratedSourceProjects()
         self.destinationProject = self.getDehydratedDestinationProject()
         self.window.load_html(self.getWrapperHTML())
+        self.window.load_css(self.getCSS())
         time.sleep(1.0)
 
         self.setLoadingMessage('Beginning data retrieval')
