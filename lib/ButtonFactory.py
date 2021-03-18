@@ -322,6 +322,7 @@ class ButtonFactory:
             title = title,
             isInitiallySelected = False,
             clickActions = [
+                self.buttonActions.resetProjectSearch,
                 lambda mode=mode :
                     self.buttonActions.showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML, title = title)
             ],
@@ -391,6 +392,7 @@ class ButtonFactory:
                 self.buttonActions.reload
             ],
             successActions = [
+                self.buttonActions.showTickets,
                 printSuccess
             ],
             failureActions = [

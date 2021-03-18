@@ -82,9 +82,6 @@ class WebviewController:
     def __load(self, hydrateTickets = True):
         self.sourceProjects = self.__getDehydratedSourceProjects()
         self.destinationProject = self.__getDehydratedDestinationProject()
-        self.window.load_html(self.__getTemplateHTML())
-        self.window.load_css(self.__getTemplateCSS())
-        time.sleep(1.0)
 
         self.__setLoadingMessage('Beginning data retrieval')
         ProjectsHydrator(
@@ -104,6 +101,9 @@ class WebviewController:
 
     def __onDOMLoaded(self):
         self.window.loaded -= self.__onDOMLoaded # unsubscribe event listener
+        self.window.load_html(self.__getTemplateHTML())
+        self.window.load_css(self.__getTemplateCSS())
+        time.sleep(1.0)
         self.__load()
 
     def reload(self, hydrateTickets = True):

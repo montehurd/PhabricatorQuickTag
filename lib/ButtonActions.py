@@ -73,6 +73,14 @@ class ButtonActions:
         """)
         return True
 
+    def resetProjectSearch(self):
+        self.__window().evaluate_js(f"""
+            document.querySelector("input#projects_search_mode").value = '';
+            document.querySelector('input.projects_search_textbox').value = '';
+            document.querySelector('div.projects_search_results').innerHTML = '';
+        """)
+        return True
+
     def hideProjectSearch(self):
         self.__window().evaluate_js(f"document.querySelectorAll('div.modal_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'none'}});")
         return True
