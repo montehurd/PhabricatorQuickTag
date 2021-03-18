@@ -94,6 +94,7 @@ div.projects_configuration_body {
 
 div.projects_configuration_body_buttons {
   float: right;
+  margin-top: -3px;
 }
 
 div.project_configuration {

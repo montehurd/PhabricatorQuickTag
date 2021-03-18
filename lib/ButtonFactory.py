@@ -403,4 +403,4 @@ class ButtonFactory:
     def reloadButtonHTML(self):
         buttonManifest = self.__reloadButtonManifest()
         ButtonManifestRegistry.add([buttonManifest])
-        return buttonManifest.html()
+        return buttonManifest.html(cssClass = 'reload_tickets')
