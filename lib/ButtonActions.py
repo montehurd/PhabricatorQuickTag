@@ -67,23 +67,9 @@ class ButtonActions:
     def showProjectSearch(self, mode, hideButtonHTML, title):
         self.__window().evaluate_js(f"""
             document.querySelectorAll('div.blurry_overlay, div.projects_search_centered_panel').forEach(e => {{e.style.display = 'block'}});
-            document.querySelector("div.projects_search_centered_panel").innerHTML = `
-              {hideButtonHTML}
-              <form>
-                <div class="projects_search_title">
-                    {title}
-                </div>
-                <input class="projects_search_textbox" type="text"
-                   placeholder="Enter project title search term here"
-                   onchange="pywebview.api.projectSearchTermEntered(this.value, '{mode}');"
-                   onpaste="this.onchange();"
-                   oninput="this.onchange();"
-                   autocomplete="off"
-                >
-              </form>
-              <div class="projects_search_results">
-              </div>
-            `;
+            document.querySelector("div.projects_search_hide_container").innerHTML = `{hideButtonHTML}`;
+            document.querySelector("div.projects_search_title").innerHTML = `{title}`;
+            document.querySelector("input#projects_search_mode").value = `{mode}`;
         """)
         return True
 

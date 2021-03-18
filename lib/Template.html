@@ -125,7 +125,7 @@
     display: none;
   }
 
-  button.projects_search_hide {
+  div.projects_search_hide_container {
     float: right;
   }
   div.projects_search_title {
@@ -176,6 +176,23 @@
     </div>
     <div class="blurry_overlay" onclick="this.style.display = 'none'; document.querySelector('div.projects_search_centered_panel').style.display = 'none';"></div>
     <div class="projects_search_centered_panel">
+      <div class="projects_search_hide_container">
+      </div>
+      <form>
+        <div class="projects_search_title">
+        </div>
+        <input type="hidden" id="projects_search_mode">
+        <input type="text"
+           class="projects_search_textbox"
+           placeholder="Enter project title search term here"
+           onchange="pywebview.api.projectSearchTermEntered(this.value, document.querySelector('input#projects_search_mode').value);"
+           onpaste="this.onchange();"
+           oninput="this.onchange();"
+           autocomplete="off"
+        >
+      </form>
+      <div class="projects_search_results">
+      </div>
     </div>
   </div>
 </body>
