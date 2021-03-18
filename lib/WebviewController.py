@@ -12,44 +12,44 @@ class WebviewController:
         self.sourceProjects = []
         self.destinationProject = None
         self.window = window
-        self.window.loaded += self.onDOMLoaded
+        self.window.loaded += self.__onDOMLoaded
 
-    def extractCSSURL(self):
+    def __extractCSSURL(self):
         # HACK: grabbing the css url from the 'flag' page html. perhaps there's a better way? some API?
         html = self.fetcher.fetchHTML('/flag')
         match = re.search(r'<link[^>]* rel="stylesheet"[^>]* href="([^"]*?core\.pkg\.css)"', html)
         return match.group(1)
 
-    def getTemplateHTML(self):
+    def __getTemplateHTML(self):
         return Template(Utilities.stringFromFile('lib/Template.html')).substitute(
             TEMPLATE_BASE_URL = self.fetcher.baseURL,
-            TEMPLATE_CSS_URL = self.extractCSSURL(),
+            TEMPLATE_CSS_URL = self.__extractCSSURL(),
             TEMPLATE_API_TOKEN = self.fetcher.apiToken
         )
 
-    def getTemplateCSS(self):
+    def __getTemplateCSS(self):
         return Utilities.stringFromFile('lib/Template.css')
 
-    def setInnerHTML(self, selector, html):
+    def __setInnerHTML(self, selector, html):
         return self.window.evaluate_js(f"""
             document.querySelector('{selector}').innerHTML = `{Utilities.escapeBackticks(html)}`
             // reminder: can return a result by placing the value on the next line
             """
         )
 
-    def setLoadingMessage(self, message):
-        return self.setInnerHTML('div.loading-message', message)
+    def __setLoadingMessage(self, message):
+        return self.__setInnerHTML('div.loading-message', message)
 
-    def setConfigurationButtonsHTML(self):
-        self.setInnerHTML('div#projects_configuration_body_buttons', ButtonFactory(self.fetcher).reloadButtonHTML())
-        self.setInnerHTML('div#sources_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
-        self.setInnerHTML('div#destination_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
+    def __setConfigurationButtonsHTML(self):
+        self.__setInnerHTML('div#projects_configuration_body_buttons', ButtonFactory(self.fetcher).reloadButtonHTML())
+        self.__setInnerHTML('div#sources_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
+        self.__setInnerHTML('div#destination_right_menu', ButtonFactory(self.fetcher).showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
         sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: ButtonFactory(self.fetcher).toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
-        self.setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
+        self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
         destinationProjectMenuButtonsHTML = ButtonFactory(self.fetcher).toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
-        self.setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
+        self.__setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
 
-    def projectsTicketsHTML(self):
+    def __projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
         html = []
@@ -60,7 +60,7 @@ class WebviewController:
         print(f'Page HTML assembled')
         return ''.join(html)
 
-    def getDehydratedSourceProjects(self):
+    def __getDehydratedSourceProjects(self):
         return list(map(lambda projectJSON:
             Project(
                 name = projectJSON['name'],
@@ -69,7 +69,7 @@ class WebviewController:
             DataStore.getConfigurationValue('sourceProjects')
         ))
 
-    def getDehydratedDestinationProject(self):
+    def __getDehydratedDestinationProject(self):
         if 'name' not in DataStore.getConfigurationValue('destinationProject').keys():
             return None
         if DataStore.getConfigurationValue('destinationProject')['name'] == None:
@@ -79,46 +79,46 @@ class WebviewController:
             columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
 
-    def load(self, hydrateTickets = True):
-        self.sourceProjects = self.getDehydratedSourceProjects()
-        self.destinationProject = self.getDehydratedDestinationProject()
-        self.window.load_html(self.getTemplateHTML())
-        self.window.load_css(self.getTemplateCSS())
+    def __load(self, hydrateTickets = True):
+        self.sourceProjects = self.__getDehydratedSourceProjects()
+        self.destinationProject = self.__getDehydratedDestinationProject()
+        self.window.load_html(self.__getTemplateHTML())
+        self.window.load_css(self.__getTemplateCSS())
         time.sleep(1.0)
 
-        self.setLoadingMessage('Beginning data retrieval')
+        self.__setLoadingMessage('Beginning data retrieval')
         ProjectsHydrator(
             sourceProjects = self.sourceProjects,
             destinationProject = self.destinationProject,
             fetcher = self.fetcher,
-            loadingMessageSetter = self.setLoadingMessage
+            loadingMessageSetter = self.__setLoadingMessage
         ).hydrateProjects(hydrateTickets = hydrateTickets)
 
-        self.setLoadingMessage('')
+        self.__setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
-        self.setConfigurationButtonsHTML()
+        self.__setConfigurationButtonsHTML()
         if not hydrateTickets:
             return
-        self.setInnerHTML('div.projects_tickets', self.projectsTicketsHTML())
+        self.__setInnerHTML('div.projects_tickets', self.__projectsTicketsHTML())
 
-    def onDOMLoaded(self):
-        self.window.loaded -= self.onDOMLoaded # unsubscribe event listener
-        self.load()
+    def __onDOMLoaded(self):
+        self.window.loaded -= self.__onDOMLoaded # unsubscribe event listener
+        self.__load()
 
     def reload(self, hydrateTickets = True):
         ButtonManifestRegistry.clear()
         DataStore.loadConfiguration()
-        self.load(hydrateTickets = hydrateTickets)
+        self.__load(hydrateTickets = hydrateTickets)
 
     def projectSearchTermEntered(self, searchTerm, mode):
         searchResultsSelector = 'div.projects_search_results'
         if len(searchTerm.strip()) == 0:
-            self.setInnerHTML(searchResultsSelector, '')
+            self.__setInnerHTML(searchResultsSelector, '')
         else:
             projectNames = self.fetcher.fetchProjectNamesMatchingSearchTerm(searchTerm)
             projectSearchResultButtonsHTML = ''.join(map(lambda projectName: ButtonFactory(self.fetcher).projectSearchResultButtonHTML(projectName, mode), projectNames))
-            self.setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
+            self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
