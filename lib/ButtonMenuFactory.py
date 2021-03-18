@@ -291,7 +291,7 @@ class ButtonMenuFactory:
             isInitiallySelected = False,
             clickActions = [
                 lambda mode=mode :
-                    self.buttonActions.showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML)
+                    self.buttonActions.showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML, title = title)
             ],
             successActions = [
                 printSuccess
