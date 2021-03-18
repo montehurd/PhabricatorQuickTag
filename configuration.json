@@ -2,25 +2,10 @@
     "configuration": {
         "url": "http://phabricator.local.com",
         "token": "api-nwmqotyonlxyxsk2uhig5c5n4iho",
-        "sourceProjects": [
-            {
-                "name": "Test-Project",
-                "columns": [
-                    "Needs-QA"
-                ]
-            },
-            {
-                "name": "Test-Project2",
-                "columns": [
-                    "Needs-Some-QA"
-                ]
-            }
-        ],
+        "sourceProjects": [],
         "destinationProject": {
-            "name": "QTE-TestingOverview",
-            "ignoreColumns": [
-                "Parking"
-            ]
+            "name": null,
+            "ignoreColumns": []
         }
     }
 }
