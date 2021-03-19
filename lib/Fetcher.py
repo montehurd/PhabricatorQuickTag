@@ -107,9 +107,13 @@ class Fetcher:
             'order[0]': '-id',
             'constraints[projects][0]' : project.phid
             })
-        return list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
+        columnsData = list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
+        columnPHIDs = list(map(lambda column: column['phid'], columnsData))
+        openColumnPHIDs = self.__fetchOpenColumnPHIDsInColumnPHIDs(columnPHIDs)
+        openColumnsData = filter(lambda column: column['phid'] in openColumnPHIDs, columnsData)
+        return openColumnsData
 
-    def fetchOpenColumnPHIDsInColumnPHIDs(self, columnPHIDs):
+    def __fetchOpenColumnPHIDsInColumnPHIDs(self, columnPHIDs):
         values = {
             'api.token' : self.apiToken
         }
