@@ -125,6 +125,12 @@ class WebviewController:
             projectSearchResultButtonsHTML = ''.join(map(lambda projectName: ButtonFactory(self.fetcher).projectSearchResultButtonHTML(projectName, mode), projectNames))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
+    def textboxTermEntered(self, term, key):
+        configuration = DataStore.getCurrentConfiguration()
+        configuration[key] = term
+        DataStore.saveCurrentConfiguration()
+
     def expose(self, window):
         window.expose(self.reload) # expose to JS as 'pywebview.api.reload'
         window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
+        window.expose(self.textboxTermEntered) # expose to JS as 'pywebview.api.textboxTermEntered'
