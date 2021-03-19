@@ -323,6 +323,7 @@ class ButtonFactory:
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.resetProjectSearch,
+                self.buttonActions.showModalOverlay,
                 lambda mode=mode :
                     self.buttonActions.showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML, title = title)
             ],
@@ -345,7 +346,8 @@ class ButtonFactory:
             title = title,
             isInitiallySelected = False,
             clickActions = [
-                self.buttonActions.hideProjectSearch
+                self.buttonActions.hideProjectSearch,
+                self.buttonActions.hideModalOverlay
             ],
             successActions = [
                 printSuccess
@@ -371,7 +373,8 @@ class ButtonFactory:
             ],
             successActions = [
                 self.buttonActions.hideProjectSearch,
-                self.buttonActions.reloadConfigurationUI
+                self.buttonActions.reloadConfigurationUI,
+                self.buttonActions.hideModalOverlay
             ],
             failureActions = [
                 printFailure
