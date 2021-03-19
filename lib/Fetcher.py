@@ -38,24 +38,36 @@ class Fetcher:
     def fetchProjectPHID(self, name):
         result = self.fetchJSON('/api/project.search', {
             'api.token' : self.apiToken,
-            'constraints[query]' : f'title:"{name}"'
+            'constraints[slugs][0]' : f'"#{name}"'
+            # 'constraints[query]' : f'title:"{name}"'
         })
         projects = list(filter(lambda x: x['type'] == 'PROJ', result['result']['data']))
-        # todo: add console print message here if 'projects' doesn't contain one element - output the 'name' in the message so the user knows which project can't be found
+        # consider printing message here if 'projects' doesn't contain one element - output the 'name' in the message so the user knows which project can't be found
         return projects[0]['phid']
 
-    def __projectNameFromProjectJSON(self, projectJSON):
-        parent = projectJSON['fields']['parent'] if projectJSON['fields']['parent'] != None else None
-        if parent == None:
-            return projectJSON['fields']['name']
-        return f'''{parent['name']} ({projectJSON['fields']['name']})'''
+    # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open
+    def __fetchOpenProjectNamesInProjectNames(self, projectNames):
+        values = {
+            'api.token' : self.apiToken
+        }
+        for index, name in enumerate(projectNames):
+            values[f'names[{index}]'] = f'#{name}'
+        result = self.fetchJSON('/api/phid.lookup', values)['result']
+        output = []
+        for i, (projectName, project) in enumerate(result.items()):
+            if project['status'] == 'open':
+                output.append(projectName[1:])
+        return output
 
     def fetchProjectNamesMatchingSearchTerm(self, searchTerm):
         result = self.fetchJSON('/api/project.search', {
             'api.token' : self.apiToken,
             'constraints[query]' : f'title:"{searchTerm}"'
         })
-        return list(map(lambda projectJSON: self.__projectNameFromProjectJSON(projectJSON), result['result']['data']))
+        projectsWithSlugs = list(filter(lambda projectJSON: (projectJSON['fields']['slug'] != None), result['result']['data']))
+        projectNames = list(map(lambda projectJSON: projectJSON['fields']['name'], projectsWithSlugs))
+        openProjectNames = self.__fetchOpenProjectNamesInProjectNames(projectNames)
+        return openProjectNames
 
     # Prefix 'name' with:
     #   '@' for User
