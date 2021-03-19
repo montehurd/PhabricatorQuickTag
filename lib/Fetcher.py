@@ -109,6 +109,19 @@ class Fetcher:
             })
         return list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
 
+    def fetchOpenColumnPHIDsInColumnPHIDs(self, columnPHIDs):
+        values = {
+            'api.token' : self.apiToken
+        }
+        for index, phid in enumerate(columnPHIDs):
+            values[f'phids[{index}]'] = phid
+        result = self.fetchJSON('/api/phid.query', values)['result']
+        output = []
+        for i, (phid, column) in enumerate(result.items()):
+            if column['status'] == 'open':
+                output.append(phid)
+        return output
+
     def fetchPriorities(self):
         result = self.fetchJSON('/api/maniphest.priority.search', {
             'api.token' : self.apiToken
