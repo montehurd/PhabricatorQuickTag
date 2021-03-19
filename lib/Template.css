@@ -95,7 +95,11 @@ div.projects_configuration_body {
 
 div.projects_configuration_body_buttons {
   float: right;
-  margin-top: -3px;
+  margin-top: 33px;
+}
+
+div.projects_configuration_textboxes input {
+    width: 300px;
 }
 
 div.project_configuration {
@@ -195,4 +199,8 @@ button.projects_search_result {
 button.projects_search_result:hover {
   background-color: #ddd;
   color: black;
+}
+
+div.projects_configuration_textboxes {
+  margin-top: 10px;
 }
