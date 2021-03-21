@@ -33,10 +33,10 @@ class WebviewController:
         return Utilities.stringFromFile('lib/Template.css')
 
     def __setInnerHTML(self, selector, html):
-        return self.window.evaluate_js(f"""__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)""")
+        return self.window.evaluate_js(f"__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)")
 
     def __setLoadingMessage(self, message):
-        self.window.set_title(f"""{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag'}{message}""")
+        self.window.set_title(f"{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag'}{message}")
 
     def __setConfigurationButtonsHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.__reloadButtonHTML())
@@ -264,7 +264,7 @@ class WebviewController:
         return buttonManifest.html(cssClass = 'projects_search_hide')
 
     def __showProjectSearch(self, mode, hideButtonHTML, title):
-        return self.window.evaluate_js(f"""__showProjectSearch(`{mode}`, `{hideButtonHTML}`, `{title}`)""")
+        return self.window.evaluate_js(f"__showProjectSearch(`{mode}`, `{hideButtonHTML}`, `{title}`)")
 
     def __resetProjectSearch(self):
         return self.window.evaluate_js('__resetProjectSearch()')
@@ -518,14 +518,14 @@ class WebviewController:
         return comment if len(comment.strip()) else None
 
     def __setComment(self, ticketID, comment):
-        returnedComment = self.window.evaluate_js(f'''__setComment("{self.__getNumericIDFromTicketID(ticketID)}", "{comment}")''')
+        returnedComment = self.window.evaluate_js(f'__setComment("{self.__getNumericIDFromTicketID(ticketID)}", "{comment}")')
         return returnedComment == comment
 
     def __deselectOtherButtonsInMenu(self, buttonID):
-        return self.window.evaluate_js(f'''__deselectOtherButtonsInMenu("{buttonID}")''')
+        return self.window.evaluate_js(f'__deselectOtherButtonsInMenu("{buttonID}")')
 
     def __setTicketActionMessage(self, ticketID, message):
-        return self.window.evaluate_js(f'''__setTicketActionMessage("{self.__getNumericIDFromTicketID(ticketID)}", "{message}")''')
+        return self.window.evaluate_js(f'__setTicketActionMessage("{self.__getNumericIDFromTicketID(ticketID)}", "{message}")')
 
     def __showTicketFailure(self, ticketID):
         return self.__setTicketActionMessage(ticketID, '💩 Failure')
