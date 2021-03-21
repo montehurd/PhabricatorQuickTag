@@ -36,6 +36,7 @@ class WebviewController:
         return self.window.evaluate_js(f"__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)")
 
     def __setLoadingMessage(self, message):
+        print(message)
         self.window.set_title(f"{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag'}{message}")
 
     def __setConfigurationButtonsHTML(self):
