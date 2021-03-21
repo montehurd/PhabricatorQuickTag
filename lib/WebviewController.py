@@ -471,22 +471,22 @@ class WebviewController:
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
 
+    def __getNumericIDFromTicketID(self, ticketID):
+        return re.sub("[^0-9]", '', ticketID)
+
     def __getComment(self, ticketID):
-        numericID = re.sub("[^0-9]", "", ticketID)
-        comment = self.window.evaluate_js(f'__getComment("{numericID}")')
+        comment = self.window.evaluate_js(f'__getComment("{self.__getNumericIDFromTicketID(ticketID)}")')
         return comment if len(comment.strip()) else None
 
     def __setComment(self, ticketID, comment):
-        numericID = re.sub("[^0-9]", "", ticketID)
-        returnedComment = self.window.evaluate_js(f'''__setComment("{numericID}", "{comment}")''')
+        returnedComment = self.window.evaluate_js(f'''__setComment("{self.__getNumericIDFromTicketID(ticketID)}", "{comment}")''')
         return returnedComment == comment
 
     def __deselectOtherButtonsInMenu(self, buttonID):
         return self.window.evaluate_js(f'''__deselectOtherButtonsInMenu("{buttonID}")''')
 
     def __setTicketActionMessage(self, ticketID, message):
-        numericID = re.sub("[^0-9]", "", ticketID)
-        return self.window.evaluate_js(f'''__setTicketActionMessage("{numericID}", "{message}")''')
+        return self.window.evaluate_js(f'''__setTicketActionMessage("{self.__getNumericIDFromTicketID(ticketID)}", "{message}")''')
 
     def __showTicketFailure(self, ticketID):
         return self.__setTicketActionMessage(ticketID, '💩 Failure')
