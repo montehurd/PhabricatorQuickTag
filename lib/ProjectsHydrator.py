@@ -62,7 +62,7 @@ class ProjectsHydrator:
             ]
 
             # make column object for each column name
-            project.columns = list(map(lambda columnName: Column(name = columnName, project = project, phid = None, fetcher = self.fetcher), project.columnNames))
+            project.columns = list(map(lambda columnName: Column(name = columnName, project = project, phid = None), project.columnNames))
 
             for column in project.columns:
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' id")
@@ -79,4 +79,4 @@ class ProjectsHydrator:
                 column.menuHTMLLambdas = currentSourceColumnMenuHTMLLambda + column.menuHTMLLambdas + addToDestinationColumnMenuHTMLLambdas + statusAndPriorityMenuHTMLLambda
                 # fetch column tickets html for their remarkup
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets html")
-                column.fetchTicketsHTML(self.destinationProject.name if self.destinationProject != None else None)
+                column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)

@@ -52,14 +52,53 @@ class WebviewController:
         """
         )
 
+    def __columnSubtitle(self, column):
+        destinationProjectName = self.destinationProject.name if self.destinationProject != None else None
+        ticketsInSourceProjectString = f"""{len(column.tickets)} ticket{'' if len(column.tickets) == 1 else 's'} currently in <b>{column.project.name} > {column.name}</b>"""
+        destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(column.tickets) == 0 else ''}""" if destinationProjectName != None else ''
+        return f"{ticketsInSourceProjectString}{destinationProjectString}:"
+
+    def __wrappedTicketHTML(self, ticketID, ticketHTML, ticketMenusHTML):
+        return f'''
+            <div class=ticket id="T{ticketID}">
+              <button class=hide onclick="this.closest('div#T{ticketID}').remove()">Hide</button>
+              {ticketHTML}
+              <div class="menus phui-tag-core phui-tag-color-object">
+                <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
+                <h2>Quick options</h2>
+                {ticketMenusHTML}
+                Comment: ( recorded with any <strong>Quick options</strong> chosen above )
+                <br>
+                <textarea id="ticketID{ticketID}" style="height: 70px; width: 100%;"></textarea>
+              </div>
+            </div>
+        '''
+
+    def __columnTicketsHTML(self, column):
+        allTicketsHTML = []
+        for ticketID, ticketHTML in column.ticketsHTMLByID.items():
+            ticketMenusHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID = ticketID, ticketJSON = column.ticketsByID[int(ticketID)]), column.menuHTMLLambdas)))
+            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, ticketMenusHTML)
+            allTicketsHTML.append(wrappedTicketHTML)
+        return ''.join(allTicketsHTML)
+
     def __projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
         html = []
         for project in self.sourceProjects:
             for column in project.columns:
-                html.append(f'<div class=column_source>Ticket Source: <span class=column_identifier>{project.name} > {column.name}</span></div>')
-                html.append(column.ticketsHTMLIncludingWrapperDivsAndMenus)
+                html.append(
+                    f'''
+                        <div class=column_source>
+                            Ticket Source: <span class=column_identifier>{project.name} > {column.name}</span>
+                        </div>
+                        <div class=column_subtitle>
+                            {self.__columnSubtitle(column)}
+                        </div>
+                        {self.__columnTicketsHTML(column = column)}
+                    '''
+                )
         print(f'Page HTML assembled')
         return ''.join(html)
 

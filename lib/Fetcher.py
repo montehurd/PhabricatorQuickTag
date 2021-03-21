@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, urllib.parse, urllib.request
+import json, urllib.parse, urllib.request, re
 
 class Fetcher:
     def __init__(self, baseURL, apiToken):
@@ -194,3 +194,27 @@ class Fetcher:
         #     raise Exception(f'\nfetchJSON Error:\n\t{pageJSON}\n')
         #
         # return pageJSON
+
+    def __ticketsRemarkupForTicketsJSON(self, tickets):
+        return ''.join(map(lambda item:
+f''' TICKET_START:{item['id']}:
+= T{item['id']} =
+== {item['fields']['name']} ==
+
+{item['fields']['description']['raw']}
+
+TICKET_END '''
+        , tickets))
+
+    def fetchTicketsHTMLByID(self, tickets):
+        ticketsRemarkup = self.__ticketsRemarkupForTicketsJSON(tickets)
+        ticketsHTML = self.fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkup)
+        allTicketsHTML = re.split(pattern=r'(<p>)?TICKET_START:(.*?):(</p>)?(.*?)(<p>)?TICKET_END(</p>)?', string=ticketsHTML, flags=re.DOTALL)
+        ticketsHTMLByID = {}
+        if len(allTicketsHTML) < 7:
+            return ticketsHTMLByID
+        for i in range(0, len(allTicketsHTML) - 1, 7):
+            ticketID = allTicketsHTML[i + 2]
+            ticketHTML = allTicketsHTML[i + 4]
+            ticketsHTMLByID[ticketID] = ticketHTML.strip()
+        return ticketsHTMLByID
