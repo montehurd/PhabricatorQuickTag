@@ -1,16 +1,18 @@
 #!/usr/local/bin/python3
 
 from Column import Column
-from ButtonFactory import ButtonFactory
 
 class ProjectsHydrator:
-    def __init__(self, sourceProjects, destinationProject = None, fetcher = None, loadingMessageSetter = None):
+    def __init__(self, sourceProjects, destinationProject = None, fetcher = None, loadingMessageSetter = None, ticketAddToColumnButtonMenuHTMLFunction = None, ticketStatusButtonMenuHTMLFunction = None, ticketPriorityButtonMenuHTMLFunction = None):
         self.sourceProjects = sourceProjects
         self.destinationProject = destinationProject
         self.statusesData = []
         self.prioritiesData = []
         self.fetcher = fetcher
         self.loadingMessageSetter = loadingMessageSetter
+        self.ticketAddToColumnButtonMenuHTMLFunction = ticketAddToColumnButtonMenuHTMLFunction
+        self.ticketStatusButtonMenuHTMLFunction = ticketStatusButtonMenuHTMLFunction
+        self.ticketPriorityButtonMenuHTMLFunction = ticketPriorityButtonMenuHTMLFunction
 
     def __fetchColumns(self, project):
         columnsData = self.fetcher.fetchColumnsData(project)
@@ -33,14 +35,14 @@ class ProjectsHydrator:
             if len(destinationColumns) > 0:
                 addToDestinationColumnMenuHTMLLambdas.append(
                     lambda ticketID, ticketJSON, columns=destinationColumns :
-                        ButtonFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
+                        self.ticketAddToColumnButtonMenuHTMLFunction(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
                 )
 
         statusAndPriorityMenuHTMLLambda = [
             lambda ticketID, ticketJSON :
                 f'''
-                    {ButtonFactory(self.fetcher).ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON)}
-                    {ButtonFactory(self.fetcher).ticketPriorityButtonMenuHTML('Priority', ticketID, ticketJSON)}
+                    {self.ticketStatusButtonMenuHTMLFunction('Status', ticketID, ticketJSON)}
+                    {self.ticketPriorityButtonMenuHTMLFunction('Priority', ticketID, ticketJSON)}
                 '''
         ]
 
@@ -56,7 +58,7 @@ class ProjectsHydrator:
 
             currentSourceColumnMenuHTMLLambda = [
                 lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
-                    ButtonFactory(self.fetcher).ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
+                    self.ticketAddToColumnButtonMenuHTMLFunction(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
             ]
 
             # make column object for each column name

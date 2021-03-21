@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json
+import json, uuid
 
 def stringFromFile(fileName):
     with open(fileName, 'r') as f:
@@ -18,6 +18,9 @@ def jsonToFile(fileName, data):
 
 def escapeBackticks(string):
     return string.replace('`', r'\`')
+
+def cssSafeGUID():
+    return f'_{uuid.uuid4().hex}'
 
 # import subprocess
 # def sendToBrowser(string, extension):
