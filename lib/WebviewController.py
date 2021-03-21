@@ -51,8 +51,8 @@ class WebviewController:
         destinationProjectMenuButtonsHTML = self.__toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
         self.__setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
         self.window.evaluate_js(f"""
-            document.querySelector('input[name=phabricator_url]').value = '{DataStore.getConfigurationValue('url')}';
-            document.querySelector('input[name=phabricator_token]').value = '{DataStore.getConfigurationValue('token')}';
+            __setPhabricatorUrl('{DataStore.getConfigurationValue('url')}');
+            __setPhabricatorToken('{DataStore.getConfigurationValue('token')}');
         """
         )
 

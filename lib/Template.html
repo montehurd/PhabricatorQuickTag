@@ -8,13 +8,19 @@
   <link rel="stylesheet" type="text/css" href="$TEMPLATE_CSS_URL">
   <base href="$TEMPLATE_BASE_URL" target="_blank">
   <script type="text/javascript">
-      const configurationProjectMouseOver = (e) => {
+      const __configurationProjectMouseOver = (e) => {
           e.classList.add('menu_highlighted');
           e.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'visible');
       }
-      const configurationProjectMouseOut = (e) => {
+      const __configurationProjectMouseOut = (e) => {
           e.classList.remove('menu_highlighted');
           e.querySelectorAll('div.right_project_menu').forEach(e => e.style.visibility = 'hidden');
+      }
+      const __setPhabricatorUrl = (url) => {
+        document.querySelector('input[name=phabricator_url]').value = url;
+      }
+      const __setPhabricatorToken = (token) => {
+        document.querySelector('input[name=phabricator_token]').value = token;
       }
   </script>
 </head>
@@ -51,14 +57,14 @@
           </div>
       </div>
       <div class=projects_configuration_body>
-          <div class=project_configuration_heading onmouseover="configurationProjectMouseOver(this)"  onmouseout="configurationProjectMouseOut(this)">
+          <div class=project_configuration_heading onmouseover="__configurationProjectMouseOver(this)"  onmouseout="__configurationProjectMouseOut(this)">
               <div id=sources_right_menu class=right_project_menu></div>
               <span class="project_configuration_title">Ticket Sources:</span>
               <span class="project_configuration_description">Tickets are shown from the project columns selected here.</span>
           </div>
           <div id=projects_configuration_sources>
           </div>
-          <div class=project_configuration_heading onmouseover="configurationProjectMouseOver(this)"  onmouseout="configurationProjectMouseOut(this)">
+          <div class=project_configuration_heading onmouseover="__configurationProjectMouseOver(this)"  onmouseout="__configurationProjectMouseOut(this)">
               <div id=destination_right_menu class=right_project_menu></div>
               <span class="project_configuration_title">Ticket Destination Columns:</span>
               <span class="project_configuration_description"> Optional. A menu of columns selected from this project will appear within each ticket's "<b>Quick options</b>".</span>
