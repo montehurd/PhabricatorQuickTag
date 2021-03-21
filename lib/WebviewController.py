@@ -33,11 +33,7 @@ class WebviewController:
         return Utilities.stringFromFile('lib/Template.css')
 
     def __setInnerHTML(self, selector, html):
-        return self.window.evaluate_js(f"""
-            document.querySelector('{selector}').innerHTML = `{Utilities.escapeBackticks(html)}`
-            // reminder: can return a result by placing the value on the next line
-            """
-        )
+        return self.window.evaluate_js(f"""__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)""")
 
     def __setLoadingMessage(self, message):
         self.window.set_title(f"""{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag'}{message}""")
@@ -136,7 +132,7 @@ class WebviewController:
         DataStore.saveCurrentConfiguration()
 
     def __showTickets(self):
-        self.window.evaluate_js('document.querySelector("div.projects_tickets").style.visibility = "visible"')
+        return self.window.evaluate_js('__showTickets()')
 
     def __reloadButtonManifest(self):
         return ButtonManifest(
@@ -161,19 +157,16 @@ class WebviewController:
         return buttonManifest.html(cssClass = 'reload_tickets')
 
     def __showModalOverlay(self):
-        self.window.evaluate_js("document.querySelector('div.modal_overlay').style.display = 'block';")
-        return True
+        return self.window.evaluate_js('__showModalOverlay()')
 
     def __hideModalOverlay(self):
-        self.window.evaluate_js("document.querySelector('div.modal_overlay').style.display = 'none';")
-        return True
+        return self.window.evaluate_js('__hideModalOverlay()')
 
     def __reloadConfigurationUI(self):
         self.reload(hydrateTickets = False)
 
     def __hideProjectSearch(self):
-        self.window.evaluate_js(f"document.querySelector('div.projects_search_centered_panel').style.display = 'none';")
-        return True
+        return self.window.evaluate_js('__hideProjectSearch()')
 
     def __saveProjectSearchChoice(self, projectName, mode):
         if mode == 'destination':
@@ -232,21 +225,10 @@ class WebviewController:
         return buttonManifest.html(cssClass = 'projects_search_hide')
 
     def __showProjectSearch(self, mode, hideButtonHTML, title):
-        self.window.evaluate_js(f"""
-            document.querySelector('div.projects_search_centered_panel').style.display = 'block';
-            document.querySelector("div.projects_search_hide_container").innerHTML = `{hideButtonHTML}`;
-            document.querySelector("div.projects_search_title").innerHTML = `{title}`;
-            document.querySelector("input#projects_search_mode").value = `{mode}`;
-        """)
-        return True
+        return self.window.evaluate_js(f"""__showProjectSearch(`{mode}`, `{hideButtonHTML}`, `{title}`)""")
 
     def __resetProjectSearch(self):
-        self.window.evaluate_js(f"""
-            document.querySelector("input#projects_search_mode").value = '';
-            document.querySelector('input.projects_search_textbox').value = '';
-            document.querySelector('div.projects_search_results').innerHTML = '';
-        """)
-        return True
+        return self.window.evaluate_js('__resetProjectSearch()')
 
     def __showProjectSearchButtonManifest(self, title, mode):
         hideButtonHTML = self.__hideProjectSearchButtonHTML(title = 'Hide')
@@ -295,11 +277,7 @@ class WebviewController:
         '''
 
     def __deleteMenu(self, buttonID):
-        self.window.evaluate_js(f'''
-            var thisButton = document.querySelector("button#{buttonID}");
-            var menuDiv = thisButton.closest('div.menu');
-            menuDiv.remove()
-        ''')
+        return self.window.evaluate_js(f"__deleteMenu('{buttonID}')")
 
     def __removeDestinationProjectFromConfigurationJSON(self):
         destinationProject = DataStore.getConfigurationValue('destinationProject')
@@ -330,14 +308,7 @@ class WebviewController:
         )
 
     def __toggleButton(self, buttonID):
-        # print(f'''document.querySelector("button#{buttonID}").classList.contains("selected")''')
-        self.window.evaluate_js(f'''
-            if (document.querySelector("button#{buttonID}").classList.contains("selected")) {{
-                document.querySelector("button#{buttonID}").classList.remove("selected")
-            }} else {{
-                document.querySelector("button#{buttonID}").classList.add("selected")
-            }}
-        ''')
+        return self.window.evaluate_js(f"__toggleButton('{buttonID}')")
 
     def __toggleDestinationProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle):
         columnName = allColumnNames[indexOfColumnToToggle]
@@ -350,7 +321,7 @@ class WebviewController:
         return True
 
     def __hideTickets(self):
-        self.window.evaluate_js("document.querySelector('div.projects_tickets').style.visibility = 'hidden';")
+        self.window.evaluate_js('__hideTickets()')
 
     def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, isInitiallySelected = False):
         return ButtonManifest(
@@ -502,35 +473,20 @@ class WebviewController:
 
     def __getComment(self, ticketID):
         numericID = re.sub("[^0-9]", "", ticketID)
-        comment = self.window.evaluate_js(f'''document.querySelector("textarea#ticketID{numericID}").value;''')
+        comment = self.window.evaluate_js(f'__getComment("{numericID}")')
         return comment if len(comment.strip()) else None
 
     def __setComment(self, ticketID, comment):
         numericID = re.sub("[^0-9]", "", ticketID)
-        returnedComment = self.window.evaluate_js(f'''document.querySelector("textarea#ticketID{numericID}").value = "{comment}"''')
+        returnedComment = self.window.evaluate_js(f'''__setComment("{numericID}", "{comment}")''')
         return returnedComment == comment
 
     def __deselectOtherButtonsInMenu(self, buttonID):
-        self.window.evaluate_js(f'''
-            var thisButton = document.querySelector("button#{buttonID}");
-            var menu = thisButton.closest('buttonmenu');
-            if (thisButton.parentElement != menu) {{
-                alert("Closest 'buttonmenu' tag is not button tag's parent");
-            }}
-            menu.querySelectorAll("button").forEach(button => {{
-                if (button.id == thisButton.id) return;
-                button.classList.remove('selected');
-            }})
-        ''')
+        return self.window.evaluate_js(f'''__deselectOtherButtonsInMenu("{buttonID}")''')
 
     def __setTicketActionMessage(self, ticketID, message):
         numericID = re.sub("[^0-9]", "", ticketID)
-        self.window.evaluate_js(f'''
-            const span = document.querySelector("span#buttonActionMessage{numericID}")
-            span.innerHTML = "{message}"
-            setTimeout(() => {{ span.innerHTML = "" }}, 1500);
-        ''')
-        return True
+        return self.window.evaluate_js(f'''__setTicketActionMessage("{numericID}", "{message}")''')
 
     def __showTicketFailure(self, ticketID):
         return self.__setTicketActionMessage(ticketID, '💩 Failure')
@@ -569,7 +525,7 @@ class WebviewController:
         )
 
     def __isButtonSelected(self, buttonID):
-        return self.window.evaluate_js(f'document.querySelector("button#{buttonID}").classList.contains("selected")')
+        return self.window.evaluate_js(f'__isButtonSelected("{buttonID}")')
 
     def __toggleTicketOnProjectColumn(self, ticketID, projectPHID, columnPHID, buttonID):
         if self.__isButtonSelected(buttonID):
@@ -608,7 +564,7 @@ class WebviewController:
         )
 
     def __selectButton(self, buttonID):
-        self.window.evaluate_js(f'document.querySelector("button#{buttonID}").classList.add("selected")')
+        return self.window.evaluate_js(f'__selectButton("{buttonID}")')
 
     def __updateTicketStatus(self, ticketID, value):
         return self.fetcher.callEndpoint(
@@ -715,6 +671,10 @@ class WebviewController:
     def expose(self, window):
         window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
         window.expose(self.textboxTermEntered) # expose to JS as 'pywebview.api.textboxTermEntered'
+        window.expose(printDebug) # expose to JS as 'pywebview.api.printDebug'
+
+def printDebug(message):
+    print(message)
 
 def printSuccess():
     print('success!')
