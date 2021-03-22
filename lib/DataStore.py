@@ -20,25 +20,25 @@ def saveCurrentConfiguration():
     global __configurationJSON
     Utilities.jsonToFile('configuration.json', __configurationJSON)
 
-def saveDestinationProject(projectName):
+def saveDestinationProjectPHID(projectPHID):
     destinationProject = getConfigurationValue('destinationProject')
-    destinationProject['name'] = projectName
+    destinationProject['phid'] = projectPHID
     saveCurrentConfiguration()
 
-def saveSourceProject(projectName):
+def saveSourceProjectPHID(projectPHID):
     sourceProjects = getConfigurationValue('sourceProjects')
-    if not any(project['name'] == projectName for project in sourceProjects):
+    if not any(project['phid'] == projectPHID for project in sourceProjects):
         sourceProjects.insert(0, {
-            'name': projectName,
+            'phid': projectPHID,
             'columns': []
         })
         saveCurrentConfiguration()
     else:
-        print(f'{projectName} already exists in project sources')
+        print(f'{projectPHID} already exists in project sources')
 
-def isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
+def isSourceProjectColumnPresentInConfigurationJSON(columnName, projectPHID):
     projects = getConfigurationValue('sourceProjects')
-    project = next(project for project in projects if project['name'] == projectName)
+    project = next(project for project in projects if project['phid'] == projectPHID)
     isColumnPresent = columnName in project['columns']
     return isColumnPresent
 

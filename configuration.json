@@ -4,7 +4,7 @@
         "token": "api-nwmqotyonlxyxsk2uhig5c5n4iho",
         "sourceProjects": [],
         "destinationProject": {
-            "name": null,
+            "phid": null,
             "ignoreColumns": []
         }
     }

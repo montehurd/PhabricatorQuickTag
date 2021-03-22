@@ -15,18 +15,30 @@ class ProjectsHydrator:
         self.ticketPriorityButtonMenuHTMLFunction = ticketPriorityButtonMenuHTMLFunction
 
     def __fetchColumns(self, project):
-        columnsData = self.fetcher.fetchColumnsData(project)
+        columnsData = self.fetcher.fetchColumnsData(project.phid)
         return list(map(lambda x: Column(x['fields']['name'], project, x['phid']), columnsData))
 
+    def __allProjectPHIDs(self):
+        phids = list(map(lambda project: project.phid, self.sourceProjects))
+        if self.destinationProject and self.destinationProject.phid != None:
+            phids.append(self.destinationProject.phid)
+        return phids
+
     def hydrateProjects(self, hydrateTickets = True):
-        # fetch destination project phid and columns
+        # fetch destination project names and columns
+
+        # hydrate source and destination project names from saved phids
+        self.loadingMessageSetter('Fetching project names')
+        if len(self.sourceProjects) > 0:
+            namesByPHID = self.fetcher.fetchNamesForPHIDs(self.__allProjectPHIDs())
+            for sourceProject in self.sourceProjects:
+                sourceProject.name = namesByPHID[sourceProject.phid]
+        if self.destinationProject != None and self.destinationProject.phid != None:
+            self.destinationProject.name = namesByPHID[self.destinationProject.phid]
 
         addToDestinationColumnMenuHTMLLambdas = []
 
         if self.destinationProject != None:
-            self.loadingMessageSetter(f"Fetching '{self.destinationProject.name}' id")
-            self.destinationProject.phid = self.fetcher.fetchProjectPHID(self.destinationProject.name)
-
             self.loadingMessageSetter(f"Fetching '{self.destinationProject.name}' columns")
             self.destinationProject.buttonsMenuColumns = self.__fetchColumns(self.destinationProject)
             self.destinationProject.buttonsMenuColumnNames = list(map(lambda column: column.name, self.destinationProject.buttonsMenuColumns))
@@ -47,10 +59,6 @@ class ProjectsHydrator:
         ]
 
         for project in self.sourceProjects:
-            # fetch project phids
-            self.loadingMessageSetter(f"Fetching '{project.name}' id")
-            project.phid = self.fetcher.fetchProjectPHID(project.name)
-
             # fetch source project columns
             self.loadingMessageSetter(f"Fetching '{project.name}' columns")
             project.buttonsMenuColumns = self.__fetchColumns(project)

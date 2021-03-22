@@ -34,40 +34,40 @@ class Fetcher:
         column = next(x for x in result['result']['data'] if x['fields']['name'] == name )
         return column['phid']
 
-    # For some reason the commented out version above won't match if the project name is for a sub-project... hence the 'project.search' approach below:
-    def fetchProjectPHID(self, name):
-        result = self.fetchJSON('/api/project.search', {
-            'api.token' : self.apiToken,
-            'constraints[slugs][0]' : f'"#{name}"'
-            # 'constraints[query]' : f'title:"{name}"'
-        })
-        projects = list(filter(lambda x: x['type'] == 'PROJ', result['result']['data']))
-        # consider printing message here if 'projects' doesn't contain one element - output the 'name' in the message so the user knows which project can't be found
-        return projects[0]['phid']
-
-    # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open
-    def __fetchOpenProjectNamesInProjectNames(self, projectNames):
+    # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
+    # 'phid.query' is also needed to get the full project name from the phid unfortunately.
+    def __fetchOpenProjectsFromProjectPHIDs(self, projectPHIDs):
         values = {
             'api.token' : self.apiToken
         }
-        for index, name in enumerate(projectNames):
-            values[f'names[{index}]'] = f'#{name}'
-        result = self.fetchJSON('/api/phid.lookup', values)['result']
+        for index, phid in enumerate(projectPHIDs):
+            values[f'phids[{index}]'] = phid
+        result = self.fetchJSON('/api/phid.query', values)['result']
         output = []
-        for i, (projectName, project) in enumerate(result.items()):
+        for i, (projectPHID, project) in enumerate(result.items()):
             if project['status'] == 'open':
-                output.append(projectName[1:])
+                output.append({'phid': projectPHID, 'name': project['name']})
         return output
 
-    def fetchProjectNamesMatchingSearchTerm(self, searchTerm):
+    # can this be made to work for both projects and colunms?
+    # combine with func above? (depends on if project search use case - where order matters so best matching appear at top)
+    def fetchNamesForPHIDs(self, phids):
+        print(phids)
+        output = {}
+        for item in self.__fetchOpenProjectsFromProjectPHIDs(phids):
+            output[item['phid']] = item['name']
+        return output
+
+    def fetchProjectsMatchingSearchTerm(self, searchTerm):
         result = self.fetchJSON('/api/project.search', {
             'api.token' : self.apiToken,
             'constraints[query]' : f'title:"{searchTerm}"'
         })
-        projectsWithSlugs = list(filter(lambda projectJSON: (projectJSON['fields']['slug'] != None), result['result']['data']))
-        projectNames = list(map(lambda projectJSON: projectJSON['fields']['name'], projectsWithSlugs))
-        openProjectNames = self.__fetchOpenProjectNamesInProjectNames(projectNames)
-        return openProjectNames
+        projectPHIDs = list(map(lambda projectJSON: projectJSON['phid'], result['result']['data']))
+        # print(json.dumps(result['result']['data'], indent=4))
+        openProjects = self.__fetchOpenProjectsFromProjectPHIDs(projectPHIDs)
+        print(json.dumps(openProjects, indent=4))
+        return openProjects
 
     # Prefix 'name' with:
     #   '@' for User
@@ -101,11 +101,11 @@ class Fetcher:
           'contents[0]' : remarkup
         })['result'][0]['content']
 
-    def fetchColumnsData(self, project, columnNamesToIgnore = []):
+    def fetchColumnsData(self, projectPHID, columnNamesToIgnore = []):
         result = self.fetchJSON('/api/project.column.search', {
             'api.token' : self.apiToken,
             'order[0]': '-id',
-            'constraints[projects][0]' : project.phid
+            'constraints[projects][0]' : projectPHID
             })
         columnsData = list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
         columnPHIDs = list(map(lambda column: column['phid'], columnsData))

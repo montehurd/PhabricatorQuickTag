@@ -43,7 +43,7 @@ class WebviewController:
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.__reloadButtonHTML())
         self.__setInnerHTML('div#sources_right_menu', self.__showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
         self.__setInnerHTML('div#destination_right_menu', self.__showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
-        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.__toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.name), self.sourceProjects))
+        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.__toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.phid), self.sourceProjects))
         self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
         destinationProjectMenuButtonsHTML = self.__toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
         self.__setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
@@ -106,26 +106,25 @@ class WebviewController:
     def __getDehydratedSourceProjects(self):
         return list(map(lambda projectJSON:
             Project(
-                name = projectJSON['name'],
+                phid = projectJSON['phid'],
                 columnNames = projectJSON['columns']
             ),
             DataStore.getConfigurationValue('sourceProjects')
         ))
 
     def __getDehydratedDestinationProject(self):
-        if 'name' not in DataStore.getConfigurationValue('destinationProject').keys():
+        if 'phid' not in DataStore.getConfigurationValue('destinationProject').keys():
             return None
-        if DataStore.getConfigurationValue('destinationProject')['name'] == None:
+        if DataStore.getConfigurationValue('destinationProject')['phid'] == None:
             return None
         return Project(
-            name = DataStore.getConfigurationValue('destinationProject')['name'],
+            phid = DataStore.getConfigurationValue('destinationProject')['phid'],
             columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
 
     def __load(self, hydrateTickets = True):
         self.sourceProjects = self.__getDehydratedSourceProjects()
         self.destinationProject = self.__getDehydratedDestinationProject()
-
         self.__setLoadingMessage('Beginning data retrieval')
         ProjectsHydrator(
             sourceProjects = self.sourceProjects,
@@ -162,8 +161,8 @@ class WebviewController:
         if len(searchTerm.strip()) == 0:
             self.__setInnerHTML(searchResultsSelector, '')
         else:
-            projectNames = self.fetcher.fetchProjectNamesMatchingSearchTerm(searchTerm)
-            projectSearchResultButtonsHTML = ''.join(map(lambda projectName: self.__projectSearchResultButtonHTML(projectName, mode), projectNames))
+            projects = self.fetcher.fetchProjectsMatchingSearchTerm(searchTerm)
+            projectSearchResultButtonsHTML = ''.join(map(lambda project: self.__projectSearchResultButtonHTML(title = project['name'], phid = project['phid'], mode = mode), projects))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def textboxTermEntered(self, term, key):
@@ -208,24 +207,24 @@ class WebviewController:
     def __hideProjectSearch(self):
         return self.window.evaluate_js('__hideProjectSearch()')
 
-    def __saveProjectSearchChoice(self, projectName, mode):
+    def __saveProjectSearchChoice(self, projectPHID, mode):
         if mode == 'destination':
-            DataStore.saveDestinationProject(projectName)
+            DataStore.saveDestinationProjectPHID(projectPHID)
         elif mode == 'source':
-            DataStore.saveSourceProject(projectName)
+            DataStore.saveSourceProjectPHID(projectPHID)
         else:
             print(f'Unhandled mode: "{mode}"')
             return False
         return True
 
-    def __projectSearchResultButtonManifest(self, projectName, mode):
+    def __projectSearchResultButtonManifest(self, projectName, projectPHID, mode):
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = projectName,
             isInitiallySelected = False,
             clickActions = [
-                lambda projectName=projectName, mode=mode :
-                    self.__saveProjectSearchChoice(projectName, mode)
+                lambda projectPHID=projectPHID, mode=mode :
+                    self.__saveProjectSearchChoice(projectPHID, mode)
             ],
             successActions = [
                 self.__hideProjectSearch,
@@ -237,8 +236,8 @@ class WebviewController:
             ]
         )
 
-    def __projectSearchResultButtonHTML(self, title, mode):
-        buttonManifest = self.__projectSearchResultButtonManifest(title, mode)
+    def __projectSearchResultButtonHTML(self, title, phid, mode):
+        buttonManifest = self.__projectSearchResultButtonManifest(title, phid, mode)
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'projects_search_result')
 
@@ -321,7 +320,7 @@ class WebviewController:
 
     def __removeDestinationProjectFromConfigurationJSON(self):
         destinationProject = DataStore.getConfigurationValue('destinationProject')
-        destinationProject['name'] = None
+        destinationProject['phid'] = None
         destinationProject['ignoreColumns'] = []
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
@@ -402,15 +401,15 @@ class WebviewController:
             deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
         )
 
-    def __removeSourceProjectFromConfigurationJSON(self, projectName):
+    def __removeSourceProjectFromConfigurationJSON(self, projectPHID):
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
-        project = next(project for project in sourceProjects if project['name'] == projectName)
+        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
         sourceProjects.remove(project)
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
         return True
 
-    def __removeSourceProjectFromConfigurationJSONButtonManifest(self, projectName):
+    def __removeSourceProjectFromConfigurationJSONButtonManifest(self, projectPHID):
         buttonID = Utilities.cssSafeGUID()
         return ButtonManifest(
             id = buttonID,
@@ -418,8 +417,8 @@ class WebviewController:
             isInitiallySelected = False,
             clickActions = [
                 self.__hideTickets,
-                lambda projectName=projectName :
-                    self.__removeSourceProjectFromConfigurationJSON(projectName)
+                lambda projectPHID=projectPHID :
+                    self.__removeSourceProjectFromConfigurationJSON(projectPHID)
             ],
             successActions = [
                 lambda buttonID=buttonID :
@@ -431,26 +430,26 @@ class WebviewController:
             ]
         )
 
-    def __toggleSourceProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectName):
+    def __toggleSourceProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectPHID):
         columnName = allColumnNames[indexOfColumnToToggle]
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
-        project = next(project for project in sourceProjects if project['name'] == projectName)
-        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectName):
+        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
+        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectPHID):
             project['columns'].remove(columnName)
         else:
             project['columns'].insert(indexOfColumnToToggle, columnName)
         DataStore.saveCurrentConfiguration()
         return True
 
-    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectName, isInitiallySelected = False):
+    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectPHID, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.__hideTickets,
-                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle, projectName=projectName :
-                    self.__toggleSourceProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectName)
+                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle, projectPHID=projectPHID :
+                    self.__toggleSourceProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectPHID)
             ],
             successActions = [
                 lambda buttonID=buttonID :
@@ -461,18 +460,18 @@ class WebviewController:
             ]
         )
 
-    def __toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectName):
+    def __toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectPHID):
         buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = indexAndColumnNameTuple[1],
             indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
             allColumnNames = allColumnNames,
-            projectName = projectName,
-            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectName)
+            projectPHID = projectPHID,
+            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectPHID)
         ), enumerate(allColumnNames)))
         ButtonManifestRegistry.add(buttonManifests)
 
-        deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectName)
+        deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectPHID)
         ButtonManifestRegistry.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
