@@ -37,6 +37,8 @@ class Fetcher:
     # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
     # 'phid.query' is also needed to get the full project name from the phid unfortunately.
     def __fetchOpenProjectsFromProjectPHIDs(self, projectPHIDs):
+        if len(projectPHIDs) == 0:
+            return []
         values = {
             'api.token' : self.apiToken
         }
