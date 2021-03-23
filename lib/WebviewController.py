@@ -26,11 +26,11 @@ class WebviewController:
         return Template(Utilities.stringFromFile('lib/Template.html')).substitute(
             TEMPLATE_BASE_URL = self.fetcher.baseURL,
             TEMPLATE_CSS_URL = self.__extractCSSURL(),
-            TEMPLATE_API_TOKEN = self.fetcher.apiToken
+            TEMPLATE_API_TOKEN = self.fetcher.apiToken,
+            # Included html tags on the next two here vs in the html file simply to keep syntax hilighting working in the html file - '$TEMPLATE_CSS', specifically, gives Atom fits.
+            TEMPLATE_CSS = f"""<style type="text/css">\n{Utilities.stringFromFile('lib/Template.css')}\n</style>""",
+            TEMPLATE_JS = f"""<script type="text/javascript">\n{Utilities.stringFromFile('lib/Template.js')}\n</script>""",
         )
-
-    def __getTemplateCSS(self):
-        return Utilities.stringFromFile('lib/Template.css')
 
     def __setInnerHTML(self, selector, html):
         return self.window.evaluate_js(f"__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)")
@@ -213,7 +213,6 @@ class WebviewController:
     def __onDOMLoaded(self):
         self.window.loaded -= self.__onDOMLoaded # unsubscribe event listener
         self.window.load_html(self.__getTemplateHTML())
-        self.window.load_css(self.__getTemplateCSS())
         time.sleep(1.0)
         self.__load()
 
