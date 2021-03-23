@@ -162,7 +162,7 @@ class WebviewController:
             self.__setInnerHTML(searchResultsSelector, '')
         else:
             projects = self.fetcher.fetchProjectsMatchingSearchTerm(searchTerm)
-            projectSearchResultButtonsHTML = ''.join(map(lambda project: self.__projectSearchResultButtonHTML(title = project['name'], phid = project['phid'], mode = mode), projects))
+            projectSearchResultButtonsHTML = ''.join(map(lambda item: self.__projectSearchResultButtonHTML(title = item[1], phid = item[0], mode = mode), projects.items()))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def textboxTermEntered(self, term, key):

@@ -57,9 +57,7 @@ class Fetcher:
             'constraints[query]' : f'title:"{searchTerm}"'
         })
         projectPHIDs = list(map(lambda projectJSON: projectJSON['phid'], result['result']['data']))
-        # print(json.dumps(result['result']['data'], indent=4))
         openProjects = self.fetchNamesForStatusOpenPHIDs(projectPHIDs)
-        print(json.dumps(openProjects, indent=4))
         return openProjects
 
     # Prefix 'name' with:
