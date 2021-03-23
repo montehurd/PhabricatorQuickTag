@@ -708,6 +708,7 @@ class WebviewController:
     def __saveDestinationProjectPHID(self, projectPHID):
         destinationProject = DataStore.getConfigurationValue('destinationProject')
         destinationProject['phid'] = projectPHID
+        destinationProject['ignoreColumns'] = []
         DataStore.saveCurrentConfiguration()
 
     def __saveSourceProjectPHID(self, projectPHID):
