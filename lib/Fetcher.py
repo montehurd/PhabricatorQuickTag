@@ -26,14 +26,6 @@ class Fetcher:
 
         return pageJSON
 
-    def fetchColumnPHID(self, name, projectPHID):
-        result = self.fetchJSON('/api/project.column.search', {
-            'api.token' : self.apiToken,
-            'constraints[projects][0]' : projectPHID
-        })
-        column = next(x for x in result['result']['data'] if x['fields']['name'] == name )
-        return column['phid']
-
     # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
     # same is true for columns. 'phid.query' is also needed to get the full project name from the phid unfortunately.
     def fetchNamesForStatusOpenPHIDs(self, phids):
@@ -92,13 +84,13 @@ class Fetcher:
           'contents[0]' : remarkup
         })['result'][0]['content']
 
-    def fetchColumnsData(self, projectPHID, columnNamesToIgnore = []):
+    def fetchColumnsData(self, projectPHID):
         result = self.fetchJSON('/api/project.column.search', {
             'api.token' : self.apiToken,
             'order[0]': '-id',
             'constraints[projects][0]' : projectPHID
             })
-        columnsData = list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
+        columnsData = list(filter(lambda x: x['type'] == 'PCOL', result['result']['data']))
         columnPHIDs = list(map(lambda column: column['phid'], columnsData))
         openColumnPHIDs = self.fetchNamesForStatusOpenPHIDs(columnPHIDs)
         openColumnsData = filter(lambda column: column['phid'] in openColumnPHIDs, columnsData)

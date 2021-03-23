@@ -36,11 +36,11 @@ def saveSourceProjectPHID(projectPHID):
     else:
         print(f'{projectPHID} already exists in project sources')
 
-def isSourceProjectColumnPresentInConfigurationJSON(columnName, projectPHID):
+def isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
     projects = getConfigurationValue('sourceProjects')
     project = next(project for project in projects if project['phid'] == projectPHID)
-    isColumnPresent = columnName in project['columns']
+    isColumnPresent = columnPHID in project['columns']
     return isColumnPresent
 
-def isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
-    return columnName in getConfigurationValue('destinationProject')['ignoreColumns']
+def isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
+    return columnPHID in getConfigurationValue('destinationProject')['ignoreColumns']

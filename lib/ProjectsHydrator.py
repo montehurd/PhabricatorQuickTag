@@ -16,7 +16,7 @@ class ProjectsHydrator:
 
     def __fetchColumns(self, project):
         columnsData = self.fetcher.fetchColumnsData(project.phid)
-        return list(map(lambda x: Column(x['fields']['name'], project, x['phid']), columnsData))
+        return list(map(lambda columnData: Column(columnData['fields']['name'], project, columnData['phid']), columnsData))
 
     def __allProjectPHIDs(self):
         phids = list(map(lambda project: project.phid, self.sourceProjects))
@@ -24,25 +24,31 @@ class ProjectsHydrator:
             phids.append(self.destinationProject.phid)
         return phids
 
+    def __allColumnPHIDs(self):
+        allColumnPHIDs = self.destinationProject.columnPHIDsToIgnoreForButtons if self.destinationProject != None else []
+        for project in self.sourceProjects:
+            allColumnPHIDs = allColumnPHIDs + project.columnPHIDs
+        return allColumnPHIDs
+
     def hydrateProjects(self, hydrateTickets = True):
         # fetch destination project names and columns
 
-        # hydrate source and destination project names from saved phids
-        self.loadingMessageSetter('Fetching project names')
-        namesByPHID = self.fetcher.fetchNamesForStatusOpenPHIDs(self.__allProjectPHIDs())
+        # hydrate source and destination project and column names from configuration.json phids
+        self.loadingMessageSetter('Fetching project and column names')
+        openItemNamesByPHID = self.fetcher.fetchNamesForStatusOpenPHIDs(self.__allProjectPHIDs() + self.__allColumnPHIDs())
+
         for sourceProject in self.sourceProjects:
-            sourceProject.name = namesByPHID[sourceProject.phid]
+            sourceProject.name = openItemNamesByPHID[sourceProject.phid]
         if self.destinationProject != None:
-            self.destinationProject.name = namesByPHID[self.destinationProject.phid]
+            self.destinationProject.name = openItemNamesByPHID[self.destinationProject.phid]
 
         addToDestinationColumnMenuHTMLLambdas = []
 
         if self.destinationProject != None:
             self.loadingMessageSetter(f"Fetching '{self.destinationProject.name}' columns")
             self.destinationProject.buttonsMenuColumns = self.__fetchColumns(self.destinationProject)
-            self.destinationProject.buttonsMenuColumnNames = list(map(lambda column: column.name, self.destinationProject.buttonsMenuColumns))
 
-            destinationColumns = list(filter(lambda column: (column.name not in self.destinationProject.columnNamesToIgnoreForButtons), self.destinationProject.buttonsMenuColumns))
+            destinationColumns = list(filter(lambda column: (column.phid not in self.destinationProject.columnPHIDsToIgnoreForButtons), self.destinationProject.buttonsMenuColumns))
             if len(destinationColumns) > 0:
                 addToDestinationColumnMenuHTMLLambdas.append(
                     lambda ticketID, ticketJSON, columns=destinationColumns :
@@ -61,7 +67,6 @@ class ProjectsHydrator:
             # fetch source project columns
             self.loadingMessageSetter(f"Fetching '{project.name}' columns")
             project.buttonsMenuColumns = self.__fetchColumns(project)
-            project.buttonsMenuColumnNames = list(map(lambda column: column.name, project.buttonsMenuColumns))
 
             currentSourceColumnMenuHTMLLambda = [
                 lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
@@ -69,11 +74,9 @@ class ProjectsHydrator:
             ]
 
             # make column object for each column name
-            project.columns = list(map(lambda columnName: Column(name = columnName, project = project, phid = None), project.columnNames))
+            project.columns = list(map(lambda columnPHID: Column(name = openItemNamesByPHID[columnPHID], project = project, phid = columnPHID), project.columnPHIDs))
 
             for column in project.columns:
-                self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' id")
-                column.phid = self.fetcher.fetchColumnPHID(column.name, column.project.phid)
                 self.loadingMessageSetter(f"Fetching '{project.name} > {column.name}' tickets")
                 if not hydrateTickets: # if only reloading the configuration UI the ticket hydration below is not needed
                     continue

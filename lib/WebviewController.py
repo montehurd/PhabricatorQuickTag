@@ -43,9 +43,9 @@ class WebviewController:
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.__reloadButtonHTML())
         self.__setInnerHTML('div#sources_right_menu', self.__showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
         self.__setInnerHTML('div#destination_right_menu', self.__showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
-        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.__toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumnNames, project.phid), self.sourceProjects))
+        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.__toggleSourceProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid), self.sourceProjects))
         self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
-        destinationProjectMenuButtonsHTML = self.__toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumnNames) if self.destinationProject != None else ''
+        destinationProjectMenuButtonsHTML = self.__toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self.destinationProject.name, self.destinationProject.buttonsMenuColumns) if self.destinationProject != None else ''
         self.__setInnerHTML('div#projects_configuration_destination', destinationProjectMenuButtonsHTML)
         self.window.evaluate_js(f"""
             __setPhabricatorUrl('{DataStore.getConfigurationValue('url')}');
@@ -107,7 +107,7 @@ class WebviewController:
         return list(map(lambda projectJSON:
             Project(
                 phid = projectJSON['phid'],
-                columnNames = projectJSON['columns']
+                columnPHIDs = projectJSON['columns']
             ),
             DataStore.getConfigurationValue('sourceProjects')
         ))
@@ -119,7 +119,7 @@ class WebviewController:
             return None
         return Project(
             phid = DataStore.getConfigurationValue('destinationProject')['phid'],
-            columnNamesToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
+            columnPHIDsToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
 
     def __load(self, hydrateTickets = True):
@@ -349,28 +349,27 @@ class WebviewController:
     def __toggleButton(self, buttonID):
         return self.window.evaluate_js(f"__toggleButton('{buttonID}')")
 
-    def __toggleDestinationProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle):
-        columnName = allColumnNames[indexOfColumnToToggle]
+    def __toggleDestinationProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle):
         project = DataStore.getConfigurationValue('destinationProject')
-        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnName):
-            project['ignoreColumns'].remove(columnName)
+        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
+            project['ignoreColumns'].remove(columnPHID)
         else:
-            project['ignoreColumns'].insert(indexOfColumnToToggle, columnName)
+            project['ignoreColumns'].insert(indexOfColumnToToggle, columnPHID)
         DataStore.saveCurrentConfiguration()
         return True
 
     def __hideTickets(self):
         self.window.evaluate_js('__hideTickets()')
 
-    def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, isInitiallySelected = False):
+    def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.__hideTickets,
-                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle :
-                    self.__toggleDestinationProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle)
+                lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle :
+                    self.__toggleDestinationProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle)
             ],
             successActions = [
                 lambda buttonID=buttonID :
@@ -381,14 +380,14 @@ class WebviewController:
             ]
         )
 
-    def __toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames):
-        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleDestinationProjectColumnInConfigurationJSONButtonManifest(
+    def __toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns):
+        buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleDestinationProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
-            title = indexAndColumnNameTuple[1],
-            indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
-            allColumnNames = allColumnNames,
-            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1])
-        ), enumerate(allColumnNames)))
+            title = indexAndColumnTuple[1].name,
+            indexOfColumnToToggle = indexAndColumnTuple[0],
+            columnPHID = indexAndColumnTuple[1].phid,
+            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid)
+        ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
         deleteButtonManifest = self.__removeDestinationProjectFromConfigurationJSONButtonManifest()
@@ -430,26 +429,25 @@ class WebviewController:
             ]
         )
 
-    def __toggleSourceProjectColumnInConfigurationJSON(self, allColumnNames, indexOfColumnToToggle, projectPHID):
-        columnName = allColumnNames[indexOfColumnToToggle]
+    def __toggleSourceProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID):
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
         project = next(project for project in sourceProjects if project['phid'] == projectPHID)
-        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnName, projectPHID):
-            project['columns'].remove(columnName)
+        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
+            project['columns'].remove(columnPHID)
         else:
-            project['columns'].insert(indexOfColumnToToggle, columnName)
+            project['columns'].insert(indexOfColumnToToggle, columnPHID)
         DataStore.saveCurrentConfiguration()
         return True
 
-    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnNameToToggle, allColumnNames, projectPHID, isInitiallySelected = False):
+    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, projectPHID, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.__hideTickets,
-                lambda allColumnNames=allColumnNames, indexOfColumnNameToToggle=indexOfColumnNameToToggle, projectPHID=projectPHID :
-                    self.__toggleSourceProjectColumnInConfigurationJSON(allColumnNames, indexOfColumnNameToToggle, projectPHID)
+                lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle, projectPHID=projectPHID :
+                    self.__toggleSourceProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID)
             ],
             successActions = [
                 lambda buttonID=buttonID :
@@ -460,15 +458,15 @@ class WebviewController:
             ]
         )
 
-    def __toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, allColumnNames, projectPHID):
-        buttonManifests = list(map(lambda indexAndColumnNameTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
+    def __toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID):
+        buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
-            title = indexAndColumnNameTuple[1],
-            indexOfColumnNameToToggle = indexAndColumnNameTuple[0],
-            allColumnNames = allColumnNames,
+            title = indexAndColumnTuple[1].name,
+            indexOfColumnToToggle = indexAndColumnTuple[0],
+            columnPHID = indexAndColumnTuple[1].phid,
             projectPHID = projectPHID,
-            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnNameTuple[1], projectPHID)
-        ), enumerate(allColumnNames)))
+            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID)
+        ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
         deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectPHID)
