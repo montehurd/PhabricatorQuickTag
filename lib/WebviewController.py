@@ -30,6 +30,8 @@ class WebviewController:
             # Included html tags on the next two here vs in the html file simply to keep syntax hilighting working in the html file - '$TEMPLATE_CSS', specifically, gives Atom fits.
             TEMPLATE_CSS = f"""<style type="text/css">\n{Utilities.stringFromFile('lib/Template.css')}\n</style>""",
             TEMPLATE_JS = f"""<script type="text/javascript">\n{Utilities.stringFromFile('lib/Template.js')}\n</script>""",
+            TEMPLATE_URL = DataStore.getConfigurationValue('url'),
+            TEMPLATE_TOKEN = DataStore.getConfigurationValue('token')
         )
 
     def __setInnerHTML(self, selector, html):
