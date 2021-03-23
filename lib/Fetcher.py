@@ -63,7 +63,7 @@ class Fetcher:
         # print(json.dumps(result['result']['data'], indent=4))
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
 
-    def fetchHTMLFromColumnTicketsRemarkup(self, remarkup):
+    def __fetchHTMLFromColumnTicketsRemarkup(self, remarkup):
         # Hit "remarkup.process" to convert our remixed remarkup to HTML:
         return self.fetchJSON('/api/remarkup.process', {
           'api.token' : self.apiToken,
@@ -165,7 +165,7 @@ TICKET_END '''
 
     def fetchTicketsHTMLByID(self, tickets):
         ticketsRemarkup = self.__ticketsRemarkupForTicketsJSON(tickets)
-        ticketsHTML = self.fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkup)
+        ticketsHTML = self.__fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkup)
         allTicketsHTML = re.split(pattern=r'(<p>)?TICKET_START:(.*?):(</p>)?(.*?)(<p>)?TICKET_END(</p>)?', string=ticketsHTML, flags=re.DOTALL)
         ticketsHTMLByID = {}
         if len(allTicketsHTML) < 7:
