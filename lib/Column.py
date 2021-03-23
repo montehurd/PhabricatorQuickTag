@@ -7,6 +7,5 @@ class Column:
         self.tickets = []
         self.project = project
         self.menuHTMLLambdas = []
-        self.__ticketsRemarkup = ''
         self.ticketsByID = []
         self.ticketsHTMLByID = {}
