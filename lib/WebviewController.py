@@ -39,7 +39,7 @@ class WebviewController:
         print(message)
         self.window.set_title(f"{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag'}{message}")
 
-    def __setConfigurationButtonsHTML(self):
+    def __setConfigurationHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.__reloadButtonHTML())
         self.__setInnerHTML('div#sources_right_menu', self.__showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
         self.__setInnerHTML('div#destination_right_menu', self.__showProjectSearchButtonHTML(title = 'Add or change Destination Project', mode = 'destination'))
@@ -139,7 +139,7 @@ class WebviewController:
         self.__setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
-        self.__setConfigurationButtonsHTML()
+        self.__setConfigurationHTML()
         if not hydrateTickets:
             return
         self.__setInnerHTML('div.projects_tickets', self.__projectsTicketsHTML())
