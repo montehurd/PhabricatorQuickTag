@@ -195,12 +195,6 @@ class WebviewController:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'reload_tickets')
 
-    def __showModalOverlay(self):
-        return self.window.evaluate_js('__showModalOverlay()')
-
-    def __hideModalOverlay(self):
-        return self.window.evaluate_js('__hideModalOverlay()')
-
     def __reloadConfigurationUI(self):
         self.reload(hydrateTickets = False)
 
@@ -228,8 +222,7 @@ class WebviewController:
             ],
             successActions = [
                 self.__hideProjectSearch,
-                self.__reloadConfigurationUI,
-                self.__hideModalOverlay
+                self.__reloadConfigurationUI
             ],
             failureActions = [
                 printFailure
@@ -241,45 +234,21 @@ class WebviewController:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'projects_search_result')
 
-    def __hideProjectSearchButtonManifest(self, title):
-        return ButtonManifest(
-            id = Utilities.cssSafeGUID(),
-            title = title,
-            isInitiallySelected = False,
-            clickActions = [
-                self.__hideProjectSearch,
-                self.__hideModalOverlay
-            ],
-            successActions = [
-                printSuccess
-            ],
-            failureActions = [
-                printFailure
-            ]
-        )
-
-    def __hideProjectSearchButtonHTML(self, title):
-        buttonManifest = self.__hideProjectSearchButtonManifest(title)
-        ButtonManifestRegistry.add([buttonManifest])
-        return buttonManifest.html(cssClass = 'projects_search_hide')
-
-    def __showProjectSearch(self, mode, hideButtonHTML, title):
-        return self.window.evaluate_js(f"__showProjectSearch(`{mode}`, `{hideButtonHTML}`, `{title}`)")
+    def __showProjectSearch(self, mode, title):
+        return self.window.evaluate_js(f"__showProjectSearch(`{mode}`, `{title}`)")
 
     def __resetProjectSearch(self):
         return self.window.evaluate_js('__resetProjectSearch()')
 
     def __showProjectSearchButtonManifest(self, title, mode):
-        hideButtonHTML = self.__hideProjectSearchButtonHTML(title = 'Hide')
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = title,
             isInitiallySelected = False,
             clickActions = [
                 self.__resetProjectSearch,
-                self.__showModalOverlay,
                 lambda mode=mode :
-                    self.__showProjectSearch(mode = mode, hideButtonHTML = hideButtonHTML, title = title)
+                    self.__showProjectSearch(mode = mode, title = title)
             ],
             successActions = [
                 printSuccess

@@ -48,11 +48,12 @@
       }
       const __hideProjectSearch = () => {
         document.querySelector('div.projects_search_centered_panel').style.display = 'none'
+        __hideModalOverlay()
         return true
       }
-      const __showProjectSearch = (mode, hideButtonHTML, title) => {
+      const __showProjectSearch = (mode, title) => {
+        __showModalOverlay()
         document.querySelector('div.projects_search_centered_panel').style.display = 'block';
-        document.querySelector('div.projects_search_hide_container').innerHTML = hideButtonHTML;
         document.querySelector('div.projects_search_title').innerHTML = title;
         document.querySelector('input#projects_search_mode').value = mode;
         return true
@@ -177,10 +178,11 @@
     <div class=projects_tickets>
     </div>
 
-    <div class="modal_overlay" onclick="__hideModalOverlay(); __hideProjectSearch(); __hideAlert();"></div>
+    <div class="modal_overlay" onclick="__hideProjectSearch(); __hideAlert();"></div>
 
     <div class="projects_search_centered_panel">
       <div class="projects_search_hide_container">
+        <button class="projects_search_hide" onclick="__hideProjectSearch();">Hide</button>
       </div>
       <div class="projects_search_title">
       </div>
