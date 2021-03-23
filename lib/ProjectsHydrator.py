@@ -6,8 +6,6 @@ class ProjectsHydrator:
     def __init__(self, sourceProjects, destinationProject = None, fetcher = None, loadingMessageSetter = None, ticketAddToColumnButtonMenuHTMLFunction = None, ticketStatusButtonMenuHTMLFunction = None, ticketPriorityButtonMenuHTMLFunction = None):
         self.sourceProjects = sourceProjects
         self.destinationProject = destinationProject
-        self.statusesData = []
-        self.prioritiesData = []
         self.fetcher = fetcher
         self.loadingMessageSetter = loadingMessageSetter
         self.ticketAddToColumnButtonMenuHTMLFunction = ticketAddToColumnButtonMenuHTMLFunction
