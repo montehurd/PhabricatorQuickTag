@@ -146,6 +146,30 @@ div.projects_search_centered_panel {
   display: none;
 }
 
+div.alert_panel {
+  width: 300px;
+  height: 200px;
+  position: fixed;
+  background-color: #eee;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px;
+  margin-left: -150px;
+  padding: 25px;
+  border-radius: 12px;
+  border: solid 1px #A1A6B0;
+  display: none;
+}
+
+div.alert_panel_buttons {
+  margin-top: 10px;
+}
+
+div.alert_panel_title {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 div.projects_search_hide_container {
   float: right;
 }

@@ -57,6 +57,18 @@
         document.querySelector('input#projects_search_mode').value = mode;
         return true
       }
+      const __hideAlert = () => {
+        document.querySelector('div.alert_panel').style.display = 'none'
+        __hideModalOverlay()
+        return true
+      }
+      const __showAlert = (title, description) => {
+        __showModalOverlay()
+        document.querySelector('div.alert_panel').style.display = 'block';
+        document.querySelector('div.alert_panel_title').innerHTML = title;
+        document.querySelector('div.alert_panel_description').innerHTML = description;
+        return true
+      }
       const __resetProjectSearch = () => {
         document.querySelector('input#projects_search_mode').value = '';
         document.querySelector('input.projects_search_textbox').value = '';
@@ -165,7 +177,8 @@
     <div class=projects_tickets>
     </div>
 
-    <div class="modal_overlay" onclick="this.style.display = 'none'; document.querySelector('div.projects_search_centered_panel').style.display = 'none';"></div>
+    <div class="modal_overlay" onclick="__hideModalOverlay(); __hideProjectSearch(); __hideAlert();"></div>
+
     <div class="projects_search_centered_panel">
       <div class="projects_search_hide_container">
       </div>
@@ -184,6 +197,16 @@
           spellcheck="false"
         >
       <div class="projects_search_results">
+      </div>
+    </div>
+
+    <div class="alert_panel">
+      <div class="alert_panel_title">
+      </div>
+      <div class="alert_panel_description">
+      </div>
+      <div class="alert_panel_buttons">
+        <button onclick="__hideAlert()">Got it</button>
       </div>
     </div>
 
