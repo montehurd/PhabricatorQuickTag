@@ -144,10 +144,8 @@ class WebviewController:
             allColumnPHIDs = allColumnPHIDs + project.columnPHIDs
         return allColumnPHIDs
 
+    # hydrate source and destination projects and their columns
     def hydrateProjects(self, hydrateTickets = True):
-        # fetch destination project names and columns
-
-        # hydrate source and destination project and column names from configuration.json phids
         self.__setLoadingMessage('Fetching project and column names')
         openItemNamesByPHID = self.fetcher.fetchNamesForStatusOpenPHIDs(self.__allProjectPHIDs() + self.__allColumnPHIDs())
 
