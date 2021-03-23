@@ -52,19 +52,6 @@ class Fetcher:
         openProjects = self.fetchNamesForStatusOpenPHIDs(projectPHIDs)
         return openProjects
 
-    # Prefix 'name' with:
-    #   '@' for User
-    #   '#' for Project
-    #   'T' for Ticket
-    # See: https://stackoverflow.com/a/52923649/135557 and https://secure.phabricator.com/w/object_name_prefixes/
-    def fetchPHID(self, name):
-        result = self.fetchJSON('/api/phid.lookup', {
-            'api.token' : self.apiToken,
-            'names[0]' : name
-        })
-        # print(json.dumps(result, indent=4))
-        return result['result'][name]['phid']
-
     def fetchColumnTickets(self, columnPHID):
         result = self.fetchJSON('/api/maniphest.search', {
             'api.token' : self.apiToken,
