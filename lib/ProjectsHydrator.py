@@ -29,7 +29,7 @@ class ProjectsHydrator:
 
         # hydrate source and destination project names from saved phids
         self.loadingMessageSetter('Fetching project names')
-        namesByPHID = self.fetcher.fetchNamesForPHIDs(self.__allProjectPHIDs())
+        namesByPHID = self.fetcher.fetchNamesForStatusOpenPHIDs(self.__allProjectPHIDs())
         for sourceProject in self.sourceProjects:
             sourceProject.name = namesByPHID[sourceProject.phid]
         if self.destinationProject != None:

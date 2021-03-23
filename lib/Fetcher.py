@@ -35,29 +35,20 @@ class Fetcher:
         return column['phid']
 
     # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
-    # 'phid.query' is also needed to get the full project name from the phid unfortunately.
-    def __fetchOpenProjectsFromProjectPHIDs(self, projectPHIDs):
-        if len(projectPHIDs) == 0:
+    # same is true for columns. 'phid.query' is also needed to get the full project name from the phid unfortunately.
+    def fetchNamesForStatusOpenPHIDs(self, phids):
+        if len(phids) == 0:
             return []
         values = {
             'api.token' : self.apiToken
         }
-        for index, phid in enumerate(projectPHIDs):
+        for index, phid in enumerate(phids):
             values[f'phids[{index}]'] = phid
         result = self.fetchJSON('/api/phid.query', values)['result']
-        output = []
-        for i, (projectPHID, project) in enumerate(result.items()):
-            if project['status'] == 'open':
-                output.append({'phid': projectPHID, 'name': project['name']})
-        return output
-
-    # can this be made to work for both projects and colunms?
-    # combine with func above? (depends on if project search use case - where order matters so best matching appear at top)
-    def fetchNamesForPHIDs(self, phids):
-        print(phids)
         output = {}
-        for item in self.__fetchOpenProjectsFromProjectPHIDs(phids):
-            output[item['phid']] = item['name']
+        for item in result.values():
+            if item['status'] == 'open':
+                output[item['phid']] = item['name']
         return output
 
     def fetchProjectsMatchingSearchTerm(self, searchTerm):
@@ -67,7 +58,7 @@ class Fetcher:
         })
         projectPHIDs = list(map(lambda projectJSON: projectJSON['phid'], result['result']['data']))
         # print(json.dumps(result['result']['data'], indent=4))
-        openProjects = self.__fetchOpenProjectsFromProjectPHIDs(projectPHIDs)
+        openProjects = self.fetchNamesForStatusOpenPHIDs(projectPHIDs)
         print(json.dumps(openProjects, indent=4))
         return openProjects
 
@@ -111,22 +102,9 @@ class Fetcher:
             })
         columnsData = list(filter(lambda x: x['type'] == 'PCOL' and x['fields']['name'] not in columnNamesToIgnore, result['result']['data']))
         columnPHIDs = list(map(lambda column: column['phid'], columnsData))
-        openColumnPHIDs = self.__fetchOpenColumnPHIDsInColumnPHIDs(columnPHIDs)
+        openColumnPHIDs = self.fetchNamesForStatusOpenPHIDs(columnPHIDs)
         openColumnsData = filter(lambda column: column['phid'] in openColumnPHIDs, columnsData)
         return openColumnsData
-
-    def __fetchOpenColumnPHIDsInColumnPHIDs(self, columnPHIDs):
-        values = {
-            'api.token' : self.apiToken
-        }
-        for index, phid in enumerate(columnPHIDs):
-            values[f'phids[{index}]'] = phid
-        result = self.fetchJSON('/api/phid.query', values)['result']
-        output = []
-        for i, (phid, column) in enumerate(result.items()):
-            if column['status'] == 'open':
-                output.append(phid)
-        return output
 
     def fetchPriorities(self):
         result = self.fetchJSON('/api/maniphest.priority.search', {
