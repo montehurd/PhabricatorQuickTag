@@ -209,9 +209,9 @@ class WebviewController:
 
     def __saveProjectSearchChoice(self, projectPHID, mode):
         if mode == 'destination':
-            DataStore.saveDestinationProjectPHID(projectPHID)
+            self.__saveDestinationProjectPHID(projectPHID)
         elif mode == 'source':
-            DataStore.saveSourceProjectPHID(projectPHID)
+            self.__saveSourceProjectPHID(projectPHID)
         else:
             print(f'Unhandled mode: "{mode}"')
             return False
@@ -351,7 +351,7 @@ class WebviewController:
 
     def __toggleDestinationProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle):
         project = DataStore.getConfigurationValue('destinationProject')
-        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
+        if self.__isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
             project['ignoreColumns'].remove(columnPHID)
         else:
             project['ignoreColumns'].insert(indexOfColumnToToggle, columnPHID)
@@ -386,7 +386,7 @@ class WebviewController:
             title = indexAndColumnTuple[1].name,
             indexOfColumnToToggle = indexAndColumnTuple[0],
             columnPHID = indexAndColumnTuple[1].phid,
-            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid)
+            isInitiallySelected = not self.__isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid)
         ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
@@ -432,7 +432,7 @@ class WebviewController:
     def __toggleSourceProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID):
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
         project = next(project for project in sourceProjects if project['phid'] == projectPHID)
-        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
+        if self.__isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
             project['columns'].remove(columnPHID)
         else:
             project['columns'].insert(indexOfColumnToToggle, columnPHID)
@@ -465,7 +465,7 @@ class WebviewController:
             indexOfColumnToToggle = indexAndColumnTuple[0],
             columnPHID = indexAndColumnTuple[1].phid,
             projectPHID = projectPHID,
-            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID)
+            isInitiallySelected = self.__isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID)
         ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
@@ -704,6 +704,31 @@ class WebviewController:
             menuTitle = menuTitle,
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
+
+    def __saveDestinationProjectPHID(self, projectPHID):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['phid'] = projectPHID
+        DataStore.saveCurrentConfiguration()
+
+    def __saveSourceProjectPHID(self, projectPHID):
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        if not any(project['phid'] == projectPHID for project in sourceProjects):
+            sourceProjects.insert(0, {
+                'phid': projectPHID,
+                'columns': []
+            })
+            DataStore.saveCurrentConfiguration()
+        else:
+            print(f'{projectPHID} already exists in project sources')
+
+    def __isSourceProjectColumnPresentInConfigurationJSON(self, columnPHID, projectPHID):
+        projects = DataStore.getConfigurationValue('sourceProjects')
+        project = next(project for project in projects if project['phid'] == projectPHID)
+        isColumnPresent = columnPHID in project['columns']
+        return isColumnPresent
+
+    def __isDestinationProjectIgnoreColumnPresentInConfigurationJSON(self, columnPHID):
+        return columnPHID in DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
 
     def expose(self, window):
         window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
