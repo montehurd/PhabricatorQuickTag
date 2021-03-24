@@ -1,7 +1,7 @@
 {
     "configuration": {
-        "url": "http://phabricator.local.com",
-        "token": "api-nwmqotyonlxyxsk2uhig5c5n4iho",
+        "url": "",
+        "token": "",
         "sourceProjects": [],
         "destinationProject": {
             "phid": null,
