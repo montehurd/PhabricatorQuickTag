@@ -231,11 +231,6 @@ class WebviewController:
             projectSearchResultButtonsHTML = ''.join(map(lambda item: self.__projectSearchResultButtonHTML(title = item[1], phid = item[0], mode = mode), projects.items()))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
-    def textboxTermEntered(self, term, key):
-        configuration = DataStore.getCurrentConfiguration()
-        configuration[key] = term
-        DataStore.saveCurrentConfiguration()
-
     def __showTickets(self):
         return self.window.evaluate_js('__showTickets()')
 
@@ -261,13 +256,22 @@ class WebviewController:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'reload_tickets')
 
+    def __saveURLAndToken(self):
+        url = self.window.evaluate_js(f'__getPhabricatorUrl()')
+        token = self.window.evaluate_js(f'__getPhabricatorToken()')
+        configuration = DataStore.getCurrentConfiguration()
+        configuration['url'] = url
+        configuration['token'] = token
+        DataStore.saveCurrentConfiguration()
+        return True
+
     def __urlAndTokenSaveButtonManifest(self):
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = 'Save',
             isInitiallySelected = False,
             clickActions = [
-                printSuccess
+                self.__saveURLAndToken
             ],
             successActions = [
                 printSuccess
@@ -792,7 +796,6 @@ class WebviewController:
 
     def expose(self, window):
         window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
-        window.expose(self.textboxTermEntered) # expose to JS as 'pywebview.api.textboxTermEntered'
         window.expose(printDebug) # expose to JS as 'pywebview.api.printDebug'
 
 def printDebug(message):
