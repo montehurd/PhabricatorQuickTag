@@ -6,6 +6,7 @@ from ButtonManifest import ButtonManifest
 from Project import Project
 from Column import Column
 from Fetcher import Fetcher
+from Debounce import debounce
 
 class WebviewController:
     def __init__(self, window):
@@ -229,6 +230,10 @@ class WebviewController:
         self.__load(hydrateTickets = hydrateTickets)
 
     def projectSearchTermEntered(self, searchTerm, mode):
+        self.__debouncedProjectSearchTermEntered(searchTerm, mode)
+
+    @debounce(0.3)
+    def __debouncedProjectSearchTermEntered(self, searchTerm, mode):
         searchResultsSelector = 'div.projects_search_results'
         if len(searchTerm.strip()) == 0:
             self.__setInnerHTML(searchResultsSelector, '')
