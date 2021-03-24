@@ -261,11 +261,11 @@ class WebviewController:
         return buttonManifest.html(cssClass = 'reload_tickets')
 
     def __saveURLAndToken(self):
-        url = self.window.evaluate_js(f'__getPhabricatorUrl()')
-        token = self.window.evaluate_js(f'__getPhabricatorToken()')
+        url = self.window.evaluate_js(f'__getPhabricatorUrl()').strip()
+        token = self.window.evaluate_js(f'__getPhabricatorToken()').strip()
         configuration = DataStore.getCurrentConfiguration()
-        configuration['url'] = url.strip()
-        configuration['token'] = token.strip()
+        configuration['url'] = url if len(url) > 0 else None
+        configuration['token'] = token if len(token) > 0 else None
         DataStore.saveCurrentConfiguration()
         return True
 
