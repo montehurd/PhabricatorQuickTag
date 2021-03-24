@@ -21,6 +21,8 @@ class WebviewController:
         return Fetcher(DataStore.getConfigurationValue('url'), DataStore.getConfigurationValue('token'))
 
     def __extractCSSURL(self):
+        if self.__isEmptyStringURLOrToken():
+            return ''
         # HACK: grabbing the css url from the 'flag' page html. perhaps there's a better way? some API?
         html = self.fetcher.fetchHTML('/flag')
         match = re.search(r'<link[^>]* rel="stylesheet"[^>]* href="([^"]*?core\.pkg\.css)"', html)
@@ -264,8 +266,8 @@ class WebviewController:
         url = self.window.evaluate_js(f'__getPhabricatorUrl()').strip()
         token = self.window.evaluate_js(f'__getPhabricatorToken()').strip()
         configuration = DataStore.getCurrentConfiguration()
-        configuration['url'] = url if len(url) > 0 else None
-        configuration['token'] = token if len(token) > 0 else None
+        configuration['url'] = url.strip()
+        configuration['token'] = token.strip()
         DataStore.saveCurrentConfiguration()
         return True
 
@@ -273,7 +275,13 @@ class WebviewController:
         self.fetcher = self.__getFetcher()
         return True
 
+    def __isEmptyStringURLOrToken(self):
+        configuration = DataStore.getCurrentConfiguration()
+        return len(configuration['url'].strip()) == 0 or len(configuration['token'].strip()) == 0
+
     def __fetchPrioritiesAndStatuses(self):
+        if self.__isEmptyStringURLOrToken():
+            return [], []
         return self.fetcher.fetchPriorities(), self.fetcher.fetchStatuses()
 
     def __refetchPrioritiesAndStatuses(self):
