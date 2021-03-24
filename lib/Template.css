@@ -232,6 +232,9 @@ button {
   font-size: 13px;
   font-weight: bold;
   font-family: helvetica;
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  margin: 0px;
 }
 
 button.projects_search_result {
