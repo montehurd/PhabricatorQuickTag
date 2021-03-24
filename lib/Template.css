@@ -13,31 +13,6 @@ div.ticket {
   background-color: white;
 }
 
-button.hide {
-  float: right;
-  margin-top: 20px;
-}
-
-button:not([class=selected]) {
-  background-color: white;
-  border: solid 1px #A1A6B0;
-  color: #777C89;
-}
-
-button, button:hover {
-  background-image: unset;
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-
-button.delete, button.add {
-  border: unset;
-  padding: 0px;
-  background-color: transparent;
-  color: #fff;
-  margin-right: -10px
-}
-
 div.menus {
   border-radius: 12px;
   padding: 6pt;
@@ -233,6 +208,9 @@ button {
   -webkit-font-smoothing: antialiased;
   cursor: pointer;
   margin: 0px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  background-image: unset;
 }
 
 button.projects_search_result {
@@ -248,6 +226,29 @@ button.projects_search_result {
 button.projects_search_result:hover {
   background-color: #ddd;
   color: black;
+}
+
+button.hide {
+  float: right;
+  margin-top: 20px;
+}
+
+button:not([class=selected]) {
+  background-color: white;
+  border: solid 1px #A1A6B0;
+  color: #777C89;
+}
+
+button:hover {
+  background-image: unset;
+}
+
+button.delete, button.add {
+  border: unset;
+  padding: 0px;
+  background-color: transparent;
+  color: #fff;
+  margin-right: -10px
 }
 
 div.projects_configuration_textboxes {
