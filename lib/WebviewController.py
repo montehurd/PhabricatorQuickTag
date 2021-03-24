@@ -403,6 +403,12 @@ class WebviewController:
             </div>
         '''
 
+    def __showLoadingIndicator(self):
+        return self.window.evaluate_js(f"__showLoadingIndicator()")
+
+    def __hideLoadingIndicator(self):
+        return self.window.evaluate_js(f"__hideLoadingIndicator()")
+
     def __showAlert(self, title, description):
         return self.window.evaluate_js(f"__showAlert(`{title}`, `{description}`)")
 
