@@ -84,7 +84,6 @@ div.projects_configuration {
 }
 
 div.projects_configuration_title {
-  /* font-size: 1.2em; */
 }
 
 div.projects_configuration_header {
@@ -188,7 +187,6 @@ div.projects_search_hide_container {
 
 span.project_configuration_title {
   font-weight: bold;
-  /* font-size: 14px; */
   display: inline-block;
 }
 
