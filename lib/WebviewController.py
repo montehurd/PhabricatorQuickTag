@@ -162,18 +162,20 @@ class WebviewController:
             self.__setLoadingMessage(f"Fetching '{self.destinationProject.name}' columns")
             self.destinationProject.buttonsMenuColumns = self.__fetchColumns(self.destinationProject)
 
-            destinationColumns = list(filter(lambda column: (column.phid not in self.destinationProject.columnPHIDsToIgnoreForButtons), self.destinationProject.buttonsMenuColumns))
-            if len(destinationColumns) > 0:
-                addToDestinationColumnMenuHTMLLambdas.append(
-                    lambda ticketID, ticketJSON, columns=destinationColumns :
-                        self.__ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
-                )
+            if hydrateTickets:
+                destinationColumns = list(filter(lambda column: (column.phid not in self.destinationProject.columnPHIDsToIgnoreForButtons), self.destinationProject.buttonsMenuColumns))
+                if len(destinationColumns) > 0:
+                    addToDestinationColumnMenuHTMLLambdas.append(
+                        lambda ticketID, ticketJSON, columns=destinationColumns :
+                            self.__ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{self.destinationProject.name}</i> )', ticketID, ticketJSON, columns)
+                    )
 
         for project in self.sourceProjects:
             # fetch source project columns
             self.__setLoadingMessage(f"Fetching '{project.name}' columns")
             project.buttonsMenuColumns = self.__fetchColumns(project)
-
+            if not hydrateTickets:
+                continue
             currentSourceColumnMenuHTMLLambda = [
                 lambda ticketID, ticketJSON, columns=project.buttonsMenuColumns :
                     self.__ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{project.name}</i> )', ticketID, ticketJSON, columns)
@@ -184,8 +186,6 @@ class WebviewController:
 
             for column in project.columns:
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets")
-                if not hydrateTickets: # if only reloading the configuration UI the ticket hydration below is not needed
-                    continue
                 tickets = list(self.fetcher.fetchColumnTickets(column.phid))
                 # dict with ticketID as key and ticketJSON as value (excluding tickets already tagged with destinationProjectPHID)
                 ticketsByID = dict((x['id'], x) for x in tickets if self.destinationProject == None or not self.destinationProject.phid in x['attachments']['projects']['projectPHIDs'])
