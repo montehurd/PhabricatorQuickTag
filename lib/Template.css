@@ -1,6 +1,7 @@
 body {
   background-color: #EBECEE;
   margin: 0px;
+  overflow-y: scroll;
 }
 
 div.ticket {
@@ -77,10 +78,13 @@ div.column_subtitle {
 
 div.projects_configuration {
   color: #eee;
+  font-family: helvetica;
+  font-size: 14px;
+  line-height: 1.7em;
 }
 
 div.projects_configuration_title {
-  font-size: 1.2em;
+  /* font-size: 1.2em; */
 }
 
 div.projects_configuration_header {
@@ -101,10 +105,17 @@ div.projects_configuration_body_buttons {
 
 div.projects_configuration_textboxes input {
     width: 300px;
+    height: 30px;
     margin-left: 5px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: bold;
     color: #222;
+    padding: 6px 6px;
+    border-radius: 3px;
+    border: 1px solid #A1A680;
+    font-family: 'helvetica neue';
+    -webkit-font-smoothing: antialiased;
+    box-sizing: border-box;
 }
 
 div.project_configuration {
@@ -177,13 +188,14 @@ div.projects_search_hide_container {
 
 span.project_configuration_title {
   font-weight: bold;
-  font-size: 14px;
+  /* font-size: 14px; */
   display: inline-block;
 }
 
 span.project_configuration_description {
   margin-left: 8px;
   color: #888;
+  font-size: 13px;
 }
 
 div.projects_search_title {
@@ -213,6 +225,13 @@ div.projects_search_results {
   overflow-x: hidden;
   height: 85%;
   width: 100%;
+}
+
+button {
+  padding: 4px 14px 5px;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: helvetica;
 }
 
 button.projects_search_result {
