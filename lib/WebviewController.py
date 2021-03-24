@@ -54,6 +54,7 @@ class WebviewController:
             __setPhabricatorToken('{DataStore.getConfigurationValue('token')}');
         """
         )
+        self.__setInnerHTML('span.projects_configuration_url_and_token_buttons', self.__urlAndTokenSaveButtonHTML())
 
     def __columnSubtitle(self, column):
         destinationProjectName = self.destinationProject.name if self.destinationProject != None else None
@@ -259,6 +260,27 @@ class WebviewController:
         buttonManifest = self.__reloadButtonManifest()
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'reload_tickets')
+
+    def __urlAndTokenSaveButtonManifest(self):
+        return ButtonManifest(
+            id = Utilities.cssSafeGUID(),
+            title = 'Save',
+            isInitiallySelected = False,
+            clickActions = [
+                printSuccess
+            ],
+            successActions = [
+                printSuccess
+            ],
+            failureActions = [
+                printFailure
+            ]
+        )
+
+    def __urlAndTokenSaveButtonHTML(self):
+        buttonManifest = self.__urlAndTokenSaveButtonManifest()
+        ButtonManifestRegistry.add([buttonManifest])
+        return buttonManifest.html(cssClass = 'save_url_and_token')
 
     def __reloadConfigurationUI(self):
         self.reload(hydrateTickets = False)
