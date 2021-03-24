@@ -5,16 +5,20 @@ from string import Template
 from ButtonManifest import ButtonManifest
 from Project import Project
 from Column import Column
+from Fetcher import Fetcher
 
 class WebviewController:
-    def __init__(self, window, fetcher):
-        self.fetcher = fetcher
+    def __init__(self, window):
+        DataStore.loadConfiguration()
+        self.fetcher = self.__getFetcher()
         self.sourceProjects = []
         self.destinationProject = None
         self.window = window
         self.window.loaded += self.__onDOMLoaded
-        self.prioritiesData = self.fetcher.fetchPriorities()
-        self.statusesData = self.fetcher.fetchStatuses()
+        self.prioritiesData, self.statusesData = self.__fetchPrioritiesAndStatuses()
+
+    def __getFetcher(self):
+        return Fetcher(DataStore.getConfigurationValue('url'), DataStore.getConfigurationValue('token'))
 
     def __extractCSSURL(self):
         # HACK: grabbing the css url from the 'flag' page html. perhaps there's a better way? some API?
@@ -260,9 +264,25 @@ class WebviewController:
         url = self.window.evaluate_js(f'__getPhabricatorUrl()')
         token = self.window.evaluate_js(f'__getPhabricatorToken()')
         configuration = DataStore.getCurrentConfiguration()
-        configuration['url'] = url
-        configuration['token'] = token
+        configuration['url'] = url.strip()
+        configuration['token'] = token.strip()
         DataStore.saveCurrentConfiguration()
+        return True
+
+    def __reloadFetcher(self):
+        self.fetcher = self.__getFetcher()
+        return True
+
+    def __fetchPrioritiesAndStatuses(self):
+        return self.fetcher.fetchPriorities(), self.fetcher.fetchStatuses()
+
+    def __refetchPrioritiesAndStatuses(self):
+        self.prioritiesData, self.statusesData = self.__fetchPrioritiesAndStatuses()
+        return True
+
+    def __refetchUpstreamCSSLinkURL(self):
+        cssURL = self.__extractCSSURL()
+        self.window.evaluate_js(f'__setUpstreamCSSLinkURL("{cssURL}")')
         return True
 
     def __urlAndTokenSaveButtonManifest(self):
@@ -274,12 +294,26 @@ class WebviewController:
                 self.__saveURLAndToken
             ],
             successActions = [
+                self.__reloadFetcher,
+                self.__refetchPrioritiesAndStatuses,
+                self.__clearSourceAndDestinationProjects,
+                self.__hideTickets,
+                self.__refetchUpstreamCSSLinkURL,
+                self.__reloadConfigurationUI,
                 printSuccess
             ],
             failureActions = [
                 printFailure
             ]
         )
+
+    def __clearSourceAndDestinationProjects(self):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['phid'] = None
+        destinationProject['ignoreColumns'] = []
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        sourceProjects.clear()
+        DataStore.saveCurrentConfiguration()
 
     def __urlAndTokenSaveButtonHTML(self):
         buttonManifest = self.__urlAndTokenSaveButtonManifest()
