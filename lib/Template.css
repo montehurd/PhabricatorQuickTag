@@ -2,6 +2,7 @@ body {
   background-color: #EBECEE;
   margin: 0px;
   overflow-y: scroll;
+  -webkit-font-smoothing: antialiased;
 }
 
 div.ticket {
@@ -88,7 +89,6 @@ div.projects_configuration_textboxes input {
     border-radius: 3px;
     border: 1px solid #A1A680;
     font-family: 'helvetica neue';
-    -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
 }
 
@@ -234,7 +234,6 @@ button {
   font-size: 13px;
   font-weight: bold;
   font-family: helvetica;
-  -webkit-font-smoothing: antialiased;
   cursor: pointer;
   margin: 0px;
   margin-right: 4px;
