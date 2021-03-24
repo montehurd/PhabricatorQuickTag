@@ -246,13 +246,16 @@ class WebviewController:
             title = 'Reload Tickets',
             isInitiallySelected = False,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.reload
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 self.__showTickets,
                 printSuccess
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -299,9 +302,11 @@ class WebviewController:
             title = 'Save',
             isInitiallySelected = False,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.__saveURLAndToken
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 self.__reloadFetcher,
                 self.__refetchPrioritiesAndStatuses,
                 self.__clearSourceAndDestinationProjects,
@@ -311,6 +316,7 @@ class WebviewController:
                 printSuccess
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -350,14 +356,17 @@ class WebviewController:
             title = projectName,
             isInitiallySelected = False,
             clickActions = [
+                self.__showLoadingIndicator,
                 lambda projectPHID=projectPHID, mode=mode :
                     self.__saveProjectSearchChoice(projectPHID, mode)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 self.__hideProjectSearch,
                 self.__reloadConfigurationUI
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -444,15 +453,18 @@ class WebviewController:
             title = 'Remove',
             isInitiallySelected = False,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.__hideTickets,
                 self.__removeDestinationProjectFromConfigurationJSON
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda buttonID=buttonID :
                     self.__deleteMenu(buttonID),
                 printSuccess
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -478,15 +490,18 @@ class WebviewController:
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.__hideTickets,
                 lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle :
                     self.__toggleDestinationProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda buttonID=buttonID :
                     self.__toggleButton(buttonID)
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -526,16 +541,19 @@ class WebviewController:
             title = 'Remove',
             isInitiallySelected = False,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.__hideTickets,
                 lambda projectPHID=projectPHID :
                     self.__removeSourceProjectFromConfigurationJSON(projectPHID)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda buttonID=buttonID :
                     self.__deleteMenu(buttonID),
                 printSuccess
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -556,15 +574,18 @@ class WebviewController:
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
+                self.__showLoadingIndicator,
                 self.__hideTickets,
                 lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle, projectPHID=projectPHID :
                     self.__toggleSourceProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda buttonID=buttonID :
                     self.__toggleButton(buttonID)
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 printFailure
             ]
         )
@@ -692,10 +713,12 @@ class WebviewController:
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
+                self.__showLoadingIndicator,
                 lambda ticketID=ticketID, projectPHID=projectPHID, columnPHID=columnPHID, buttonID=buttonID :
                     self.__toggleTicketOnProjectColumn(ticketID, projectPHID, columnPHID, buttonID)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketSuccess(ticketID),
                 lambda buttonID=buttonID :
@@ -706,6 +729,7 @@ class WebviewController:
                     self.__setComment(ticketID, '')
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketFailure(ticketID),
             ]
@@ -729,10 +753,12 @@ class WebviewController:
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
+                self.__showLoadingIndicator,
                 lambda ticketID=ticketID, value=value :
                     self.__updateTicketStatus(ticketID, value)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketSuccess(ticketID),
                 lambda buttonID=buttonID :
@@ -743,6 +769,7 @@ class WebviewController:
                     self.__setComment(ticketID, '')
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketFailure(ticketID),
             ]
@@ -779,12 +806,14 @@ class WebviewController:
             title = title,
             isInitiallySelected = isInitiallySelected,
             clickActions = [ # lambda currying: https://stackoverflow.com/a/452659
+                self.__showLoadingIndicator,
                 lambda ticketID=ticketID, value=value :
                     self.__updateTicketPriority(ticketID, value),
                 lambda title=title :
                     print(title)
             ],
             successActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketSuccess(ticketID),
                 lambda buttonID=buttonID :
@@ -795,6 +824,7 @@ class WebviewController:
                     self.__setComment(ticketID, '')
             ],
             failureActions = [
+                self.__hideLoadingIndicator,
                 lambda ticketID=ticketID :
                     self.__showTicketFailure(ticketID),
             ]
