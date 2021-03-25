@@ -99,7 +99,7 @@
       </div>
         <input type="hidden" id="projects_search_mode">
         <input type="text"
-          class="projects_search_textbox"
+          id="projects_search_textbox"
           placeholder="Enter project title search term here"
           onchange="pywebview.api.projectSearchTermEntered(this.value, document.querySelector('input#projects_search_mode').value)"
           onpaste="this.onchange()"

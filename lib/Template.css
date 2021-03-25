@@ -79,13 +79,13 @@ div.projects_configuration_body_buttons {
   margin-top: -44px;
 }
 
-div.projects_configuration_textboxes input {
+div.projects_configuration_textboxes input, input#projects_search_textbox {
     width: 300px;
     height: 30px;
     margin-left: 5px;
     font-size: 13px;
     font-weight: bold;
-    color: #222;
+    color: #777C89;
     padding: 6px 6px;
     border-radius: 3px;
     border: 1px solid #A1A680;
@@ -209,10 +209,6 @@ div.projects_search_title {
   margin-bottom: 10px;
 }
 
-.projects_search_textbox {
-  width: 300px;
-}
-
 div.modal_overlay {
   position: fixed;
   width: 100%;
@@ -229,6 +225,7 @@ div.projects_search_results {
   overflow-x: hidden;
   height: 85%;
   width: 100%;
+  margin-left: 5px;
 }
 
 button {
