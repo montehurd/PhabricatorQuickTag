@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import DataStore, ButtonManifestRegistry, re
+import DataStore, ButtonManifestRegistry, Utilities, re
 
 class ButtonActions:
     def __init__(self, window, delegate):
@@ -149,11 +149,8 @@ class ButtonActions:
         DataStore.loadConfiguration()
         return True
 
-    def __getNumericIDFromTicketID(self, ticketID):
-        return re.sub("[^0-9]", '', ticketID)
-
     def __setTicketActionMessage(self, ticketID, message):
-        return self.window.evaluate_js(f'__setTicketActionMessage("{self.__getNumericIDFromTicketID(ticketID)}", "{message}")')
+        return self.window.evaluate_js(f'__setTicketActionMessage("{Utilities.getNumericIDFromTicketID(ticketID)}", "{message}")')
 
     def showTicketFailure(self, ticketID):
         return self.__setTicketActionMessage(ticketID, '💩 Failure')
@@ -162,7 +159,7 @@ class ButtonActions:
         return self.__setTicketActionMessage(ticketID, '🎉 Success')
 
     def setComment(self, ticketID, comment):
-        returnedComment = self.window.evaluate_js(f'__setComment("{self.__getNumericIDFromTicketID(ticketID)}", "{comment}")')
+        returnedComment = self.window.evaluate_js(f'__setComment("{Utilities.getNumericIDFromTicketID(ticketID)}", "{comment}")')
         return returnedComment == comment
 
     def selectButton(self, buttonID):

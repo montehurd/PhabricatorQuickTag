@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, uuid
+import json, uuid, re
 
 def stringFromFile(fileName):
     with open(fileName, 'r') as f:
@@ -21,6 +21,9 @@ def escapeBackticks(string):
 
 def cssSafeGUID():
     return f'_{uuid.uuid4().hex}'
+
+def getNumericIDFromTicketID(ticketID):
+    return re.sub("[^0-9]", '', ticketID)
 
 # import subprocess
 # def sendToBrowser(string, extension):

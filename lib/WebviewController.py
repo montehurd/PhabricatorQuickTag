@@ -283,11 +283,8 @@ class WebviewController:
     def showAlert(self, title, description):
         return self.window.evaluate_js(f"__showAlert(`{title}`, `{description}`)")
 
-    def __getNumericIDFromTicketID(self, ticketID):
-        return re.sub("[^0-9]", '', ticketID)
-
     def __getComment(self, ticketID):
-        comment = self.window.evaluate_js(f'__getComment("{self.__getNumericIDFromTicketID(ticketID)}")')
+        comment = self.window.evaluate_js(f'__getComment("{Utilities.getNumericIDFromTicketID(ticketID)}")')
         return comment if len(comment.strip()) else None
 
     def addTicketToProject(self, ticketID, projectPHID):
