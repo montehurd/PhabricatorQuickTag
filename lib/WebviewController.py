@@ -61,7 +61,7 @@ class WebviewController:
             __setPhabricatorToken('{DataStore.getConfigurationValue('token')}');
         """
         )
-        self.__setInnerHTML('span.projects_configuration_url_and_token_buttons', self.__urlAndTokenSaveButtonHTML())
+        self.__setInnerHTML('div.projects_configuration_url_and_token_buttons', self.__urlAndTokenSaveButtonHTML())
 
     def __columnSubtitle(self, column):
         destinationProjectName = self.destinationProject.name if self.destinationProject != None else None

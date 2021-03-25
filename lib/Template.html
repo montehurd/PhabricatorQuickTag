@@ -18,31 +18,53 @@
       <div class=projects_configuration_header>
           <div class=projects_configuration_title>
               <b>⚙️&nbsp;&nbsp;Current Configuration</b>
-              <div id=projects_configuration_body_buttons class=projects_configuration_body_buttons>
-              </div>
               <div class=projects_configuration_textboxes>
-                <input type="text" name="phabricator_url" placeholder="Your Phabricator URL"
-                onchange="__show_save_url_and_token_button()"
-                onpaste="this.onchange()"
-                oninput="this.onchange()"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                value="$TEMPLATE_URL"
-                >
-                <input type="password" name="phabricator_token" placeholder="Your Conduit Token"
-                onchange="__show_save_url_and_token_button()"
-                onpaste="this.onchange()"
-                oninput="this.onchange()"
-                autocomplete="off"
-                autocorrect="off"
-                autocapitalize="off"
-                spellcheck="false"
-                value="$TEMPLATE_TOKEN"
-                >
-                <span class=projects_configuration_url_and_token_buttons>
-                </span>
+                <div class=projects_configuration_textbox_container>
+                  <div class=projects_configuration_textbox_title>
+                    Phabricator URL
+                  </div>
+                  <input type="text" name="phabricator_url" placeholder="Enter your Phabricator URL here"
+                  onchange="__show_save_url_and_token_button()"
+                  onpaste="this.onchange()"
+                  oninput="this.onchange()"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  value="$TEMPLATE_URL"
+                  >
+                  <div class=projects_configuration_textbox_description>
+                    Project and ticket source
+                  </div>
+                </div>
+                <div class=projects_configuration_textbox_container>
+                  <div class=projects_configuration_textbox_title>
+                    Conduit Token
+                  </div>
+                  <input type="password" name="phabricator_token" placeholder="Enter your Conduit Token here"
+                  onchange="__show_save_url_and_token_button()"
+                  onpaste="this.onchange()"
+                  oninput="this.onchange()"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  value="$TEMPLATE_TOKEN"
+                  >
+                  <div class=projects_configuration_textbox_description>
+                    Conduit token of user making changes
+                  </div>
+                </div>
+                <div class=projects_configuration_textbox_container>
+                  <div class=projects_configuration_url_and_token_buttons>
+                  </div>
+                  <div class=projects_configuration_textbox_description>
+                    &nbsp;
+                  </div>
+                </div>
+
+              </div>
+              <div id=projects_configuration_body_buttons class=projects_configuration_body_buttons>
               </div>
           </div>
       </div>

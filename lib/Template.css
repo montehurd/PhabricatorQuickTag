@@ -75,7 +75,6 @@ div.projects_configuration_body {
 
 div.projects_configuration_body_buttons {
   float: right;
-  margin-top: 35px;
 }
 
 div.projects_configuration_textboxes input {
@@ -254,6 +253,7 @@ button.projects_search_result {
 
 button.save_url_and_token {
   display: none;
+  margin-bottom: 2px;
 }
 
 button.projects_search_result:hover {
@@ -286,4 +286,24 @@ button.delete, button.add {
 
 div.projects_configuration_textboxes {
   margin-top: 10px;
+}
+
+div.projects_configuration_textbox_container {
+  display: inline-block;
+}
+
+div.projects_configuration_textbox_title {
+  margin-left: 7px;
+  font-weight: bold;
+}
+
+div.projects_configuration_textbox_description {
+  margin-left: 7px;
+  color: #888;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+div.projects_configuration_url_and_token_buttons {
+  display: inline-block;
 }
