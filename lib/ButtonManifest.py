@@ -6,8 +6,8 @@ class ButtonManifest:
         self.title = title
         self.isInitiallySelected = isInitiallySelected
         self.clickActions = clickActions
-        self.successActions = successActions # executed if all 'clickAction' succeeded
-        self.failureActions = failureActions # executed if any 'clickAction' failed
+        self.successActions = successActions # executed if all 'clickActions' succeeded
+        self.failureActions = failureActions # executed if any 'clickActions' failed
 
     def html(self, cssClass = None):
         classes = []
