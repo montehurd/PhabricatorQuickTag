@@ -76,11 +76,12 @@ div.projects_configuration_body {
   background-color: #282828;
   padding: 10px 16px 10px 16px;
   display: none;
+  border-top: 1px solid #555;
 }
 
 div.projects_configuration_body_buttons {
   float: right;
-  margin-top: -49px;
+  margin-top: -50px;
 }
 
 div.projects_configuration_textboxes input, input#projects_search_textbox {
