@@ -287,6 +287,10 @@ button.delete, button.add {
   margin-right: -10px
 }
 
+button.delete {
+  display: none;
+}
+
 div.projects_configuration_textboxes {
   margin-top: 10px;
 }
