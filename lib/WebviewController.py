@@ -271,8 +271,8 @@ class WebviewController:
         return buttonManifest.html(cssClass = 'reload_tickets')
 
     def __saveURLAndToken(self):
-        url = self.window.evaluate_js(f'__getPhabricatorUrl()').strip()
-        token = self.window.evaluate_js(f'__getPhabricatorToken()').strip()
+        url = self.window.evaluate_js(f'__getPhabricatorUrl()')
+        token = self.window.evaluate_js(f'__getPhabricatorToken()')
         configuration = DataStore.getCurrentConfiguration()
         configuration['url'] = url.strip()
         configuration['token'] = token.strip()
@@ -286,6 +286,13 @@ class WebviewController:
     def __isEmptyStringURLOrToken(self):
         configuration = DataStore.getCurrentConfiguration()
         return len(configuration['url'].strip()) == 0 or len(configuration['token'].strip()) == 0
+
+    def isSavedURLAndTokenSameAsInTextboxes(self):
+        url = self.window.evaluate_js(f'__getPhabricatorUrl()')
+        token = self.window.evaluate_js(f'__getPhabricatorToken()')
+        configuration = DataStore.getCurrentConfiguration()
+        isSame = configuration['url'] == url.strip() and configuration['token'] == token.strip()
+        return isSame
 
     def __fetchPrioritiesAndStatuses(self):
         if self.__isEmptyStringURLOrToken():
@@ -879,6 +886,7 @@ class WebviewController:
 
     def expose(self, window):
         window.expose(self.projectSearchTermEntered) # expose to JS as 'pywebview.api.projectSearchTermEntered'
+        window.expose(self.isSavedURLAndTokenSameAsInTextboxes) # expose to JS as 'pywebview.api.isSavedURLAndTokenSameAsInTextboxes'
         window.expose(printDebug) # expose to JS as 'pywebview.api.printDebug'
 
 def printDebug(message):

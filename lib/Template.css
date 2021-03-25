@@ -252,6 +252,10 @@ button.projects_search_result {
   border-radius: 2px;
 }
 
+button.save_url_and_token {
+  display: none;
+}
+
 button.projects_search_result:hover {
   background-color: #ddd;
   color: black;
