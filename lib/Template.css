@@ -34,7 +34,7 @@ div.menu {
 }
 
 div.menu_highlighted {
-  background-color: #333;
+  background-color: #414141;
   border-radius: 8px;
 }
 
@@ -73,15 +73,15 @@ div.projects_configuration_header {
 }
 
 div.projects_configuration_body {
-  border-top: dashed 1px #666;
-  background-color: #222;
-  padding: 2px 16px 10px 16px;
+  border-top: solid 1px #999;
+  background-color: #282828;
+  padding: 0px 16px 10px 16px;
   display: none;
 }
 
 div.projects_configuration_body_buttons {
   float: right;
-  margin-top: -44px;
+  margin-top: -49px;
 }
 
 div.projects_configuration_textboxes input, input#projects_search_textbox {
