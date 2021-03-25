@@ -75,6 +75,7 @@ div.projects_configuration_body {
 
 div.projects_configuration_body_buttons {
   float: right;
+  margin-top: -28px;
 }
 
 div.projects_configuration_textboxes input {
