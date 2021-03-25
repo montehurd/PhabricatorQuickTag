@@ -445,8 +445,9 @@ class WebviewController:
         mouseOverAndOut = f' onmouseover="__configurationProjectMouseOver(this)" onmouseout="__configurationProjectMouseOut(this)"' if showRightProjectMenu else ''
         return f'''
             <div class="menu" {mouseOverAndOut}>
-                {menuTitle}
-                <br>
+                <div class="menu_title">
+                    {menuTitle}
+                </div>
                 <buttonmenu>
                     {menuButtons}
                 </buttonmenu>

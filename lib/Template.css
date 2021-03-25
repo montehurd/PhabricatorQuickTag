@@ -38,6 +38,11 @@ div.menu_highlighted {
   border-radius: 8px;
 }
 
+div.menu_title {
+  font-size: 13px;
+  font-family: arial;
+}
+
 div.column_source {
   font-size: 1.75em;
   margin: 15px;
