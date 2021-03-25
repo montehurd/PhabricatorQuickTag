@@ -62,6 +62,7 @@ class WebviewController:
         """
         )
         self.__setInnerHTML('div.projects_configuration_url_and_token_buttons', self.__urlAndTokenSaveButtonHTML())
+        self.window.evaluate_js(f'''__showProjectsConfigurationBody({'false' if self.__isEmptyStringURLOrToken() else 'true'})''')
 
     def __columnSubtitle(self, column):
         destinationProjectName = self.destinationProject.name if self.destinationProject != None else None

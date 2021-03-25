@@ -71,11 +71,12 @@ div.projects_configuration_body {
   border-top: dashed 1px #666;
   background-color: #222;
   padding: 2px 16px 10px 16px;
+  display: none;
 }
 
 div.projects_configuration_body_buttons {
   float: right;
-  margin-top: -28px;
+  margin-top: -44px;
 }
 
 div.projects_configuration_textboxes input {
