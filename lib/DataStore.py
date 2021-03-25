@@ -19,3 +19,12 @@ def getCurrentConfiguration():
 def saveCurrentConfiguration():
     global __configurationJSON
     Utilities.jsonToFile('configuration.json', __configurationJSON)
+
+def isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
+    return columnPHID in getConfigurationValue('destinationProject')['ignoreColumns']
+
+def isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
+    projects = getConfigurationValue('sourceProjects')
+    project = next(project for project in projects if project['phid'] == projectPHID)
+    isColumnPresent = columnPHID in project['columns']
+    return isColumnPresent

@@ -1,0 +1,192 @@
+#!/usr/local/bin/python3
+
+import DataStore, ButtonManifestRegistry, re
+
+class ButtonActions:
+    def __init__(self, window, delegate):
+        self.window = window
+        self.delegate = delegate
+
+    def showLoadingIndicator(self):
+        return self.delegate.showLoadingIndicator()
+
+    def hideLoadingIndicator(self):
+        return self.delegate.hideLoadingIndicator()
+
+    def showAlert(self, title, description):
+        return self.delegate.showAlert(title, description)
+
+    def reload(self, hydrateTickets = True):
+        ButtonManifestRegistry.clear()
+        DataStore.loadConfiguration()
+        self.delegate.load(hydrateTickets = hydrateTickets)
+        return True
+
+    def showTickets(self):
+        return self.window.evaluate_js('__showTickets()')
+
+    def hideTickets(self):
+        return self.window.evaluate_js('__hideTickets()')
+
+    def printSuccess(self):
+        print('success!')
+
+    def printFailure(self):
+        print('failure!')
+
+    def saveURLAndToken(self):
+        url = self.window.evaluate_js(f'__getPhabricatorUrl()')
+        token = self.window.evaluate_js(f'__getPhabricatorToken()')
+        configuration = DataStore.getCurrentConfiguration()
+        configuration['url'] = url.strip()
+        configuration['token'] = token.strip()
+        DataStore.saveCurrentConfiguration()
+        return True
+
+    def reloadFetcher(self):
+        self.delegate.reloadFetcher()
+        return True
+
+    def refetchPrioritiesAndStatuses(self):
+        self.delegate.refetchPrioritiesAndStatuses()
+        return True
+
+    def clearSourceAndDestinationProjects(self):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['phid'] = None
+        destinationProject['ignoreColumns'] = []
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        sourceProjects.clear()
+        DataStore.saveCurrentConfiguration()
+
+    def refetchUpstreamCSSLinkURL(self):
+        cssURL = self.delegate.extractCSSURL()
+        self.window.evaluate_js(f'__setUpstreamCSSLinkURL("{cssURL}")')
+        return True
+
+    def resetUpstreamBaseURL(self):
+        configuration = DataStore.getCurrentConfiguration()
+        self.window.evaluate_js(f'''__setUpstreamBaseURL("{configuration['url']}")''')
+        return True
+
+    def reloadConfigurationUI(self):
+        self.reload(hydrateTickets = False)
+
+    def hideProjectSearch(self):
+        return self.window.evaluate_js('__hideProjectSearch()')
+
+    def __saveDestinationProjectPHID(self, projectPHID):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['phid'] = projectPHID
+        destinationProject['ignoreColumns'] = []
+        DataStore.saveCurrentConfiguration()
+
+    def __saveSourceProjectPHID(self, projectPHID):
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        if not any(project['phid'] == projectPHID for project in sourceProjects):
+            sourceProjects.insert(0, {
+                'phid': projectPHID,
+                'columns': []
+            })
+            DataStore.saveCurrentConfiguration()
+        else:
+            print(f'{projectPHID} already exists in project sources')
+
+    def saveProjectSearchChoice(self, projectPHID, mode):
+        if mode == 'destination':
+            self.__saveDestinationProjectPHID(projectPHID)
+        elif mode == 'source':
+            self.__saveSourceProjectPHID(projectPHID)
+        else:
+            print(f'Unhandled mode: "{mode}"')
+            return False
+        return True
+
+    def resetProjectSearch(self):
+        return self.window.evaluate_js('__resetProjectSearch()')
+
+    def showProjectSearch(self, mode, title):
+        return self.window.evaluate_js(f"__showProjectSearch(`{mode}`, `{title}`)")
+
+    def toggleButton(self, buttonID):
+        return self.window.evaluate_js(f"__toggleButton('{buttonID}')")
+
+    def toggleDestinationProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle):
+        project = DataStore.getConfigurationValue('destinationProject')
+        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
+            project['ignoreColumns'].remove(columnPHID)
+        else:
+            project['ignoreColumns'].insert(indexOfColumnToToggle, columnPHID)
+        DataStore.saveCurrentConfiguration()
+        return True
+
+    def removeDestinationProjectFromConfigurationJSON(self):
+        destinationProject = DataStore.getConfigurationValue('destinationProject')
+        destinationProject['phid'] = None
+        destinationProject['ignoreColumns'] = []
+        DataStore.saveCurrentConfiguration()
+        DataStore.loadConfiguration()
+        return True
+
+    def deleteMenu(self, buttonID):
+        return self.window.evaluate_js(f"__deleteMenu('{buttonID}')")
+
+    def toggleSourceProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID):
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
+        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
+            project['columns'].remove(columnPHID)
+        else:
+            project['columns'].insert(indexOfColumnToToggle, columnPHID)
+        DataStore.saveCurrentConfiguration()
+        return True
+
+    def removeSourceProjectFromConfigurationJSON(self, projectPHID):
+        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
+        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
+        sourceProjects.remove(project)
+        DataStore.saveCurrentConfiguration()
+        DataStore.loadConfiguration()
+        return True
+
+    def __getNumericIDFromTicketID(self, ticketID):
+        return re.sub("[^0-9]", '', ticketID)
+
+    def __setTicketActionMessage(self, ticketID, message):
+        return self.window.evaluate_js(f'__setTicketActionMessage("{self.__getNumericIDFromTicketID(ticketID)}", "{message}")')
+
+    def showTicketFailure(self, ticketID):
+        return self.__setTicketActionMessage(ticketID, '💩 Failure')
+
+    def showTicketSuccess(self, ticketID):
+        return self.__setTicketActionMessage(ticketID, '🎉 Success')
+
+    def setComment(self, ticketID, comment):
+        returnedComment = self.window.evaluate_js(f'__setComment("{self.__getNumericIDFromTicketID(ticketID)}", "{comment}")')
+        return returnedComment == comment
+
+    def selectButton(self, buttonID):
+        return self.window.evaluate_js(f'__selectButton("{buttonID}")')
+
+    def deselectOtherButtonsInMenu(self, buttonID):
+        return self.window.evaluate_js(f'__deselectOtherButtonsInMenu("{buttonID}")')
+
+    def __isButtonSelected(self, buttonID):
+        return self.window.evaluate_js(f'__isButtonSelected("{buttonID}")')
+
+    def toggleTicketOnProjectColumn(self, ticketID, projectPHID, columnPHID, buttonID):
+        if self.__isButtonSelected(buttonID):
+            if not self.delegate.removeTicketFromProject(ticketID, projectPHID):
+                return False
+        else:
+            if not self.delegate.addTicketToProject(ticketID, projectPHID):
+                return False
+            if not self.delegate.addTicketToColumn(ticketID, columnPHID):
+                return False
+        return True
+
+    def updateTicketStatus(self, ticketID, value):
+        return self.delegate.updateTicketStatus(ticketID, value)
+
+    def updateTicketPriority(self, ticketID, value):
+        return self.delegate.updateTicketPriority(ticketID, value)
