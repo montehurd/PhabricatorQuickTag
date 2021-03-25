@@ -114,7 +114,7 @@ button, textarea, span.phui-tag-core {
 }
 
 div.right_project_menu {
-  visibility: hidden;
+  opacity: 50%;
   float: right;
 }
 
