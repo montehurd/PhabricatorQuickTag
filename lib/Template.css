@@ -73,9 +73,8 @@ div.projects_configuration_header {
 }
 
 div.projects_configuration_body {
-  border-top: solid 1px #999;
   background-color: #282828;
-  padding: 0px 16px 10px 16px;
+  padding: 10px 16px 10px 16px;
   display: none;
 }
 
@@ -107,7 +106,6 @@ span.project_configuration_column, span.project_configuration_project {
 
 div.project_configuration_heading {
   padding: 5px 24px 5px 8px;
-  margin-top: 8px;
 }
 
 button, textarea, span.phui-tag-core {
