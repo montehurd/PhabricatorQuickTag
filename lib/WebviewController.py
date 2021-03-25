@@ -210,14 +210,17 @@ class WebviewController:
         self.sourceProjects = self.__getDehydratedSourceProjects()
         self.destinationProject = self.__getDehydratedDestinationProject()
         self.__setLoadingMessage('Beginning data retrieval')
+        self.__showLoadingIndicator()
         self.hydrateProjects(hydrateTickets = hydrateTickets)
         self.__setLoadingMessage('')
 
         # can start html generation now that projects are hydrated
         self.__setConfigurationHTML()
         if not hydrateTickets:
+            self.__hideLoadingIndicator()
             return
         self.__setInnerHTML('div.projects_tickets', self.__projectsTicketsHTML())
+        self.__hideLoadingIndicator()
 
     def __onDOMLoaded(self):
         self.window.loaded -= self.__onDOMLoaded # unsubscribe event listener
