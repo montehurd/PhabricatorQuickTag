@@ -48,6 +48,8 @@ class Fetcher:
             'api.token' : self.apiToken,
             'constraints[query]' : f'title:"{searchTerm}"'
         })
+        if result['result'] == None:
+            return []
         projectPHIDs = list(map(lambda projectJSON: projectJSON['phid'], result['result']['data']))
         openProjects = self.fetchNamesForStatusOpenPHIDs(projectPHIDs)
         return openProjects
