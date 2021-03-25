@@ -308,6 +308,11 @@ class WebviewController:
         self.window.evaluate_js(f'__setUpstreamCSSLinkURL("{cssURL}")')
         return True
 
+    def __resetUpstreamBaseURL(self):
+        configuration = DataStore.getCurrentConfiguration()
+        self.window.evaluate_js(f'''__setUpstreamBaseURL("{configuration['url']}")''')
+        return True
+
     def __urlAndTokenSaveButtonManifest(self):
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
@@ -324,6 +329,7 @@ class WebviewController:
                 self.__clearSourceAndDestinationProjects,
                 self.__hideTickets,
                 self.__refetchUpstreamCSSLinkURL,
+                self.__resetUpstreamBaseURL,
                 self.__reloadConfigurationUI,
                 printSuccess
             ],
