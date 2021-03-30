@@ -52,9 +52,8 @@ class ButtonActions:
         return True
 
     def clearSourceAndDestinationProjects(self):
-        destinationProject = DataStore.getConfigurationValue('destinationProject')
-        destinationProject['phid'] = None
-        destinationProject['ignoreColumns'] = []
+        destinationProjects = DataStore.getConfigurationValue('destinationProjects')
+        destinationProjects.clear()
         sourceProjects = DataStore.getConfigurationValue('sourceProjects')
         sourceProjects.clear()
         DataStore.saveCurrentConfiguration()
@@ -75,31 +74,20 @@ class ButtonActions:
     def hideProjectSearch(self):
         return self.window.evaluate_js('__hideProjectSearch()')
 
-    def __saveDestinationProjectPHID(self, projectPHID):
-        destinationProject = DataStore.getConfigurationValue('destinationProject')
-        destinationProject['phid'] = projectPHID
-        destinationProject['ignoreColumns'] = []
-        DataStore.saveCurrentConfiguration()
-
-    def __saveSourceProjectPHID(self, projectPHID):
-        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
-        if not any(project['phid'] == projectPHID for project in sourceProjects):
-            sourceProjects.insert(0, {
+    def __saveProjectPHID(self, projectPHID, mode):
+        dataStoreKey = DataStore.dataStoreKeyForMode(mode)
+        projects = DataStore.getConfigurationValue(dataStoreKey)
+        if not any(project['phid'] == projectPHID for project in projects):
+            projects.insert(0, {
                 'phid': projectPHID,
                 'columns': []
             })
             DataStore.saveCurrentConfiguration()
         else:
-            print(f'{projectPHID} already exists in project sources')
+            print(f'{projectPHID} already exists in "{dataStoreKey}"')
 
     def saveProjectSearchChoice(self, projectPHID, mode):
-        if mode == 'destination':
-            self.__saveDestinationProjectPHID(projectPHID)
-        elif mode == 'source':
-            self.__saveSourceProjectPHID(projectPHID)
-        else:
-            print(f'Unhandled mode: "{mode}"')
-            return False
+        self.__saveProjectPHID(projectPHID, mode)
         return True
 
     def resetProjectSearch(self):
@@ -111,40 +99,25 @@ class ButtonActions:
     def toggleButton(self, buttonID):
         return self.window.evaluate_js(f"__toggleButton('{buttonID}')")
 
-    def toggleDestinationProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle):
-        project = DataStore.getConfigurationValue('destinationProject')
-        if DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(columnPHID):
-            project['ignoreColumns'].remove(columnPHID)
-        else:
-            project['ignoreColumns'].insert(indexOfColumnToToggle, columnPHID)
-        DataStore.saveCurrentConfiguration()
-        return True
-
-    def removeDestinationProjectFromConfigurationJSON(self):
-        destinationProject = DataStore.getConfigurationValue('destinationProject')
-        destinationProject['phid'] = None
-        destinationProject['ignoreColumns'] = []
-        DataStore.saveCurrentConfiguration()
-        DataStore.loadConfiguration()
-        return True
-
     def deleteMenu(self, buttonID):
         return self.window.evaluate_js(f"__deleteMenu('{buttonID}')")
 
-    def toggleSourceProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID):
-        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
-        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
-        if DataStore.isSourceProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID):
+    def toggleProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID, mode):
+        dataStoreKey = DataStore.dataStoreKeyForMode(mode)
+        projects = DataStore.getConfigurationValue(dataStoreKey)
+        project = next(project for project in projects if project['phid'] == projectPHID)
+        if DataStore.isProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID, mode):
             project['columns'].remove(columnPHID)
         else:
             project['columns'].insert(indexOfColumnToToggle, columnPHID)
         DataStore.saveCurrentConfiguration()
         return True
 
-    def removeSourceProjectFromConfigurationJSON(self, projectPHID):
-        sourceProjects = DataStore.getConfigurationValue('sourceProjects')
-        project = next(project for project in sourceProjects if project['phid'] == projectPHID)
-        sourceProjects.remove(project)
+    def removeProjectFromConfigurationJSON(self, projectPHID, mode):
+        dataStoreKey = DataStore.dataStoreKeyForMode(mode)
+        projects = DataStore.getConfigurationValue(dataStoreKey)
+        project = next(project for project in projects if project['phid'] == projectPHID)
+        projects.remove(project)
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
         return True

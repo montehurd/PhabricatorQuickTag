@@ -112,71 +112,6 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
-    def __removeDestinationProjectFromConfigurationJSONButtonManifest(self):
-        buttonID = Utilities.cssSafeGUID()
-        return ButtonManifest(
-            id = buttonID,
-            title = 'Remove',
-            isInitiallySelected = False,
-            clickActions = [
-                self.buttonActions.showLoadingIndicator,
-                self.buttonActions.hideTickets,
-                self.buttonActions.removeDestinationProjectFromConfigurationJSON
-            ],
-            successActions = [
-                self.buttonActions.hideLoadingIndicator,
-                lambda buttonID=buttonID :
-                    self.buttonActions.deleteMenu(buttonID),
-                self.buttonActions.printSuccess
-            ],
-            failureActions = [
-                self.buttonActions.hideLoadingIndicator,
-                self.buttonActions.printFailure
-            ]
-        )
-
-    def __toggleDestinationProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, isInitiallySelected = False):
-        return ButtonManifest(
-            id = buttonID,
-            title = title,
-            isInitiallySelected = isInitiallySelected,
-            clickActions = [
-                self.buttonActions.showLoadingIndicator,
-                self.buttonActions.hideTickets,
-                lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle :
-                    self.buttonActions.toggleDestinationProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle)
-            ],
-            successActions = [
-                self.buttonActions.hideLoadingIndicator,
-                lambda buttonID=buttonID :
-                    self.buttonActions.toggleButton(buttonID)
-            ],
-            failureActions = [
-                self.buttonActions.hideLoadingIndicator,
-                self.buttonActions.printFailure
-            ]
-        )
-
-    def toggleDestinationProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns):
-        buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleDestinationProjectColumnInConfigurationJSONButtonManifest(
-            buttonID = Utilities.cssSafeGUID(),
-            title = indexAndColumnTuple[1].name,
-            indexOfColumnToToggle = indexAndColumnTuple[0],
-            columnPHID = indexAndColumnTuple[1].phid,
-            isInitiallySelected = not DataStore.isDestinationProjectIgnoreColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid)
-        ), enumerate(columns)))
-        ButtonManifestRegistry.add(buttonManifests)
-
-        deleteButtonManifest = self.__removeDestinationProjectFromConfigurationJSONButtonManifest()
-        ButtonManifestRegistry.add([deleteButtonManifest])
-
-        return self.__wrapWithButtonMenuTag(
-            menuTitle = menuTitle,
-            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests)),
-            showRightProjectMenu = True,
-            deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
-        )
-
     def __rightProjectMenuDiv(self, deleteProjectButtonHTML):
         return f'''
             <div class="right_project_menu">
@@ -199,7 +134,7 @@ class ButtonFactory:
             </div>
         '''
 
-    def __toggleSourceProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, projectPHID, isInitiallySelected = False):
+    def __toggleProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, projectPHID, mode, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
@@ -208,7 +143,7 @@ class ButtonFactory:
                 self.buttonActions.showLoadingIndicator,
                 self.buttonActions.hideTickets,
                 lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle, projectPHID=projectPHID :
-                    self.buttonActions.toggleSourceProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID)
+                    self.buttonActions.toggleProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID, mode)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
@@ -221,18 +156,19 @@ class ButtonFactory:
             ]
         )
 
-    def toggleSourceProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID):
-        buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleSourceProjectColumnInConfigurationJSONButtonManifest(
+    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, mode):
+        buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = indexAndColumnTuple[1].name,
             indexOfColumnToToggle = indexAndColumnTuple[0],
             columnPHID = indexAndColumnTuple[1].phid,
             projectPHID = projectPHID,
-            isInitiallySelected = DataStore.isSourceProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID)
+            mode = mode,
+            isInitiallySelected = DataStore.isProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID, mode)
         ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
-        deleteButtonManifest = self.__removeSourceProjectFromConfigurationJSONButtonManifest(projectPHID)
+        deleteButtonManifest = self.__removeProjectFromConfigurationJSONButtonManifest(projectPHID, mode)
         ButtonManifestRegistry.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
@@ -244,7 +180,7 @@ class ButtonFactory:
             deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
         )
 
-    def __removeSourceProjectFromConfigurationJSONButtonManifest(self, projectPHID):
+    def __removeProjectFromConfigurationJSONButtonManifest(self, projectPHID, mode):
         buttonID = Utilities.cssSafeGUID()
         return ButtonManifest(
             id = buttonID,
@@ -254,7 +190,7 @@ class ButtonFactory:
                 self.buttonActions.showLoadingIndicator,
                 self.buttonActions.hideTickets,
                 lambda projectPHID=projectPHID :
-                    self.buttonActions.removeSourceProjectFromConfigurationJSON(projectPHID)
+                    self.buttonActions.removeProjectFromConfigurationJSON(projectPHID, mode)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,

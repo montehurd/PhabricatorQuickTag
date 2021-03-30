@@ -3,9 +3,6 @@
         "url": "",
         "token": "",
         "sourceProjects": [],
-        "destinationProject": {
-            "phid": null,
-            "ignoreColumns": []
-        }
+        "destinationProjects": []
     }
 }
