@@ -116,15 +116,6 @@ class WebviewController:
         print(f'Page HTML assembled')
         return ''.join(html)
 
-    def __getDehydratedSourceProjects(self):
-        return list(map(lambda projectJSON:
-            Project(
-                phid = projectJSON['phid'],
-                columnPHIDs = projectJSON['columns']
-            ),
-            DataStore.getConfigurationValue('sourceProjects')
-        ))
-
     def __getDehydratedDestinationProject(self):
         if 'phid' not in DataStore.getConfigurationValue('destinationProject').keys():
             return None
@@ -134,6 +125,15 @@ class WebviewController:
             phid = DataStore.getConfigurationValue('destinationProject')['phid'],
             columnPHIDsToIgnoreForButtons = DataStore.getConfigurationValue('destinationProject')['ignoreColumns']
         )
+
+    def __getDehydratedProjects(self, dataStoreKey):
+        return list(map(lambda projectJSON:
+            Project(
+                phid = projectJSON['phid'],
+                columnPHIDs = projectJSON['columns']
+            ),
+            DataStore.getConfigurationValue(dataStoreKey)
+        ))
 
     def __ticketStatusAndPriorityMenuHTML(self, ticketID, ticketJSON):
         return f'''
@@ -209,7 +209,7 @@ class WebviewController:
                 column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)
 
     def load(self, hydrateTickets = True):
-        self.sourceProjects = self.__getDehydratedSourceProjects()
+        self.sourceProjects = self.__getDehydratedProjects('sourceProjects')
         self.destinationProject = self.__getDehydratedDestinationProject()
         self.__setLoadingMessage('Beginning data retrieval')
         self.showLoadingIndicator()
