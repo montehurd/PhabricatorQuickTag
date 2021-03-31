@@ -1,6 +1,6 @@
 # PhabricatorQuickTag
 
-Quickly tag tickets from columns on various projects into any column on a destination project.
+Quickly tag tickets from columns on source projects into columns on destination projects.
 
 ## Installation
 ### From a Terminal window

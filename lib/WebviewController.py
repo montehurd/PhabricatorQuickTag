@@ -49,7 +49,7 @@ class WebviewController:
 
     def __setLoadingMessage(self, message):
         print(message)
-        self.window.set_title(f"{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag: Quickly tag tickets from columns on various projects into any column on a destination project.'}{message}")
+        self.window.set_title(f"{'' if len(message.strip()) > 0 else 'Phabricator Quick Tag: Quickly tag tickets from columns on source projects into columns on destination projects.'}{message}")
 
     def __setConfigurationHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.buttonFactory.reloadButtonHTML())
