@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import Utilities
+from ProjectType import ProjectType
 
 __configurationJSON = None
 
@@ -20,16 +21,16 @@ def saveCurrentConfiguration():
     global __configurationJSON
     Utilities.jsonToFile('configuration.json', __configurationJSON)
 
-def dataStoreKeyForMode(mode):
-    if mode == 'destination':
+def dataStoreKeyForProjectType(projectType):
+    if projectType == ProjectType.DESTINATION:
         return 'destinationProjects'
-    elif mode == 'source':
+    elif projectType == ProjectType.SOURCE:
         return 'sourceProjects'
     else:
-        raise Exception(f'Unhandled mode: "{mode}"')
+        raise Exception(f'Unhandled projectType: "{projectType}"')
 
-def isProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID, mode):
-    dataStoreKey = dataStoreKeyForMode(mode)
+def isProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID, projectType):
+    dataStoreKey = dataStoreKeyForProjectType(projectType)
     projects = getConfigurationValue(dataStoreKey)
     project = next(project for project in projects if project['phid'] == projectPHID)
     isColumnPresent = columnPHID in project['columns']

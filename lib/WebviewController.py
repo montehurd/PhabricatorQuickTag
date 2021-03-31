@@ -8,6 +8,7 @@ from Fetcher import Fetcher
 from Debounce import debounce
 from ButtonActions import ButtonActions
 from ButtonFactory import ButtonFactory
+from ProjectType import ProjectType
 
 class WebviewController:
     def __init__(self, window):
@@ -52,11 +53,11 @@ class WebviewController:
 
     def __setConfigurationHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.buttonFactory.reloadButtonHTML())
-        self.__setInnerHTML('div#sources_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Source Project', mode = 'source'))
-        self.__setInnerHTML('div#destination_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Destination Project', mode = 'destination'))
-        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, 'source'), self.sourceProjects))
+        self.__setInnerHTML('div#sources_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Source Project', projectType = ProjectType.SOURCE))
+        self.__setInnerHTML('div#destination_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Destination Project', projectType = ProjectType.DESTINATION))
+        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.SOURCE), self.sourceProjects))
         self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
-        destinationProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, 'destination'), self.destinationProjects))
+        destinationProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.DESTINATION), self.destinationProjects))
         self.__setInnerHTML('div#projects_configuration_destinations', destinationProjectsMenuButtonsHTML)
         self.window.evaluate_js(f"""
             __setPhabricatorUrl('{DataStore.getConfigurationValue('url')}');
@@ -116,8 +117,8 @@ class WebviewController:
         print(f'Page HTML assembled')
         return ''.join(html)
 
-    def __getDehydratedProjects(self, mode):
-        dataStoreKey = DataStore.dataStoreKeyForMode(mode)
+    def __getDehydratedProjects(self, projectType):
+        dataStoreKey = DataStore.dataStoreKeyForProjectType(projectType)
         return list(map(lambda projectJSON:
             Project(
                 phid = projectJSON['phid'],
@@ -136,27 +137,27 @@ class WebviewController:
         columnsData = self.fetcher.fetchColumnsData(project.phid)
         return list(map(lambda columnData: Column(columnData['fields']['name'], project, columnData['phid']), columnsData))
 
-    def __projectPHIDs(self, mode):
-        projects = self.sourceProjects if mode == 'source' else self.destinationProjects
+    def __projectPHIDs(self, projectType):
+        projects = self.sourceProjects if projectType == ProjectType.SOURCE else self.destinationProjects
         return list(map(lambda project: project.phid, projects))
 
     def __allProjectPHIDs(self):
-        return self.__projectPHIDs('source') + self.__projectPHIDs('destination')
+        return self.__projectPHIDs(ProjectType.SOURCE) + self.__projectPHIDs(ProjectType.DESTINATION)
 
-    def __columnPHIDs(self, mode):
+    def __columnPHIDs(self, projectType):
         phids = []
-        for project in self.sourceProjects if mode == 'source' else self.destinationProjects:
+        for project in self.sourceProjects if projectType == ProjectType.SOURCE else self.destinationProjects:
             phids = phids + project.columnPHIDs
         return phids
 
     def __allColumnPHIDs(self):
-        return self.__columnPHIDs('source') + self.__columnPHIDs('destination')
+        return self.__columnPHIDs(ProjectType.SOURCE) + self.__columnPHIDs(ProjectType.DESTINATION)
 
     def __allProjects(self):
         return self.sourceProjects + self.destinationProjects
 
     def __isSourceProject(self, projectPHID):
-        return projectPHID in self.__projectPHIDs('source')
+        return projectPHID in self.__projectPHIDs(ProjectType.SOURCE)
 
     # hydrate source and destination projects and their columns
     def hydrateProjects(self, hydrateTickets = True):
@@ -204,8 +205,8 @@ class WebviewController:
                 column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)
 
     def load(self, hydrateTickets = True):
-        self.sourceProjects = self.__getDehydratedProjects('source')
-        self.destinationProjects = self.__getDehydratedProjects('destination')
+        self.sourceProjects = self.__getDehydratedProjects(ProjectType.SOURCE)
+        self.destinationProjects = self.__getDehydratedProjects(ProjectType.DESTINATION)
         self.__setLoadingMessage('Beginning data retrieval')
         self.showLoadingIndicator()
         self.hydrateProjects(hydrateTickets = hydrateTickets)
@@ -222,8 +223,8 @@ class WebviewController:
     def __shouldShowTicket(self, ticket, projectPHID, columnPHID):
         # show if projectPHID is also a destination project and columnPHID is in sourceColumns
         # (this is basically an exception which causes tickets to show in the case where their project is both a source *and* a destination)
-        destinationPHIDs = self.__projectPHIDs('destination')
-        sourceColumnPHIDs = self.__columnPHIDs('source')
+        destinationPHIDs = self.__projectPHIDs(ProjectType.DESTINATION)
+        sourceColumnPHIDs = self.__columnPHIDs(ProjectType.SOURCE)
         if projectPHID in destinationPHIDs and columnPHID in sourceColumnPHIDs:
             return True
         # don't show if the ticket is tagged on a destination project
@@ -238,17 +239,17 @@ class WebviewController:
         time.sleep(1.0)
         self.load()
 
-    def projectSearchTermEntered(self, searchTerm, mode):
-        self.__debouncedProjectSearchTermEntered(searchTerm, mode)
+    def projectSearchTermEntered(self, searchTerm, projectTypeName):
+        self.__debouncedProjectSearchTermEntered(searchTerm, ProjectType[projectTypeName])
 
     @debounce(0.3)
-    def __debouncedProjectSearchTermEntered(self, searchTerm, mode):
+    def __debouncedProjectSearchTermEntered(self, searchTerm, projectType):
         searchResultsSelector = 'div.projects_search_results'
         if len(searchTerm.strip()) == 0:
             self.__setInnerHTML(searchResultsSelector, '')
         else:
             projects = self.fetcher.fetchProjectsMatchingSearchTerm(searchTerm)
-            projectSearchResultButtonsHTML = '' if len(projects) == 0 else ''.join(map(lambda item: self.buttonFactory.projectSearchResultButtonHTML(title = item[1], phid = item[0], mode = mode), projects.items()))
+            projectSearchResultButtonsHTML = '' if len(projects) == 0 else ''.join(map(lambda item: self.buttonFactory.projectSearchResultButtonHTML(title = item[1], phid = item[0], projectType = projectType), projects.items()))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def reloadFetcher(self):

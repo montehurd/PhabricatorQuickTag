@@ -63,15 +63,15 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'save_url_and_token')
 
-    def __projectSearchResultButtonManifest(self, projectName, projectPHID, mode):
+    def __projectSearchResultButtonManifest(self, projectName, projectPHID, projectType):
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = projectName,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
-                lambda projectPHID=projectPHID, mode=mode :
-                    self.buttonActions.saveProjectSearchChoice(projectPHID, mode)
+                lambda projectPHID=projectPHID, projectType=projectType :
+                    self.buttonActions.saveProjectSearchChoice(projectPHID, projectType)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
@@ -84,20 +84,20 @@ class ButtonFactory:
             ]
         )
 
-    def projectSearchResultButtonHTML(self, title, phid, mode):
-        buttonManifest = self.__projectSearchResultButtonManifest(title, phid, mode)
+    def projectSearchResultButtonHTML(self, title, phid, projectType):
+        buttonManifest = self.__projectSearchResultButtonManifest(title, phid, projectType)
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'projects_search_result')
 
-    def __showProjectSearchButtonManifest(self, title, mode):
+    def __showProjectSearchButtonManifest(self, title, projectType):
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = title,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.resetProjectSearch,
-                lambda mode=mode :
-                    self.buttonActions.showProjectSearch(mode = mode, title = title)
+                lambda projectType=projectType :
+                    self.buttonActions.showProjectSearch(projectType = projectType, title = title)
             ],
             successActions = [
                 self.buttonActions.printSuccess
@@ -107,8 +107,8 @@ class ButtonFactory:
             ]
         )
 
-    def showProjectSearchButtonHTML(self, title, mode):
-        buttonManifest = self.__showProjectSearchButtonManifest(title, mode)
+    def showProjectSearchButtonHTML(self, title, projectType):
+        buttonManifest = self.__showProjectSearchButtonManifest(title, projectType)
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
@@ -134,7 +134,7 @@ class ButtonFactory:
             </div>
         '''
 
-    def __toggleProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, projectPHID, mode, isInitiallySelected = False):
+    def __toggleProjectColumnInConfigurationJSONButtonManifest(self, buttonID, title, indexOfColumnToToggle, columnPHID, projectPHID, projectType, isInitiallySelected = False):
         return ButtonManifest(
             id = buttonID,
             title = title,
@@ -143,7 +143,7 @@ class ButtonFactory:
                 self.buttonActions.showLoadingIndicator,
                 self.buttonActions.hideTickets,
                 lambda columnPHID=columnPHID, indexOfColumnToToggle=indexOfColumnToToggle, projectPHID=projectPHID :
-                    self.buttonActions.toggleProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID, mode)
+                    self.buttonActions.toggleProjectColumnInConfigurationJSON(columnPHID, indexOfColumnToToggle, projectPHID, projectType)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
@@ -156,19 +156,19 @@ class ButtonFactory:
             ]
         )
 
-    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, mode):
+    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, projectType):
         buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = indexAndColumnTuple[1].name,
             indexOfColumnToToggle = indexAndColumnTuple[0],
             columnPHID = indexAndColumnTuple[1].phid,
             projectPHID = projectPHID,
-            mode = mode,
-            isInitiallySelected = DataStore.isProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID, mode)
+            projectType = projectType,
+            isInitiallySelected = DataStore.isProjectColumnPresentInConfigurationJSON(indexAndColumnTuple[1].phid, projectPHID, projectType)
         ), enumerate(columns)))
         ButtonManifestRegistry.add(buttonManifests)
 
-        deleteButtonManifest = self.__removeProjectFromConfigurationJSONButtonManifest(projectPHID, mode)
+        deleteButtonManifest = self.__removeProjectFromConfigurationJSONButtonManifest(projectPHID, projectType)
         ButtonManifestRegistry.add([deleteButtonManifest])
 
         return self.__wrapWithButtonMenuTag(
@@ -180,7 +180,7 @@ class ButtonFactory:
             deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
         )
 
-    def __removeProjectFromConfigurationJSONButtonManifest(self, projectPHID, mode):
+    def __removeProjectFromConfigurationJSONButtonManifest(self, projectPHID, projectType):
         buttonID = Utilities.cssSafeGUID()
         return ButtonManifest(
             id = buttonID,
@@ -190,7 +190,7 @@ class ButtonFactory:
                 self.buttonActions.showLoadingIndicator,
                 self.buttonActions.hideTickets,
                 lambda projectPHID=projectPHID :
-                    self.buttonActions.removeProjectFromConfigurationJSON(projectPHID, mode)
+                    self.buttonActions.removeProjectFromConfigurationJSON(projectPHID, projectType)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
