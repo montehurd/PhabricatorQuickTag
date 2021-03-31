@@ -163,7 +163,9 @@ class ButtonActions:
         return self.delegate.updateTicketPriority(ticketID, value)
 
     def moveProject(self, projectPHID, projectType, directionType):
-        DataStore.moveProject(projectPHID, projectType, directionType)
+        result = DataStore.moveProject(projectPHID, projectType, directionType)
+        if result == False:
+            return False
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
         return True

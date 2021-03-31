@@ -363,7 +363,8 @@ class ButtonFactory:
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
-                self.buttonActions.reloadConfigurationUI
+                self.buttonActions.reloadConfigurationUI,
+                self.buttonActions.printSuccess
             ],
             failureActions = [
                 self.buttonActions.hideLoadingIndicator,

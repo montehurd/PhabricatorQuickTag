@@ -46,8 +46,9 @@ def moveProject(projectPHID, projectType, directionType):
     oldIndex = projects.index(project)
     if oldIndex == 0 and directionType == DirectionType.UP:
         print('Already at start')
-        return
+        return False
     if oldIndex == (len(projects) - 1) and directionType == DirectionType.DOWN:
         print('Already at end')
-        return
+        return False
     projects.insert(oldIndex + offset, projects.pop(oldIndex))
+    return True
