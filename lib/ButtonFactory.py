@@ -3,6 +3,7 @@
 import ButtonManifestRegistry, Utilities, DataStore
 from ButtonManifest import ButtonManifest
 from DirectionType import DirectionType
+from ProjectType import ProjectType
 
 class ButtonFactory:
     def __init__(self, buttonActions):
@@ -120,11 +121,12 @@ class ButtonFactory:
             </div>
         '''
 
-    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, rightButtonsHTML = ''):
+    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, rightButtonsHTML = '', id = None):
         rightProjectMenuDiv = self.__rightProjectMenuDiv(rightButtonsHTML = rightButtonsHTML) if showRightProjectMenu else ''
         mouseOverAndOut = f' onmouseover="__configurationProjectMouseOver(this)" onmouseout="__configurationProjectMouseOut(this)"' if showRightProjectMenu else ''
+        id = f' id="{id}"' if id != None else ''
         return f'''
-            <div class="menu" {mouseOverAndOut}>
+            <div class="menu" {mouseOverAndOut} {id}>
                 <div class="menu_title">
                     {menuTitle}
                 </div>
@@ -181,7 +183,8 @@ class ButtonFactory:
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
             showRightProjectMenu = True,
-            rightButtonsHTML = upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete')
+            rightButtonsHTML = upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
+            id = f'_{projectPHID}'
         )
 
     def __removeProjectFromConfigurationJSONButtonManifest(self, projectPHID, projectType):
@@ -236,12 +239,12 @@ class ButtonFactory:
             ]
         )
 
-    def ticketAddToColumnButtonMenuHTML(self, menuTitle, ticketID, ticketJSON, columns):
+    def ticketAddToColumnButtonMenuHTML(self, menuTitle, ticketID, ticketJSON, columns, projectPHID):
         buttonManifests = list(map(lambda column: self.__ticketToggleColumnButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = column.name,
             ticketID = f'T{ticketID}',
-            projectPHID = column.project.phid,
+            projectPHID = projectPHID,
             columnPHID = column.phid,
             isInitiallySelected = self.__isColumnPHIDPresentInTicketJSON(column.phid, ticketJSON)
         ), columns))
@@ -250,7 +253,10 @@ class ButtonFactory:
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
-            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
+            menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests)),
+            showRightProjectMenu = False,
+            rightButtonsHTML = '',
+            id = f'_{projectPHID}'
         )
 
     def __isColumnPHIDPresentInTicketJSON(self, columnPHID, ticketJSON):
@@ -357,13 +363,17 @@ class ButtonFactory:
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
-                self.buttonActions.hideTickets,
                 lambda projectPHID=projectPHID, projectType=projectType, directionType=directionType :
-                    self.buttonActions.moveProject(projectPHID, projectType, directionType)
+                    self.buttonActions.moveConfigurationProjectVertically(projectPHID, projectType, directionType)
             ],
             successActions = [
                 self.buttonActions.hideLoadingIndicator,
-                self.buttonActions.reloadConfigurationUI,
+                lambda projectPHID=projectPHID, projectType=projectType, directionType=directionType :
+                    self.buttonActions.moveDOMConfigurationProjectVertically(projectPHID, projectType, directionType),
+                lambda projectPHID=projectPHID, projectType=projectType, directionType=directionType :
+                    self.buttonActions.moveDOMProjectTicketsVertically(projectPHID, projectType, directionType),
+                lambda projectPHID=projectPHID, projectType=projectType, directionType=directionType :
+                    self.buttonActions.moveDOMAddToColumnMenusVertically(projectPHID, projectType, directionType),
                 self.buttonActions.printSuccess
             ],
             failureActions = [

@@ -6,6 +6,9 @@ class Column:
         self.phid = phid
         self.tickets = []
         self.project = project
-        self.menuHTMLLambdas = []
         self.ticketsByID = []
         self.ticketsHTMLByID = {}
+        self.currentSourceColumnMenuHTMLLambda = None
+        self.nonSourceProjectColumnMenuHTMLLambdas = []
+        self.statusMenuHTMLLambda = None
+        self.priorityMenuHTMLLambda = None

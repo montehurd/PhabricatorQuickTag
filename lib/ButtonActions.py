@@ -2,6 +2,7 @@
 
 import DataStore, ButtonManifestRegistry, Utilities, re
 from DirectionType import DirectionType
+from ProjectType import ProjectType
 
 class ButtonActions:
     def __init__(self, window, delegate):
@@ -162,10 +163,24 @@ class ButtonActions:
     def updateTicketPriority(self, ticketID, value):
         return self.delegate.updateTicketPriority(ticketID, value)
 
-    def moveProject(self, projectPHID, projectType, directionType):
+    def moveConfigurationProjectVertically(self, projectPHID, projectType, directionType):
         result = DataStore.moveProject(projectPHID, projectType, directionType)
         if result == False:
             return False
         DataStore.saveCurrentConfiguration()
         DataStore.loadConfiguration()
         return True
+
+    def moveDOMConfigurationProjectVertically(self, projectPHID, projectType, directionType):
+        containerSelector = f'''div#projects_configuration_{'sources' if projectType == ProjectType.SOURCE else 'destinations'}'''
+        return self.window.evaluate_js(f'''__moveVertically("{containerSelector} > div.menu#_{projectPHID}", "{directionType.name}")''')
+
+    def moveDOMProjectTicketsVertically(self, projectPHID, projectType, directionType):
+        if projectType == ProjectType.DESTINATION:
+            return True
+        return self.window.evaluate_js(f'__moveVertically("div.project_tickets#_{projectPHID}", "{directionType.name}")')
+
+    def moveDOMAddToColumnMenusVertically(self, projectPHID, projectType, directionType):
+        if projectType == ProjectType.SOURCE:
+            return True
+        return self.window.evaluate_js(f'__moveAllVertically("div.destination_projects_menus > div.menu#_{projectPHID}", "{directionType.name}")')

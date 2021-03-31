@@ -73,15 +73,22 @@ class WebviewController:
         destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(column.tickets) == 0 else ''}""" if destinationProjectName != None else ''
         return f"{ticketsInSourceProjectString}{destinationProjectString}:"
 
-    def __wrappedTicketHTML(self, ticketID, ticketHTML, ticketMenusHTML):
+    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML):
         return f'''
             <div class=ticket id="T{ticketID}">
               <button class=hide onclick="this.closest('div#T{ticketID}').remove()">Hide</button>
               {ticketHTML}
-              <div class="menus phui-tag-core phui-tag-color-object">
+              <div class="quick_options phui-tag-core phui-tag-color-object">
                 <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
                 <h2>Quick options</h2>
-                {ticketMenusHTML}
+                <div class="menus">
+                    {currentSourceColumnMenuHTML}
+                    <div class="destination_projects_menus">
+                        {nonSourceProjectColumnMenuHTML}
+                    </div>
+                    {statusMenuHTML}
+                    {priorityMenuHTML}
+                </div>
                 Comment: ( recorded with any <strong>Quick options</strong> chosen above )
                 <br>
                 <textarea id="ticketID{ticketID}" style="height: 70px; width: 100%;"></textarea>
@@ -92,8 +99,12 @@ class WebviewController:
     def __columnTicketsHTML(self, column):
         allTicketsHTML = []
         for ticketID, ticketHTML in column.ticketsHTMLByID.items():
-            ticketMenusHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID = ticketID, ticketJSON = column.ticketsByID[int(ticketID)]), column.menuHTMLLambdas)))
-            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, ticketMenusHTML)
+            ticketJSON = column.ticketsByID[int(ticketID)]
+            currentSourceColumnMenuHTML = column.currentSourceColumnMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
+            nonSourceProjectColumnMenuHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON), column.nonSourceProjectColumnMenuHTMLLambdas)))
+            statusMenuHTML = column.statusMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
+            priorityMenuHTML = column.priorityMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
+            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML)
             allTicketsHTML.append(wrappedTicketHTML)
         return ''.join(allTicketsHTML)
 
@@ -102,6 +113,7 @@ class WebviewController:
         print(f'Processing hydrated object graph')
         html = []
         for project in self.sourceProjects:
+            html.append(f'<div class="project_tickets" id="_{project.phid}">')
             for column in project.columns:
                 html.append(
                     f'''
@@ -114,6 +126,7 @@ class WebviewController:
                         {self.__columnTicketsHTML(column = column)}
                     '''
                 )
+            html.append('</div>')
         print(f'Page HTML assembled')
         return ''.join(html)
 
@@ -126,12 +139,6 @@ class WebviewController:
             ),
             DataStore.getConfigurationValue(dataStoreKey)
         ))
-
-    def __ticketStatusAndPriorityMenuHTML(self, ticketID, ticketJSON):
-        return f'''
-            {self.buttonFactory.ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON, self.statusesData)}
-            {self.buttonFactory.ticketPriorityButtonMenuHTML('Priority', ticketID, ticketJSON, self.prioritiesData)}
-        '''
 
     def __fetchColumns(self, project):
         columnsData = self.fetcher.fetchColumnsData(project.phid)
@@ -175,7 +182,7 @@ class WebviewController:
             if hydrateTickets:
                 destinationColumns = list(filter(lambda column: (column.phid in project.columnPHIDs), project.buttonsMenuColumns))
                 if len(destinationColumns) > 0:
-                    projectColumnMenuHTMLLambdas[project.phid] = lambda ticketID, ticketJSON, name=project.name, columns=destinationColumns : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{name}</i>)', ticketID, ticketJSON, columns)
+                    projectColumnMenuHTMLLambdas[project.phid] = lambda ticketID, ticketJSON, name=project.name, columns=destinationColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{name}</i>)', ticketID, ticketJSON, columns, projectPHID)
 
         for project in self.sourceProjects:
             # fetch source project columns
@@ -183,10 +190,8 @@ class WebviewController:
             project.buttonsMenuColumns = self.__fetchColumns(project)
             if not hydrateTickets:
                 continue
-            currentSourceColumnMenuHTMLLambda = [
-                lambda ticketID, ticketJSON, name=project.name, columns=project.buttonsMenuColumns :
-                    self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{name}</i> )', ticketID, ticketJSON, columns)
-            ]
+
+            currentSourceColumnMenuHTMLLambda = lambda ticketID, ticketJSON, name=project.name, columns=project.buttonsMenuColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{name}</i> )', ticketID, ticketJSON, columns, projectPHID)
 
             # make column object for each column name
             project.columns = list(map(lambda columnPHID: Column(name = openItemNamesByPHID[columnPHID], project = project, phid = columnPHID), project.columnPHIDs))
@@ -196,10 +201,12 @@ class WebviewController:
                 tickets = list(self.fetcher.fetchColumnTickets(column.phid))
                 ticketsByID = dict((ticket['id'], ticket) for ticket in tickets if self.__shouldShowTicket(ticket, project.phid, column.phid))
                 column.ticketsByID = ticketsByID
-                # print(json.dumps(self.ticketsByID, indent=4))
                 column.tickets = column.ticketsByID.values()
                 nonSourceProjectColumnMenuHTMLLambdas = [v for (k,v) in projectColumnMenuHTMLLambdas.items() if k != project.phid]
-                column.menuHTMLLambdas = currentSourceColumnMenuHTMLLambda + nonSourceProjectColumnMenuHTMLLambdas + [self.__ticketStatusAndPriorityMenuHTML]
+                column.currentSourceColumnMenuHTMLLambda = currentSourceColumnMenuHTMLLambda
+                column.nonSourceProjectColumnMenuHTMLLambdas = nonSourceProjectColumnMenuHTMLLambdas
+                column.statusMenuHTMLLambda = lambda ticketID, ticketJSON, statusesData=self.statusesData : self.buttonFactory.ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON, statusesData)
+                column.priorityMenuHTMLLambda = lambda ticketID, ticketJSON, prioritiesData=self.prioritiesData : self.buttonFactory.ticketPriorityButtonMenuHTML('Status', ticketID, ticketJSON, prioritiesData)
                 # fetch column tickets html for their remarkup
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets html")
                 column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)
