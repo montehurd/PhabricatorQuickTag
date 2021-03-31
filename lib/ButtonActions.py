@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import DataStore, ButtonManifestRegistry, Utilities, re
+from DirectionType import DirectionType
 
 class ButtonActions:
     def __init__(self, window, delegate):
@@ -160,3 +161,9 @@ class ButtonActions:
 
     def updateTicketPriority(self, ticketID, value):
         return self.delegate.updateTicketPriority(ticketID, value)
+
+    def moveProject(self, projectPHID, projectType, directionType):
+        DataStore.moveProject(projectPHID, projectType, directionType)
+        DataStore.saveCurrentConfiguration()
+        DataStore.loadConfiguration()
+        return True

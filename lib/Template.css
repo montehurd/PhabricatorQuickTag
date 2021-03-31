@@ -279,16 +279,28 @@ button:hover {
   background-image: unset;
 }
 
-button.delete, button.add {
+button.delete, button.add, button.move {
   border: unset;
   padding: 0px;
   background-color: transparent;
   color: #fff;
+}
+
+button.delete, button.add {
   margin-right: -10px
 }
 
-button.delete {
+button.delete, button.move {
   display: none;
+}
+
+button.move {
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+button.delete {
+  margin-left: 7px;
 }
 
 div.projects_configuration_textboxes {

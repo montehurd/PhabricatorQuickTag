@@ -2,6 +2,7 @@
 
 import Utilities
 from ProjectType import ProjectType
+from DirectionType import DirectionType
 
 __configurationJSON = None
 
@@ -35,3 +36,18 @@ def isProjectColumnPresentInConfigurationJSON(columnPHID, projectPHID, projectTy
     project = next(project for project in projects if project['phid'] == projectPHID)
     isColumnPresent = columnPHID in project['columns']
     return isColumnPresent
+
+def moveProject(projectPHID, projectType, directionType):
+    dataStoreKey = dataStoreKeyForProjectType(projectType)
+    projects = getConfigurationValue(dataStoreKey)
+    project = next(project for project in projects if project['phid'] == projectPHID)
+
+    offset = 1 if directionType == DirectionType.DOWN else -1
+    oldIndex = projects.index(project)
+    if oldIndex == 0 and directionType == DirectionType.UP:
+        print('Already at start')
+        return
+    if oldIndex == (len(projects) - 1) and directionType == DirectionType.DOWN:
+        print('Already at end')
+        return
+    projects.insert(oldIndex + offset, projects.pop(oldIndex))

@@ -2,6 +2,7 @@
 
 import ButtonManifestRegistry, Utilities, DataStore
 from ButtonManifest import ButtonManifest
+from DirectionType import DirectionType
 
 class ButtonFactory:
     def __init__(self, buttonActions):
@@ -112,15 +113,15 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
-    def __rightProjectMenuDiv(self, deleteProjectButtonHTML):
+    def __rightProjectMenuDiv(self, rightButtonsHTML):
         return f'''
             <div class="right_project_menu">
-                {deleteProjectButtonHTML}
+                {rightButtonsHTML}
             </div>
         '''
 
-    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, deleteProjectButtonHTML = ''):
-        rightProjectMenuDiv = self.__rightProjectMenuDiv(deleteProjectButtonHTML = deleteProjectButtonHTML) if showRightProjectMenu else ''
+    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, rightButtonsHTML = ''):
+        rightProjectMenuDiv = self.__rightProjectMenuDiv(rightButtonsHTML = rightButtonsHTML) if showRightProjectMenu else ''
         mouseOverAndOut = f' onmouseover="__configurationProjectMouseOver(this)" onmouseout="__configurationProjectMouseOut(this)"' if showRightProjectMenu else ''
         return f'''
             <div class="menu" {mouseOverAndOut}>
@@ -171,13 +172,16 @@ class ButtonFactory:
         deleteButtonManifest = self.__removeProjectFromConfigurationJSONButtonManifest(projectPHID, projectType)
         ButtonManifestRegistry.add([deleteButtonManifest])
 
+        upButtonHTML = self.__moveProjectButtonHTML('↑', projectPHID, projectType, DirectionType.UP)
+        downButtonHTML = self.__moveProjectButtonHTML('↓', projectPHID, projectType, DirectionType.DOWN)
+
         return self.__wrapWithButtonMenuTag(
             menuTitle = f'''{menuTitle}''',
             menuButtons = f'''
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
             showRightProjectMenu = True,
-            deleteProjectButtonHTML = deleteButtonManifest.html(cssClass = 'delete')
+            rightButtonsHTML = upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete')
         )
 
     def __removeProjectFromConfigurationJSONButtonManifest(self, projectPHID, projectType):
@@ -345,3 +349,37 @@ class ButtonFactory:
             menuTitle = menuTitle,
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
+
+    def __moveProjectButtonManifest(self, buttonID, title, projectPHID, projectType, directionType):
+        return ButtonManifest(
+            id = buttonID,
+            title = title,
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.showLoadingIndicator,
+                self.buttonActions.hideTickets,
+                lambda projectPHID=projectPHID, projectType=projectType, directionType=directionType :
+                    self.buttonActions.moveProject(projectPHID, projectType, directionType)
+            ],
+            successActions = [
+                self.buttonActions.hideLoadingIndicator,
+                self.buttonActions.reloadConfigurationUI
+            ],
+            failureActions = [
+                self.buttonActions.hideLoadingIndicator,
+                self.buttonActions.printFailure
+            ]
+        )
+
+    def __moveProjectButtonHTML(self, title, projectPHID, projectType, directionType):
+        buttonManifest = self.__moveProjectButtonManifest(
+            buttonID = Utilities.cssSafeGUID(),
+            title = title,
+            projectPHID = projectPHID,
+            projectType = projectType,
+            directionType = directionType
+        )
+
+        ButtonManifestRegistry.add([buttonManifest])
+
+        return buttonManifest.html(cssClass = 'move')
