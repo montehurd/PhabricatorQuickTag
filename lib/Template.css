@@ -264,7 +264,7 @@ button.projects_search_result:hover {
   color: black;
 }
 
-button.hide {
+button.toggle_ticket {
   float: right;
   margin-top: 20px;
 }
@@ -334,4 +334,8 @@ span.ticket_user_heading {
 span.ticket_authored_by {
   display: inline-block;
   margin-left: 10px;
+}
+
+.toggle_hidden {
+  display: none;
 }
