@@ -12,3 +12,4 @@ class Column:
         self.nonSourceProjectColumnMenuHTMLLambdas = []
         self.statusMenuHTMLLambda = None
         self.priorityMenuHTMLLambda = None
+        self.userNames = {}

@@ -73,11 +73,19 @@ class WebviewController:
         destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(column.tickets) == 0 else ''}""" if destinationProjectName != None else ''
         return f"{ticketsInSourceProjectString}{destinationProjectString}:"
 
-    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML):
+    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy):
         return f'''
             <div class=ticket id="T{ticketID}">
               <button class=hide onclick="this.closest('div#T{ticketID}').remove()">Hide</button>
               {ticketHTML}
+              <div class=ticket_users>
+                  <span class=ticket_assigned_to>
+                      <span class=ticket_user_heading>Assigned to:</span> {assignedTo}
+                  </span>
+                  <span class=ticket_authored_by>
+                      <span class=ticket_user_heading>Authored by:</span> {authoredBy}
+                  </span>
+              </div>
               <div class="quick_options phui-tag-core phui-tag-color-object">
                 <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
                 <h2>Quick options</h2>
@@ -104,7 +112,9 @@ class WebviewController:
             nonSourceProjectColumnMenuHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON), column.nonSourceProjectColumnMenuHTMLLambdas)))
             statusMenuHTML = column.statusMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
             priorityMenuHTML = column.priorityMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
-            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML)
+            assignedTo = column.userNames.get(ticketJSON['fields']['ownerPHID'], 'None')
+            authoredBy = column.userNames.get(ticketJSON['fields']['authorPHID'], 'None')
+            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy)
             allTicketsHTML.append(wrappedTicketHTML)
         return ''.join(allTicketsHTML)
 
@@ -184,6 +194,7 @@ class WebviewController:
                 if len(destinationColumns) > 0:
                     projectColumnMenuHTMLLambdas[project.phid] = lambda ticketID, ticketJSON, name=project.name, columns=destinationColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{name}</i>)', ticketID, ticketJSON, columns, projectPHID)
 
+        userPHIDs = set()
         for project in self.sourceProjects:
             # fetch source project columns
             self.__setLoadingMessage(f"Fetching '{project.name}' columns")
@@ -210,6 +221,19 @@ class WebviewController:
                 # fetch column tickets html for their remarkup
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets html")
                 column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)
+                userPHIDs = userPHIDs.union(self.__getUserPHIDs(tickets))
+
+        self.__setLoadingMessage(f"Fetching user names")
+        userNames = self.fetcher.fetchUserNamesForUserPHIDs(userPHIDs)
+        for project in self.sourceProjects:
+            for column in project.columns:
+                column.userNames = userNames
+
+    def __getUserPHIDs(self, tickets):
+        authors = set(map(lambda ticket: ticket['fields']['authorPHID'], tickets))
+        owners = set(map(lambda ticket: ticket['fields']['ownerPHID'], tickets))
+        people = authors.union(owners)
+        return list(filter(None, people))
 
     def load(self, hydrateTickets = True):
         self.sourceProjects = self.__getDehydratedProjects(ProjectType.SOURCE)

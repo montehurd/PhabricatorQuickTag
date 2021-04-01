@@ -62,7 +62,6 @@ class Fetcher:
             'attachments[projects]' : 'true',
             'attachments[columns]' : 'true'
         })
-        # print(json.dumps(result['result']['data'], indent=4))
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
 
     def __fetchHTMLFromColumnTicketsRemarkup(self, remarkup):
@@ -119,7 +118,6 @@ class Fetcher:
             'objectIdentifier': objectIdentifier,
             'output': 'json'
         }
-        # print(values)
         if comment != None:
             values['transactions[1][type]'] = 'comment'
             values['transactions[1][value]'] = comment
@@ -177,3 +175,17 @@ TICKET_END '''
             ticketHTML = allTicketsHTML[i + 4]
             ticketsHTMLByID[ticketID] = ticketHTML.strip()
         return ticketsHTMLByID
+
+    def fetchUserNamesForUserPHIDs(self, userPHIDs):
+        if len(userPHIDs) == 0:
+            return []
+        values = {
+            'api.token' : self.apiToken
+        }
+        for index, phid in enumerate(userPHIDs):
+            values[f'constraints[phids][{index}]'] = phid
+        results = self.fetchJSON('/api/user.search', values)['result']['data']
+        output = {}
+        for item in results:
+            output[item['phid']] = item['fields']['username']
+        return output

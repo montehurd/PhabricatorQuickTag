@@ -17,7 +17,7 @@ div.ticket {
 div.quick_options {
   border-radius: 12px;
   padding: 6pt;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 span.buttonActionMessage {
@@ -325,4 +325,13 @@ div.projects_configuration_textbox_description {
 
 div.projects_configuration_url_and_token_buttons {
   display: inline-block;
+}
+
+span.ticket_user_heading {
+  font-weight: bold;
+}
+
+span.ticket_authored_by {
+  display: inline-block;
+  margin-left: 10px;
 }
