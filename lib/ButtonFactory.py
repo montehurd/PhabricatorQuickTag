@@ -44,7 +44,6 @@ class ButtonFactory:
                 self.buttonActions.saveURLAndToken
             ],
             successActions = [
-                self.buttonActions.hideLoadingIndicator,
                 self.buttonActions.reloadFetcher,
                 self.buttonActions.refetchPrioritiesAndStatuses,
                 self.buttonActions.clearSourceAndDestinationProjects,
@@ -52,6 +51,7 @@ class ButtonFactory:
                 self.buttonActions.refetchUpstreamCSSLinkURL,
                 self.buttonActions.resetUpstreamBaseURL,
                 self.buttonActions.reloadConfigurationUI,
+                self.buttonActions.hideLoadingIndicator,
                 self.buttonActions.printSuccess
             ],
             failureActions = [
