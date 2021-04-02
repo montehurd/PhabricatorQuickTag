@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 
 import json, uuid, re
+from datetime import datetime, timezone
 
 def stringFromFile(fileName):
     with open(fileName, 'r') as f:
@@ -24,6 +25,11 @@ def cssSafeGUID():
 
 def getNumericIDFromTicketID(ticketID):
     return re.sub("[^0-9]", '', ticketID)
+
+def localTimezoneDateStringFromTimeStamp(ts):
+    local_now = datetime.now().astimezone()
+    local_tz = local_now.tzinfo
+    return datetime.fromtimestamp(ts, tz=local_tz).strftime('%a, %b %e, %r')
 
 # import subprocess
 # def sendToBrowser(string, extension):

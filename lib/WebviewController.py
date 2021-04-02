@@ -73,7 +73,7 @@ class WebviewController:
         destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(column.tickets) == 0 else ''}""" if destinationProjectName != None else ''
         return f"{ticketsInSourceProjectString}{destinationProjectString}:"
 
-    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy):
+    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
         return f'''
             <div class=ticket id="T{ticketID}">
               <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this, '{ticketID}')">Collapse</button>
@@ -83,7 +83,7 @@ class WebviewController:
                       <span class=ticket_user_heading>Assigned to:</span> {assignedTo}
                   </span>
                   <span class=ticket_authored_by>
-                      <span class=ticket_user_heading>Authored by:</span> {authoredBy}
+                      <span class=ticket_user_heading>Authored by:</span> {authoredBy} {dateCreatedString}
                   </span>
               </div>
               <div class="quick_options phui-tag-core phui-tag-color-object">
@@ -114,7 +114,9 @@ class WebviewController:
             priorityMenuHTML = column.priorityMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
             assignedTo = column.userNames.get(ticketJSON['fields']['ownerPHID'], 'None')
             authoredBy = column.userNames.get(ticketJSON['fields']['authorPHID'], 'None')
-            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy)
+            dateCreatedTimeStamp = ticketJSON['fields'].get('dateCreated', None)
+            dateCreatedString = f' - <i>{Utilities.localTimezoneDateStringFromTimeStamp(dateCreatedTimeStamp)}</i>' if dateCreatedTimeStamp != None else ''
+            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString)
             allTicketsHTML.append(wrappedTicketHTML)
         return ''.join(allTicketsHTML)
 
