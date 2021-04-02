@@ -80,10 +80,13 @@ class WebviewController:
               {ticketHTML}
               <div class=ticket_users>
                   <span class=ticket_assigned_to>
-                      <span class=ticket_user_heading>Assigned to:</span> {assignedTo}
+                      <span class=ticket_user_heading>Assigned to:</span>
+                      {assignedTo}
                   </span>
                   <span class=ticket_authored_by>
-                      <span class=ticket_user_heading>Authored by:</span> {authoredBy} {dateCreatedString}
+                      <span class=ticket_user_heading>Authored by:</span>
+                      {authoredBy}
+                      {dateCreatedString}
                   </span>
               </div>
               <div class="quick_options phui-tag-core phui-tag-color-object">
@@ -115,7 +118,7 @@ class WebviewController:
             assignedTo = column.userNames.get(ticketJSON['fields']['ownerPHID'], 'None')
             authoredBy = column.userNames.get(ticketJSON['fields']['authorPHID'], 'None')
             dateCreatedTimeStamp = ticketJSON['fields'].get('dateCreated', None)
-            dateCreatedString = f' - <i>{Utilities.localTimezoneDateStringFromTimeStamp(dateCreatedTimeStamp)}</i>' if dateCreatedTimeStamp != None else ''
+            dateCreatedString = f' on {Utilities.localTimezoneDateStringFromTimeStamp(dateCreatedTimeStamp)}' if dateCreatedTimeStamp != None else ''
             wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString)
             allTicketsHTML.append(wrappedTicketHTML)
         return ''.join(allTicketsHTML)
@@ -194,7 +197,7 @@ class WebviewController:
             if hydrateTickets:
                 destinationColumns = list(filter(lambda column: (column.phid in project.columnPHIDs), project.buttonsMenuColumns))
                 if len(destinationColumns) > 0:
-                    projectColumnMenuHTMLLambdas[project.phid] = lambda ticketID, ticketJSON, name=project.name, columns=destinationColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{name}</i>)', ticketID, ticketJSON, columns, projectPHID)
+                    projectColumnMenuHTMLLambdas[project.phid] = lambda ticketID, ticketJSON, name=project.name, columns=destinationColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Add to column on destination project ( <i>{name}</i> )', ticketID, ticketJSON, columns, projectPHID)
 
         userPHIDs = set()
         for project in self.sourceProjects:
