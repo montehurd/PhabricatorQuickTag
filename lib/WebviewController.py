@@ -222,7 +222,7 @@ class WebviewController:
                 column.currentSourceColumnMenuHTMLLambda = currentSourceColumnMenuHTMLLambda
                 column.nonSourceProjectColumnMenuHTMLLambdas = nonSourceProjectColumnMenuHTMLLambdas
                 column.statusMenuHTMLLambda = lambda ticketID, ticketJSON, statusesData=self.statusesData : self.buttonFactory.ticketStatusButtonMenuHTML('Status', ticketID, ticketJSON, statusesData)
-                column.priorityMenuHTMLLambda = lambda ticketID, ticketJSON, prioritiesData=self.prioritiesData : self.buttonFactory.ticketPriorityButtonMenuHTML('Status', ticketID, ticketJSON, prioritiesData)
+                column.priorityMenuHTMLLambda = lambda ticketID, ticketJSON, prioritiesData=self.prioritiesData : self.buttonFactory.ticketPriorityButtonMenuHTML('Priority', ticketID, ticketJSON, prioritiesData)
                 # fetch column tickets html for their remarkup
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets html")
                 column.ticketsHTMLByID = self.fetcher.fetchTicketsHTMLByID(column.tickets)
