@@ -70,8 +70,8 @@ class WebviewController:
     def __columnSubtitle(self, column):
         destinationProjectName = 'Ticket Destination' if len(self.destinationProjects) > 0 else None
         ticketsInSourceProjectString = f"""{len(column.tickets)} ticket{'' if len(column.tickets) == 1 else 's'} currently in <b>{column.project.name} > {column.name}</b>"""
-        destinationProjectString = f""" not already appearing in a <b>{destinationProjectName}</b> column{'.' if len(column.tickets) == 0 else ''}""" if destinationProjectName != None else ''
-        return f"{ticketsInSourceProjectString}{destinationProjectString}:"
+        destinationProjectString = f" not already appearing in a <b>{destinationProjectName}</b> column" if destinationProjectName != None else ''
+        return f"{ticketsInSourceProjectString}{destinationProjectString}"
 
     def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
         return f'''
@@ -132,10 +132,10 @@ class WebviewController:
             for column in project.columns:
                 html.append(
                     f'''
+                        <div class=column_source>
+                            <span class=column_identifier>{project.name} > {column.name}</span>
+                        </div>
                         <div class=project_column>
-                            <div class=column_source>
-                                Ticket Source: <span class=column_identifier>{project.name} > {column.name}</span>
-                            </div>
                             <div class=column_subtitle>
                                 {self.__columnSubtitle(column)}
                             </div>
