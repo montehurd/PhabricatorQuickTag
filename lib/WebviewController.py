@@ -76,7 +76,7 @@ class WebviewController:
     def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
         return f'''
             <div class=ticket id="T{ticketID}">
-              <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this, '{ticketID}')">Collapse</button>
+              <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this)">Collapse</button>
               {ticketHTML}
               <div class=ticket_users>
                   <span class=ticket_assigned_to>
