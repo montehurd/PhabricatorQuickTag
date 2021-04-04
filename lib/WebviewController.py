@@ -76,7 +76,7 @@ class WebviewController:
     def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
         return f'''
             <div class=ticket id="T{ticketID}">
-              <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this)">Collapse</button>
+              <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this)">🐵</button>
               {ticketHTML}
               <div class=ticket_users>
                   <span class=ticket_assigned_to>
@@ -126,19 +126,21 @@ class WebviewController:
     def __projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
-        html = []
+        html = ['<button class=toggle_all_tickets onclick="__clickAllToggleTicketButtons()">🐵 <> 🙈</button>']
         for project in self.sourceProjects:
-            html.append(f'<div class="project_tickets" id="_{project.phid}">')
+            html.append(f'<div class="project_columns" id="_{project.phid}">')
             for column in project.columns:
                 html.append(
                     f'''
-                        <div class=column_source>
-                            Ticket Source: <span class=column_identifier>{project.name} > {column.name}</span>
+                        <div class=project_column>
+                            <div class=column_source>
+                                Ticket Source: <span class=column_identifier>{project.name} > {column.name}</span>
+                            </div>
+                            <div class=column_subtitle>
+                                {self.__columnSubtitle(column)}
+                            </div>
+                            {self.__columnTicketsHTML(column = column)}
                         </div>
-                        <div class=column_subtitle>
-                            {self.__columnSubtitle(column)}
-                        </div>
-                        {self.__columnTicketsHTML(column = column)}
                     '''
                 )
             html.append('</div>')

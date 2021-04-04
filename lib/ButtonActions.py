@@ -178,7 +178,7 @@ class ButtonActions:
     def moveDOMProjectTicketsVertically(self, projectPHID, projectType, directionType):
         if projectType == ProjectType.DESTINATION:
             return True
-        return self.window.evaluate_js(f'__moveVertically("div.project_tickets#_{projectPHID}", "{directionType.name}")')
+        return self.window.evaluate_js(f'__moveVertically("div.project_columns#_{projectPHID}", "{directionType.name}")')
 
     def moveDOMAddToColumnMenusVertically(self, projectPHID, projectType, directionType):
         if projectType == ProjectType.SOURCE:

@@ -1,5 +1,5 @@
 body {
-  background-color: #EBECEE;
+  background-color: #FFF;
   margin: 0px;
   overflow-y: scroll;
   -webkit-font-smoothing: antialiased;
@@ -7,7 +7,7 @@ body {
 
 div.ticket {
   border: solid 1px #A1A6B0;
-  margin: 15px 50px 50px 50px;
+  margin: 15px 0px 50px 0px;
   padding: 5px 20px 20px 20px;
   border-radius: 12px;
   min-width: 740px;
@@ -45,8 +45,7 @@ div.menu_title {
 
 div.column_source {
   font-size: 1.75em;
-  margin: 15px;
-  margin-top: 50px;
+  margin-bottom: 15px;
 }
 
 span.column_identifier {
@@ -54,7 +53,6 @@ span.column_identifier {
 }
 
 div.column_subtitle {
-  margin-left: 30px;
 }
 
 div.projects_configuration {
@@ -269,6 +267,22 @@ button.toggle_ticket {
   margin-top: 20px;
 }
 
+button.toggle_all_tickets {
+  float: right;
+  margin-top: -41px;
+  margin-right: 28px;
+}
+
+button.toggle_all_tickets, button.toggle_ticket {
+  font-size: 18px;
+  padding-top: 1px;
+  padding-bottom: 2px;
+  background-color: #EBECEE !important;
+  font-weight: 100;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
 button:not([class=selected]) {
   background-color: white;
   border: solid 1px #A1A6B0;
@@ -338,4 +352,14 @@ span.ticket_authored_by {
 
 .toggle_hidden {
   display: none;
+}
+
+div.project_column {
+  border: 1px solid #A1A6B0;
+  background-color: #EBECEE;
+  margin: 10px;
+  padding: 20px;
+  margin-top: 50px;
+  padding-top: 20px;
+  border-radius: 12px;
 }
