@@ -76,7 +76,7 @@ class WebviewController:
     def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
         return f'''
             <div class=ticket id="T{ticketID}">
-              <button class=toggle_ticket onclick="__toggleCollapseExpandButton(this)">🐵</button>
+              <button class="toggle_ticket expanded" onclick="__toggleCollapseExpandButton(this)" title="Toggle ticket"></button>
               {ticketHTML}
               <div class=ticket_users>
                   <span class=ticket_assigned_to>
@@ -126,7 +126,7 @@ class WebviewController:
     def __projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
-        html = ['<button class=toggle_all_tickets onclick="__clickAllToggleTicketButtons()">🐵 <> 🙈</button>']
+        html = []
         for project in self.sourceProjects:
             html.append(f'<div class="project_columns" id="_{project.phid}">')
             for column in project.columns:
@@ -242,19 +242,28 @@ class WebviewController:
         people = authors.union(owners)
         return list(filter(None, people))
 
+    def __allSourceProjectsTicketCount(self):
+        count = 0
+        for project in self.sourceProjects:
+            for column in project.columns:
+                count += len(column.tickets)
+        return count
+
     def load(self, hydrateTickets = True):
         self.sourceProjects = self.__getDehydratedProjects(ProjectType.SOURCE)
         self.destinationProjects = self.__getDehydratedProjects(ProjectType.DESTINATION)
+        self.hideToggleAllTicketsContainer()
         self.__setLoadingMessage('Beginning data retrieval')
         self.showLoadingIndicator()
         self.hydrateProjects(hydrateTickets = hydrateTickets)
         self.__setLoadingMessage('')
-
         # can start html generation now that projects are hydrated
         self.__setConfigurationHTML()
         if not hydrateTickets:
             self.hideLoadingIndicator()
             return
+        if self.__allSourceProjectsTicketCount() > 0:
+            self.showToggleAllTicketsContainer()
         self.__setInnerHTML('div.projects_tickets', self.__projectsTicketsHTML())
         self.hideLoadingIndicator()
 
@@ -326,6 +335,12 @@ class WebviewController:
 
     def hideLoadingIndicator(self):
         return self.window.evaluate_js(f"__hideLoadingIndicator()")
+
+    def showToggleAllTicketsContainer(self):
+        return self.window.evaluate_js(f"__showToggleAllTicketsContainer()")
+
+    def hideToggleAllTicketsContainer(self):
+        return self.window.evaluate_js(f"__hideToggleAllTicketsContainer()")
 
     def showAlert(self, title, description):
         return self.window.evaluate_js(f"__showAlert(`{title}`, `{description}`)")
