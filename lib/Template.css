@@ -407,4 +407,5 @@ button.toggle_all_tickets:nth-child(3) {
 
 div.selected_ticket {
   border-style: dashed;
+  border-width: 2px;
 }
