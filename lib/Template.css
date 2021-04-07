@@ -404,3 +404,7 @@ button.toggle_all_tickets:nth-child(3) {
   margin-left: 0px;
   border-radius: 0px 8px 8px 0px;
 }
+
+div.selected_ticket {
+  border-style: dashed;
+}
