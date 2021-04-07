@@ -104,6 +104,12 @@ class ButtonActions:
     def deleteMenu(self, buttonID):
         return self.window.evaluate_js(f"__deleteMenu('{buttonID}')")
 
+    def deleteProjectTickets(self, projectPHID):
+        return self.window.evaluate_js(f"__deleteProjectTickets('{projectPHID}')")
+
+    def hideToggleAllTicketsContainerIfNoSourceProjects(self):
+        return self.window.evaluate_js(f"__hideToggleAllTicketsContainerIfNoSourceProjects()")
+
     def toggleProjectColumnInConfigurationJSON(self, columnPHID, indexOfColumnToToggle, projectPHID, projectType):
         dataStoreKey = DataStore.dataStoreKeyForProjectType(projectType)
         projects = DataStore.getConfigurationValue(dataStoreKey)

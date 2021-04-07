@@ -195,7 +195,6 @@ class ButtonFactory:
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
-                self.buttonActions.hideTickets,
                 lambda projectPHID=projectPHID :
                     self.buttonActions.removeProjectFromConfigurationJSON(projectPHID, projectType)
             ],
@@ -203,6 +202,9 @@ class ButtonFactory:
                 self.buttonActions.hideLoadingIndicator,
                 lambda buttonID=buttonID :
                     self.buttonActions.deleteMenu(buttonID),
+                lambda projectPHID=projectPHID :
+                    self.buttonActions.deleteProjectTickets(projectPHID),
+                self.buttonActions.hideToggleAllTicketsContainerIfNoSourceProjects,
                 self.buttonActions.printSuccess
             ],
             failureActions = [
