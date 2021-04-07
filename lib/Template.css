@@ -267,12 +267,13 @@ button.projects_search_result:hover {
 button.toggle_ticket {
   float: right;
   margin-top: 18px;
+  margin-right: 0px;
 }
 
 div.toggle_all_tickets_container {
   float: right;
   margin-top: 10px;
-  margin-right: 20px;
+  margin-right: 25px;
   display: none;
 }
 
