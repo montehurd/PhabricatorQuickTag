@@ -45,7 +45,9 @@ class WebviewController:
         )
 
     def __setInnerHTML(self, selector, html):
-        return self.window.evaluate_js(f"__setInnerHTML('{selector}', `{Utilities.escapeBackticks(html)}`)")
+        html = html.replace('$', '&#36;') # needed for dollar signs within a remarkup code block, such as ```$100``` in a ticket description
+        html = Utilities.escapeBackticks(html)
+        return self.window.evaluate_js(f"__setInnerHTML('{selector}', `{html}`)")
 
     def __setLoadingMessage(self, message):
         print(message)
