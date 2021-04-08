@@ -230,6 +230,7 @@ div.projects_search_results {
   height: 85%;
   width: 100%;
   margin-left: 5px;
+  margin-top: 5px;
 }
 
 button {
@@ -247,7 +248,7 @@ button {
 button.projects_search_result {
   width: 99%;
   margin: unset !important;
-  margin-top: 4px !important;
+  margin-bottom: 4px !important;
   text-align: unset;
   background-color: #fff;
   padding: 10px;
