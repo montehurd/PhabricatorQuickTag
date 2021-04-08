@@ -4,6 +4,7 @@ import ButtonManifestRegistry, Utilities, DataStore
 from ButtonManifest import ButtonManifest
 from DirectionType import DirectionType
 from ProjectType import ProjectType
+from ColumnsSelectionType import ColumnsSelectionType
 
 class ButtonFactory:
     def __init__(self, buttonActions):
@@ -177,13 +178,16 @@ class ButtonFactory:
         upButtonHTML = self.__moveProjectButtonHTML('↑', projectPHID, projectType, DirectionType.UP)
         downButtonHTML = self.__moveProjectButtonHTML('↓', projectPHID, projectType, DirectionType.DOWN)
 
+        selectAllButtonHTML = self.__selectProjectColumnsButtonHTML('All', projectPHID, projectType, ColumnsSelectionType.ALL)
+        deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('None', projectPHID, projectType, ColumnsSelectionType.NONE)
+
         return self.__wrapWithButtonMenuTag(
             menuTitle = f'''{menuTitle}''',
             menuButtons = f'''
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
             showRightProjectMenu = True,
-            rightButtonsHTML = upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
+            rightButtonsHTML = upButtonHTML + downButtonHTML + selectAllButtonHTML + deselectAllButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
             id = f'_{projectPHID}'
         )
 
@@ -396,3 +400,37 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
 
         return buttonManifest.html(cssClass = 'move')
+
+    def __selectProjectColumnsButtonManifest(self, buttonID, title, projectPHID, projectType, columnsSelectionType):
+        return ButtonManifest(
+            id = buttonID,
+            title = title,
+            isInitiallySelected = False,
+            clickActions = [
+                self.buttonActions.hideTickets,
+                self.buttonActions.showLoadingIndicator,
+                lambda projectPHID=projectPHID, projectType=projectType, columnsSelectionType=columnsSelectionType :
+                    self.buttonActions.selectConfigurationProjectColumns(projectPHID, projectType, columnsSelectionType)
+            ],
+            successActions = [
+                self.buttonActions.hideLoadingIndicator,
+                self.buttonActions.printSuccess
+            ],
+            failureActions = [
+                self.buttonActions.hideLoadingIndicator,
+                self.buttonActions.printFailure
+            ]
+        )
+
+    def __selectProjectColumnsButtonHTML(self, title, projectPHID, projectType, columnsSelectionType):
+        buttonManifest = self.__selectProjectColumnsButtonManifest(
+            buttonID = Utilities.cssSafeGUID(),
+            title = title,
+            projectPHID = projectPHID,
+            projectType = projectType,
+            columnsSelectionType = columnsSelectionType
+        )
+
+        ButtonManifestRegistry.add([buttonManifest])
+
+        return buttonManifest.html(cssClass = 'select')

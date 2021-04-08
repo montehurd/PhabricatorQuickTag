@@ -190,3 +190,7 @@ class ButtonActions:
         if projectType == ProjectType.SOURCE:
             return True
         return self.window.evaluate_js(f'__moveAllVertically("div.destination_projects_menus > div.menu#_{projectPHID}", "{directionType.name}")')
+
+    def selectConfigurationProjectColumns(self, projectPHID, projectType, columnsSelectionType):
+        containerSelector = f'''div#projects_configuration_{'sources' if projectType == ProjectType.SOURCE else 'destinations'}'''
+        return self.window.evaluate_js(f'''__selectConfigurationProjectColumns("{containerSelector} > div.menu#_{projectPHID}", "{columnsSelectionType.name}")''')
