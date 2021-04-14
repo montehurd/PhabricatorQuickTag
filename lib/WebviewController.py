@@ -57,9 +57,9 @@ class WebviewController:
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.buttonFactory.reloadButtonHTML())
         self.__setInnerHTML('div#sources_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Source Project', projectType = ProjectType.SOURCE))
         self.__setInnerHTML('div#destination_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Destination Project', projectType = ProjectType.DESTINATION))
-        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.SOURCE), self.sourceProjects))
+        sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.SOURCE, project.status), self.sourceProjects))
         self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
-        destinationProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.DESTINATION), self.destinationProjects))
+        destinationProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.DESTINATION, project.status), self.destinationProjects))
         self.__setInnerHTML('div#projects_configuration_destinations', destinationProjectsMenuButtonsHTML)
         self.window.evaluate_js(f"""
             __setPhabricatorUrl('{DataStore.getConfigurationValue('url')}');
@@ -135,7 +135,7 @@ class WebviewController:
                 html.append(
                     f'''
                         <div class=column_source>
-                            <span class=column_identifier>{project.name} > {column.name}</span>
+                            <span class=column_identifier>{project.name} > {column.name} {'' if project.status != 'closed' else ' (CLOSED)'}</span>
                         </div>
                         <div class=project_column>
                             <div class=column_subtitle>

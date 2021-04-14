@@ -160,7 +160,7 @@ class ButtonFactory:
             ]
         )
 
-    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, projectType):
+    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, projectType, status):
         buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = indexAndColumnTuple[1].name,
@@ -182,7 +182,7 @@ class ButtonFactory:
         deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('None', projectPHID, projectType, ColumnsSelectionType.NONE)
 
         return self.__wrapWithButtonMenuTag(
-            menuTitle = f'''{menuTitle}''',
+            menuTitle = f'''{menuTitle} {'' if status != 'closed' else ' (CLOSED)'}''',
             menuButtons = f'''
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
