@@ -7,3 +7,4 @@ class Project:
         self.phid = phid
         self.columns = []
         self.buttonsMenuColumns = []
+        self.status = None

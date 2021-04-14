@@ -26,9 +26,13 @@ class Fetcher:
 
         return pageJSON
 
+    def fetchNamesForStatusOpenPHIDs(self, phids):
+        namesAndStatusesByPHID = self.fetchNamesAndStatusesForPHIDs(phids)
+        return {key: value['name'] for key, value in namesAndStatusesByPHID.items() if value['status'] == 'open'}
+
     # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
     # same is true for columns. 'phid.query' is also needed to get the full project name from the phid unfortunately.
-    def fetchNamesForStatusOpenPHIDs(self, phids):
+    def fetchNamesAndStatusesForPHIDs(self, phids):
         if len(phids) == 0:
             return []
         values = {
@@ -39,8 +43,7 @@ class Fetcher:
         result = self.fetchJSON('/api/phid.query', values)['result']
         output = {}
         for item in result.values():
-            if item['status'] == 'open':
-                output[item['phid']] = item['name']
+            output[item['phid']] = {'name': item['name'], 'status': item['status']}
         return output
 
     def fetchProjectsMatchingSearchTerm(self, searchTerm):

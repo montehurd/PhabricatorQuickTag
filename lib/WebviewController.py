@@ -188,10 +188,11 @@ class WebviewController:
     # hydrate source and destination projects and their columns
     def hydrateProjects(self, hydrateTickets = True):
         self.__setLoadingMessage('Fetching project and column names')
-        openItemNamesByPHID = self.fetcher.fetchNamesForStatusOpenPHIDs(self.__allProjectPHIDs() + self.__allColumnPHIDs())
-
+        namesAndStatusesByPHID = self.fetcher.fetchNamesAndStatusesForPHIDs(self.__allProjectPHIDs() + self.__allColumnPHIDs())
         for project in self.__allProjects():
-            project.name = openItemNamesByPHID[project.phid]
+            if project.phid in namesAndStatusesByPHID.keys():
+                project.name = namesAndStatusesByPHID[project.phid]['name']
+                project.status = namesAndStatusesByPHID[project.phid]['status']
 
         projectColumnMenuHTMLLambdas = {}
         for project in self.destinationProjects:
@@ -214,9 +215,12 @@ class WebviewController:
             currentSourceColumnMenuHTMLLambda = lambda ticketID, ticketJSON, name=project.name, columns=project.buttonsMenuColumns, projectPHID=project.phid : self.buttonFactory.ticketAddToColumnButtonMenuHTML(f'Current column on source project ( <i>{name}</i> )', ticketID, ticketJSON, columns, projectPHID)
 
             # make column object for each column name
-            project.columns = list(map(lambda columnPHID: Column(name = openItemNamesByPHID[columnPHID], project = project, phid = columnPHID), project.columnPHIDs))
+            project.columns = list(map(lambda columnPHID: Column(name = None, project = project, phid = columnPHID), project.columnPHIDs))
 
             for column in project.columns:
+                if column.phid in namesAndStatusesByPHID.keys():
+                    column.status = namesAndStatusesByPHID[column.phid]['status']
+                    column.name = namesAndStatusesByPHID[column.phid]['name']
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets")
                 tickets = list(self.fetcher.fetchColumnTickets(column.phid))
                 ticketsByID = dict((ticket['id'], ticket) for ticket in tickets if self.__shouldShowTicket(ticket, project.phid, column.phid))

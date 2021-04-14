@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 class Column:
-    def __init__(self, name, project, phid=None):
+    def __init__(self, name=None, project=None, phid=None):
         self.name = name
         self.phid = phid
         self.tickets = []
@@ -13,3 +13,4 @@ class Column:
         self.statusMenuHTMLLambda = None
         self.priorityMenuHTMLLambda = None
         self.userNames = {}
+        self.status = None
