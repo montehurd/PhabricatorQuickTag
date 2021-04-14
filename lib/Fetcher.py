@@ -83,6 +83,8 @@ class Fetcher:
             })
         columnsData = list(filter(lambda x: x['type'] == 'PCOL', result['result']['data']))
         columnPHIDs = list(map(lambda column: column['phid'], columnsData))
+        if len(columnPHIDs) == 0:
+            return []
         openColumnPHIDs = self.fetchNamesForStatusOpenPHIDs(columnPHIDs)
         openColumnsData = filter(lambda column: column['phid'] in openColumnPHIDs, columnsData)
         return openColumnsData
