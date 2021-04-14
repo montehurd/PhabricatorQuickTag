@@ -28,6 +28,8 @@ class Fetcher:
 
     def fetchNamesForStatusOpenPHIDs(self, phids):
         namesAndStatusesByPHID = self.fetchNamesAndStatusesForPHIDs(phids)
+        if len(namesAndStatusesByPHID) == 0:
+            return {}
         return {key: value['name'] for key, value in namesAndStatusesByPHID.items() if value['status'] == 'open'}
 
     # project.search does not currently return status, so have to do separate fetch, unfortunately, to see if projects are still open.
