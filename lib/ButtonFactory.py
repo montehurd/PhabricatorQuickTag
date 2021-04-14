@@ -267,6 +267,8 @@ class ButtonFactory:
 
     def __isColumnPHIDPresentInTicketJSON(self, columnPHID, ticketJSON):
         boards = ticketJSON['attachments']['columns']['boards']
+        if len(boards) == 0:
+            return False
         arrayOfColumnPHIDArrays = map(lambda board:
             map(lambda column: column['phid'], board['columns']),
             boards.values()
