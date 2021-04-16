@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import json, urllib.parse, urllib.request, re
+import json, urllib.parse, urllib.request
 
 class Fetcher:
     def __init__(self, baseURL, apiToken):
@@ -69,13 +69,17 @@ class Fetcher:
         })
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
 
-    def __fetchHTMLFromColumnTicketsRemarkup(self, remarkup):
-        # Hit "remarkup.process" to convert our remixed remarkup to HTML:
-        return self.fetchJSON('/api/remarkup.process', {
-          'api.token' : self.apiToken,
-          'context' : 'phriction',
-          'contents[0]' : remarkup
-        })['result'][0]['content']
+    def __fetchHTMLFromColumnTicketsRemarkup(self, ticketsRemarkup):
+        if len(ticketsRemarkup) == 0:
+            return []
+        values = {
+            'api.token' : self.apiToken,
+            'context' : 'phriction' # use 'maniphest' ???
+        }
+        for index, remarkup in enumerate(ticketsRemarkup):
+            values[f'contents[{index}]'] = remarkup
+        result = self.fetchJSON('/api/remarkup.process', values)['result']
+        return result
 
     def fetchColumnsData(self, projectPHID):
         result = self.fetchJSON('/api/project.column.search', {
@@ -159,28 +163,25 @@ class Fetcher:
         #
         # return pageJSON
 
-    def __ticketsRemarkupForTicketsJSON(self, tickets):
-        return ''.join(map(lambda item:
-f''' TICKET_START:{item['id']}:
-= T{item['id']} =
-== {item['fields']['name']} ==
+    def __ticketRemarkupForTicketJSON(self, ticket):
+        return f'''
+= T{ticket['id']} =
+== {ticket['fields']['name']} ==
 
-{item['fields']['description']['raw']}
-
-TICKET_END '''
-        , tickets))
+{ticket['fields']['description']['raw']}
+'''
 
     def fetchTicketsHTMLByID(self, tickets):
-        ticketsRemarkup = self.__ticketsRemarkupForTicketsJSON(tickets)
-        ticketsHTML = self.__fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkup)
-        allTicketsHTML = re.split(pattern=r'(<p>)?TICKET_START:(.*?):(</p>)?(.*?)(<p>)?TICKET_END(</p>)?', string=ticketsHTML, flags=re.DOTALL)
+        ticketsRemarkupArray = list(map(lambda ticket: self.__ticketRemarkupForTicketJSON(ticket), tickets))
+        ticketsHTMLArray = self.__fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkupArray)
+        ticketsHTMLArray = list(map(lambda item: item['content'].strip(), ticketsHTMLArray))
+        ticketIDs = list(map(lambda ticket: ticket['id'], tickets))
+        if len(ticketIDs) != len(ticketsHTMLArray):
+            print('Did not receive expected number of ticket html values')
+            return {}
         ticketsHTMLByID = {}
-        if len(allTicketsHTML) < 7:
-            return ticketsHTMLByID
-        for i in range(0, len(allTicketsHTML) - 1, 7):
-            ticketID = allTicketsHTML[i + 2]
-            ticketHTML = allTicketsHTML[i + 4]
-            ticketsHTMLByID[ticketID] = ticketHTML.strip()
+        for i, ticketID in enumerate(ticketIDs):
+            ticketsHTMLByID[f'{ticketID}'] = ticketsHTMLArray[i]
         return ticketsHTMLByID
 
     def fetchUserNamesForUserPHIDs(self, userPHIDs):
