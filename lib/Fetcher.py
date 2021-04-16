@@ -79,7 +79,8 @@ class Fetcher:
         for index, remarkup in enumerate(ticketsRemarkup):
             values[f'contents[{index}]'] = remarkup
         result = self.fetchJSON('/api/remarkup.process', values)['result']
-        return result
+        htmlArray = list(map(lambda item: item['content'].strip(), result))
+        return htmlArray
 
     def fetchColumnsData(self, projectPHID):
         result = self.fetchJSON('/api/project.column.search', {
@@ -174,7 +175,6 @@ class Fetcher:
     def fetchTicketsHTMLByID(self, tickets):
         ticketsRemarkupArray = list(map(lambda ticket: self.__ticketRemarkupForTicketJSON(ticket), tickets))
         ticketsHTMLArray = self.__fetchHTMLFromColumnTicketsRemarkup(ticketsRemarkupArray)
-        ticketsHTMLArray = list(map(lambda item: item['content'].strip(), ticketsHTMLArray))
         ticketIDs = list(map(lambda ticket: ticket['id'], tickets))
         if len(ticketIDs) != len(ticketsHTMLArray):
             print('Did not receive expected number of ticket html values')
