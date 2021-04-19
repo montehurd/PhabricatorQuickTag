@@ -14,6 +14,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = 'Reload Tickets',
+            tooltip = None,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -39,6 +40,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = 'Save',
+            tooltip = None,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -70,6 +72,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = projectName,
+            tooltip = None,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -96,6 +99,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = Utilities.cssSafeGUID(),
             title = title,
+            tooltip = None,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.resetProjectSearch,
@@ -142,6 +146,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = None,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -175,11 +180,11 @@ class ButtonFactory:
         deleteButtonManifest = self.__removeProjectFromConfigurationJSONButtonManifest(projectPHID, projectType)
         ButtonManifestRegistry.add([deleteButtonManifest])
 
-        upButtonHTML = self.__moveProjectButtonHTML('↑', projectPHID, projectType, DirectionType.UP)
-        downButtonHTML = self.__moveProjectButtonHTML('↓', projectPHID, projectType, DirectionType.DOWN)
+        upButtonHTML = self.__moveProjectButtonHTML('', 'Move up', projectPHID, projectType, DirectionType.UP)
+        downButtonHTML = self.__moveProjectButtonHTML('', 'Move down', projectPHID, projectType, DirectionType.DOWN)
 
-        selectAllButtonHTML = self.__selectProjectColumnsButtonHTML('All', projectPHID, projectType, ColumnsSelectionType.ALL)
-        deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('None', projectPHID, projectType, ColumnsSelectionType.NONE)
+        selectAllButtonHTML = self.__selectProjectColumnsButtonHTML('', 'Select all', projectPHID, projectType, ColumnsSelectionType.ALL)
+        deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('', 'Select none', projectPHID, projectType, ColumnsSelectionType.NONE)
 
         return self.__wrapWithButtonMenuTag(
             menuTitle = f'''{menuTitle} {'' if status != 'closed' else ' (CLOSED)'}''',
@@ -187,7 +192,7 @@ class ButtonFactory:
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
             showRightProjectMenu = True,
-            rightButtonsHTML = upButtonHTML + downButtonHTML + selectAllButtonHTML + deselectAllButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
+            rightButtonsHTML = deselectAllButtonHTML + selectAllButtonHTML + upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
             id = f'_{projectPHID}'
         )
 
@@ -195,7 +200,8 @@ class ButtonFactory:
         buttonID = Utilities.cssSafeGUID()
         return ButtonManifest(
             id = buttonID,
-            title = 'Remove',
+            title = '',
+            tooltip = 'Remove',
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -221,6 +227,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = None,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -280,6 +287,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = None,
             isInitiallySelected = isInitiallySelected,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -324,6 +332,7 @@ class ButtonFactory:
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = None,
             isInitiallySelected = isInitiallySelected,
             clickActions = [ # lambda currying: https://stackoverflow.com/a/452659
                 self.buttonActions.showLoadingIndicator,
@@ -364,10 +373,11 @@ class ButtonFactory:
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))
         )
 
-    def __moveProjectButtonManifest(self, buttonID, title, projectPHID, projectType, directionType):
+    def __moveProjectButtonManifest(self, buttonID, title, tooltip, projectPHID, projectType, directionType):
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = tooltip,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.showLoadingIndicator,
@@ -390,10 +400,11 @@ class ButtonFactory:
             ]
         )
 
-    def __moveProjectButtonHTML(self, title, projectPHID, projectType, directionType):
+    def __moveProjectButtonHTML(self, title, tooltip, projectPHID, projectType, directionType):
         buttonManifest = self.__moveProjectButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = title,
+            tooltip = tooltip,
             projectPHID = projectPHID,
             projectType = projectType,
             directionType = directionType
@@ -401,12 +412,13 @@ class ButtonFactory:
 
         ButtonManifestRegistry.add([buttonManifest])
 
-        return buttonManifest.html(cssClass = 'move')
+        return buttonManifest.html(cssClass = ('move-up' if directionType == DirectionType.UP else 'move-down'))
 
-    def __selectProjectColumnsButtonManifest(self, buttonID, title, projectPHID, projectType, columnsSelectionType):
+    def __selectProjectColumnsButtonManifest(self, buttonID, title, tooltip, projectPHID, projectType, columnsSelectionType):
         return ButtonManifest(
             id = buttonID,
             title = title,
+            tooltip = tooltip,
             isInitiallySelected = False,
             clickActions = [
                 self.buttonActions.hideTickets,
@@ -424,10 +436,11 @@ class ButtonFactory:
             ]
         )
 
-    def __selectProjectColumnsButtonHTML(self, title, projectPHID, projectType, columnsSelectionType):
+    def __selectProjectColumnsButtonHTML(self, title, tooltip, projectPHID, projectType, columnsSelectionType):
         buttonManifest = self.__selectProjectColumnsButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = title,
+            tooltip = tooltip,
             projectPHID = projectPHID,
             projectType = projectType,
             columnsSelectionType = columnsSelectionType
@@ -435,4 +448,4 @@ class ButtonFactory:
 
         ButtonManifestRegistry.add([buttonManifest])
 
-        return buttonManifest.html(cssClass = 'select')
+        return buttonManifest.html(cssClass = ('select-all' if columnsSelectionType == ColumnsSelectionType.ALL else 'select-none'))
