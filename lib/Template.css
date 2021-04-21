@@ -30,7 +30,7 @@ span.buttonActionMessage {
 
 div.menu {
   padding-left: 24px;
-  padding-right: 10px;
+  padding-right: 0px;
 }
 
 buttonmenu {
@@ -342,7 +342,8 @@ button.delete, button.move-up, button.move-down, button.select-all, button.selec
   height: 32px;
   background-position: center;
   background-repeat: no-repeat;
-  margin-left: 1px;
+  margin-left: 4px;
+  margin-right: 1px;
 }
 
 button.delete {
