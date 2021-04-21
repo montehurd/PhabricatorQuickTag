@@ -143,9 +143,10 @@ div#sources_right_menu > button, div#destination_right_menu > button {
   margin-right: 0px;
 }
 
-
 div.right_project_menu {
   flex-shrink: 0;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 
 div.projects_search_centered_panel {
@@ -327,6 +328,11 @@ button.delete, button.add, button.move-up, button.move-down, button.select-all, 
   border: unset;
   background-color: transparent;
   color: #fff;
+  vertical-align: middle;
+}
+
+button.delete:hover, button.add:hover, button.move-up:hover, button.move-down:hover, button.select-all:hover, button.select-none:hover {
+  background-color: #555;
 }
 
 button.delete, button.move-up, button.move-down, button.select-all, button.select-none {
