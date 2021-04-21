@@ -119,26 +119,22 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
-    def __rightProjectMenuDiv(self, rightButtonsHTML):
-        return f'''
-            <div class="right_project_menu">
-                {rightButtonsHTML}
-            </div>
-        '''
-
     def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, rightButtonsHTML = '', id = None):
-        rightProjectMenuDiv = self.__rightProjectMenuDiv(rightButtonsHTML = rightButtonsHTML) if showRightProjectMenu else ''
         mouseOverAndOut = f' onmouseover="__configurationProjectMouseOver(this)" onmouseout="__configurationProjectMouseOut(this)"' if showRightProjectMenu else ''
         id = f' id="{id}"' if id != None else ''
         return f'''
             <div class="menu" {mouseOverAndOut} {id}>
-                <div class="menu_title">
-                    {menuTitle}
+                <div class="menu_flex_container">
+                    <div class="menu_title">
+                        {menuTitle}
+                    </div>
+                    <div class="right_project_menu">
+                        {rightButtonsHTML if showRightProjectMenu else ''}
+                    </div>
                 </div>
                 <buttonmenu>
                     {menuButtons}
                 </buttonmenu>
-                {rightProjectMenuDiv}
             </div>
         '''
 

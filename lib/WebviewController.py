@@ -329,13 +329,6 @@ class WebviewController:
         self.prioritiesData, self.statusesData = self.__fetchPrioritiesAndStatuses()
         return True
 
-    def __rightProjectMenuDiv(self, deleteProjectButtonHTML):
-        return f'''
-            <div class="right_project_menu">
-                {deleteProjectButtonHTML}
-            </div>
-        '''
-
     def showLoadingIndicator(self):
         return self.window.evaluate_js(f"__showLoadingIndicator()")
 

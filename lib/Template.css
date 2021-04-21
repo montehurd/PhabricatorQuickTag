@@ -28,9 +28,24 @@ span.buttonActionMessage {
 }
 
 div.menu {
-  margin: 0px;
   padding-left: 24px;
   padding-right: 10px;
+}
+
+buttonmenu {
+  display: block;
+}
+
+buttonmenu > button {
+  margin-bottom: 6px;
+}
+
+.menu_flex_container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
 div.menu_highlighted {
@@ -41,6 +56,7 @@ div.menu_highlighted {
 div.menu_title {
   font-size: 13px;
   font-family: arial;
+  white-space: nowrap;
 }
 
 div.column_source {
@@ -85,17 +101,17 @@ div.projects_configuration_body_buttons {
 }
 
 div.projects_configuration_textboxes input, input#projects_search_textbox {
-    width: 300px;
-    height: 30px;
-    margin-left: 5px;
-    font-size: 13px;
-    font-weight: bold;
-    color: #666;
-    padding: 6px 6px;
-    border-radius: 3px;
-    border: 1px solid #A1A680;
-    font-family: 'helvetica neue';
-    box-sizing: border-box;
+  width: 300px;
+  height: 30px;
+  margin-left: 5px;
+  font-size: 13px;
+  font-weight: bold;
+  color: #666;
+  padding: 6px 6px;
+  border-radius: 3px;
+  border: 1px solid #A1A680;
+  font-family: 'helvetica neue';
+  box-sizing: border-box;
 }
 
 div.project_configuration {
@@ -106,7 +122,7 @@ span.project_configuration_column, span.project_configuration_project {
 }
 
 div.project_configuration_heading {
-  padding: 5px 14px 5px 8px;
+  padding: 5px 5px 5px 10px;
 }
 
 button, textarea, span.phui-tag-core {
@@ -117,9 +133,18 @@ button, textarea, span.phui-tag-core {
   border-color: #A1A6B0;
 }
 
-div.right_project_menu {
-  opacity: 50%;
+div#sources_right_menu, div#destination_right_menu {
   float: right;
+  clear: right;
+}
+
+div#sources_right_menu > button, div#destination_right_menu > button {
+  margin-right: 0px;
+}
+
+
+div.right_project_menu {
+  flex-shrink: 0;
 }
 
 div.projects_search_centered_panel {
@@ -241,7 +266,6 @@ button {
   cursor: pointer;
   margin: 0px;
   margin-right: 4px;
-  margin-bottom: 4px;
   background-image: unset;
 }
 
@@ -300,24 +324,18 @@ button:hover {
 
 button.delete, button.add, button.move-up, button.move-down, button.select-all, button.select-none {
   border: unset;
-  padding: 1px;
   background-color: transparent;
   color: #fff;
 }
 
-div.right_project_menu {
-  /* border: 1px solid white; */
-  height: 32px;
-}
-
 button.delete, button.move-up, button.move-down, button.select-all, button.select-none {
-  display: none;
+  display: inline-block;
+  visibility: hidden;
   width: 32px;
   height: 32px;
-  /* border: 1px solid white; */
   background-position: center;
   background-repeat: no-repeat;
-  margin-left: 2px;
+  margin-left: 1px;
 }
 
 button.delete {
