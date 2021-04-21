@@ -3,6 +3,7 @@ body {
   margin: 0px;
   overflow-y: scroll;
   -webkit-font-smoothing: antialiased;
+  min-width: 864px;
 }
 
 div.ticket {
