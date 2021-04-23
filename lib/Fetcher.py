@@ -61,6 +61,19 @@ class Fetcher:
         openProjects = self.fetchNamesForStatusOpenPHIDs(projectPHIDs)
         return openProjects
 
+    def fetchProjectsIcons(self, projectPHIDs):
+        if len(projectPHIDs) == 0:
+            return []
+        values = {
+            'api.token' : self.apiToken
+        }
+        for index, phid in enumerate(projectPHIDs):
+            values[f'constraints[phids][{index}]'] = phid
+        result = self.fetchJSON('/api/project.search', values)
+        if result['result'] == None or result['result']['data'] == None:
+            return {}
+        return { project['phid']:project['fields']['icon'] for project in result['result']['data'] }
+
     def fetchColumnTickets(self, columnPHID):
         result = self.fetchJSON('/api/maniphest.search', {
             'api.token' : self.apiToken,
