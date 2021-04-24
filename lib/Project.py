@@ -8,3 +8,4 @@ class Project:
         self.columns = []
         self.buttonsMenuColumns = []
         self.status = None
+        self.icon = None

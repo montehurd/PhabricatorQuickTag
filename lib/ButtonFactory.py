@@ -119,13 +119,13 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
         return buttonManifest.html(cssClass = 'add')
 
-    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, showRightProjectMenu = False, rightButtonsHTML = '', id = None):
+    def __wrapWithButtonMenuTag(self, menuTitle, menuButtons, menuTitleIconCSSClass = '', showRightProjectMenu = False, rightButtonsHTML = '', id = None):
         mouseOverAndOut = f' onmouseover="__configurationProjectMouseOver(this)" onmouseout="__configurationProjectMouseOut(this)"' if showRightProjectMenu else ''
         id = f' id="{id}"' if id != None else ''
         return f'''
             <div class="menu" {mouseOverAndOut} {id}>
                 <div class="menu_flex_container">
-                    <div class="menu_title">
+                    <div class="menu_title {menuTitleIconCSSClass}">
                         {menuTitle}
                     </div>
                     <div class="right_project_menu">
@@ -161,7 +161,7 @@ class ButtonFactory:
             ]
         )
 
-    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, projectType, status):
+    def toggleProjectColumnInConfigurationButtonMenuHTML(self, menuTitle, columns, projectPHID, projectType, status, icon):
         buttonManifests = list(map(lambda indexAndColumnTuple: self.__toggleProjectColumnInConfigurationJSONButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = indexAndColumnTuple[1].name,
@@ -183,10 +183,11 @@ class ButtonFactory:
         deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('', 'Select none', projectPHID, projectType, ColumnsSelectionType.NONE)
 
         return self.__wrapWithButtonMenuTag(
-            menuTitle = f'''{menuTitle} {'' if status != 'closed' else ' (CLOSED)'}''',
+            menuTitle = f'''&nbsp;{menuTitle} {'' if status != 'closed' else ' (CLOSED)'}''',
             menuButtons = f'''
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
+            menuTitleIconCSSClass = icon['icon'],
             showRightProjectMenu = True,
             rightButtonsHTML = deselectAllButtonHTML + selectAllButtonHTML + upButtonHTML + downButtonHTML + deleteButtonManifest.html(cssClass = 'delete'),
             id = f'_{projectPHID}'
@@ -263,6 +264,7 @@ class ButtonFactory:
         return self.__wrapWithButtonMenuTag(
             menuTitle = menuTitle,
             menuButtons = ' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests)),
+            menuTitleIconCSSClass = '',
             showRightProjectMenu = False,
             rightButtonsHTML = '',
             id = f'_{projectPHID}'

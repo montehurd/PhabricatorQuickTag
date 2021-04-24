@@ -58,6 +58,7 @@ div.menu_title {
   font-size: 13px;
   font-family: arial;
   white-space: nowrap;
+  font-family: FontAwesome;
 }
 
 div.column_source {
@@ -291,7 +292,7 @@ button.save_url_and_token {
 
 button.projects_search_result:hover {
   background-color: #f4f4f4;
-  color: black !important;;
+  color: #222 !important;;
 }
 
 button.toggle_ticket {
