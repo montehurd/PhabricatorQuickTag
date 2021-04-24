@@ -90,10 +90,10 @@ class ButtonFactory:
             ]
         )
 
-    def projectSearchResultButtonHTML(self, title, phid, projectType):
+    def projectSearchResultButtonHTML(self, title, phid, projectType, cssClass):
         buttonManifest = self.__projectSearchResultButtonManifest(title, phid, projectType)
         ButtonManifestRegistry.add([buttonManifest])
-        return buttonManifest.html(cssClass = 'projects_search_result')
+        return buttonManifest.html(cssClass = cssClass)
 
     def __showProjectSearchButtonManifest(self, title, projectType):
         return ButtonManifest(

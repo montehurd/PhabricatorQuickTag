@@ -279,6 +279,9 @@ button.projects_search_result {
   background-color: #fff;
   padding: 10px;
   border-radius: 2px;
+  font-weight: normal;
+  font-family: FontAwesome;
+  color: #666 !important;
 }
 
 button.save_url_and_token {
@@ -287,8 +290,8 @@ button.save_url_and_token {
 }
 
 button.projects_search_result:hover {
-  background-color: #ddd;
-  color: black;
+  background-color: #f4f4f4;
+  color: black !important;;
 }
 
 button.toggle_ticket {

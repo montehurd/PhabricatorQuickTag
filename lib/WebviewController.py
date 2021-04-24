@@ -302,7 +302,8 @@ class WebviewController:
             self.__setInnerHTML(searchResultsSelector, '')
         else:
             projects = self.fetcher.fetchProjectsMatchingSearchTerm(searchTerm)
-            projectSearchResultButtonsHTML = '' if len(projects) == 0 else ''.join(map(lambda item: self.buttonFactory.projectSearchResultButtonHTML(title = item[1], phid = item[0], projectType = projectType), projects.items()))
+            icons = self.fetcher.fetchProjectsIcons(projects.keys())
+            projectSearchResultButtonsHTML = '' if len(projects) == 0 else ''.join(map(lambda item: self.buttonFactory.projectSearchResultButtonHTML(title = f' {item[1]}', phid = item[0], projectType = projectType, cssClass = f"projects_search_result {icons[item[0]]['icon']}"), projects.items()))
             self.__setInnerHTML(searchResultsSelector, projectSearchResultButtonsHTML)
 
     def reloadFetcher(self):
