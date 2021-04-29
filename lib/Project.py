@@ -9,3 +9,10 @@ class Project:
         self.buttonsMenuColumns = []
         self.status = None
         self.icon = None
+
+    def html(self, destinationProjectsCount):
+        return f'''
+            <div class="project_columns" id="_{self.phid}">
+                {''.join(map(lambda column: column.html(destinationProjectsCount), self.columns))}
+            </div>
+        '''

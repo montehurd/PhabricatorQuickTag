@@ -69,85 +69,12 @@ class WebviewController:
         self.__setInnerHTML('div.projects_configuration_url_and_token_buttons', self.buttonFactory.urlAndTokenSaveButtonHTML())
         self.window.evaluate_js(f'''__showProjectsConfigurationBody({'false' if self.__isEmptyStringURLOrToken() else 'true'})''')
 
-    def __columnSubtitle(self, column):
-        destinationProjectName = 'Ticket Destination' if len(self.destinationProjects) > 0 else None
-        ticketsInSourceProjectString = f"""{len(column.tickets)} ticket{'' if len(column.tickets) == 1 else 's'} currently in <b>{column.project.name} > {column.name}</b>"""
-        destinationProjectString = f" not already appearing in a <b>{destinationProjectName}</b> column" if destinationProjectName != None else ''
-        return f"{ticketsInSourceProjectString}{destinationProjectString}"
-
-    def __wrappedTicketHTML(self, ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString):
-        return f'''
-            <div class=ticket id="T{ticketID}">
-              <button class="toggle_ticket expanded" onclick="__toggleCollapseExpandButton(this)" title="Toggle ticket"></button>
-              {ticketHTML}
-              <div class=ticket_users>
-                  <span class=ticket_assigned_to>
-                      <span class=ticket_user_heading>Assigned to:</span>
-                      {assignedTo}
-                  </span>
-                  <span class=ticket_authored_by>
-                      <span class=ticket_user_heading>Authored by:</span>
-                      {authoredBy}
-                      {dateCreatedString}
-                  </span>
-              </div>
-              <div class="quick_options phui-tag-core phui-tag-color-object">
-                <span class=buttonActionMessage id="buttonActionMessage{ticketID}"></span>
-                <h2>Quick options</h2>
-                <div class="menus">
-                    {currentSourceColumnMenuHTML}
-                    <div class="destination_projects_menus">
-                        {nonSourceProjectColumnMenuHTML}
-                    </div>
-                    {statusMenuHTML}
-                    {priorityMenuHTML}
-                </div>
-                Comment: ( recorded with any <strong>Quick options</strong> chosen above )
-                <br>
-                <textarea id="ticketID{ticketID}" style="height: 70px; width: 100%;"></textarea>
-              </div>
-            </div>
-        '''
-
-    def __columnTicketsHTML(self, column):
-        allTicketsHTML = []
-        for ticketID, ticketHTML in column.ticketsHTMLByID.items():
-            ticketJSON = column.ticketsByID[int(ticketID)]
-            currentSourceColumnMenuHTML = column.currentSourceColumnMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
-            nonSourceProjectColumnMenuHTML = ''.join(list(map(lambda menuHTMLLambda: menuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON), column.nonSourceProjectColumnMenuHTMLLambdas)))
-            statusMenuHTML = column.statusMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
-            priorityMenuHTML = column.priorityMenuHTMLLambda(ticketID = ticketID, ticketJSON = ticketJSON)
-            assignedTo = column.userNames.get(ticketJSON['fields']['ownerPHID'], 'None')
-            authoredBy = column.userNames.get(ticketJSON['fields']['authorPHID'], 'None')
-            dateCreatedTimeStamp = ticketJSON['fields'].get('dateCreated', None)
-            dateCreatedString = f' on {Utilities.localTimezoneDateStringFromTimeStamp(dateCreatedTimeStamp)}' if dateCreatedTimeStamp != None else ''
-            wrappedTicketHTML = self.__wrappedTicketHTML(ticketID, ticketHTML, currentSourceColumnMenuHTML, nonSourceProjectColumnMenuHTML, statusMenuHTML, priorityMenuHTML, assignedTo, authoredBy, dateCreatedString)
-            allTicketsHTML.append(wrappedTicketHTML)
-        return ''.join(allTicketsHTML)
-
     def __projectsTicketsHTML(self):
         print(f'Fetching complete')
         print(f'Processing hydrated object graph')
-        html = []
-        for project in self.sourceProjects:
-            html.append(f'<div class="project_columns" id="_{project.phid}">')
-            for column in project.columns:
-                html.append(
-                    f'''
-                        <div class=column_source>
-                            <span class=column_identifier>{project.name} > {column.name} {'' if project.status != 'closed' else ' (CLOSED)'}</span>
-                        </div>
-                        <div class=project_column>
-                            <div class=column_subtitle>
-                                {self.__columnSubtitle(column)}
-                            </div>
-                            {self.__columnTicketsHTML(column = column)}
-                        </div>
-                    '''
-                )
-            html.append('</div>')
+        projectsTicketsHTML = ''.join(map(lambda project: project.html(destinationProjectsCount = len(self.destinationProjects)), self.sourceProjects))
         print(f'Page HTML assembled')
-        return ''.join(html)
+        return projectsTicketsHTML
 
     def __getDehydratedProjects(self, projectType):
         dataStoreKey = DataStore.dataStoreKeyForProjectType(projectType)
