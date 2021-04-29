@@ -137,7 +137,7 @@ class Fetcher:
         return page.decode('utf-8')
 
     # hit endpoint returning boolean result
-    def callEndpoint(self, path, key, value, objectIdentifier, comment = None, needsValueArgumentInArray = False):
+    def __callEndpoint(self, path, key, value, objectIdentifier, comment = None, needsValueArgumentInArray = False):
         values = {
             'api.token': self.apiToken,
             'transactions[0][type]': key,
@@ -212,3 +212,51 @@ class Fetcher:
         for item in results:
             output[item['phid']] = item['fields']['username']
         return output
+    
+    def addTicketToProject(self, ticketID, projectPHID):
+        return self.__callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'projects.add',
+            value = projectPHID,
+            objectIdentifier = ticketID,
+            comment = None,
+            needsValueArgumentInArray = True
+        )
+
+    def removeTicketFromProject(self, ticketID, projectPHID, comment):
+        return self.__callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'projects.remove',
+            value = projectPHID,
+            objectIdentifier = ticketID,
+            comment = comment,
+            needsValueArgumentInArray = True
+        )
+
+    def addTicketToColumn(self, ticketID, columnPHID, comment):
+        return self.__callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'column',
+            value = columnPHID,
+            objectIdentifier = ticketID,
+            comment = comment,
+            needsValueArgumentInArray = True
+        )
+
+    def updateTicketStatus(self, ticketID, value, comment):
+        return self.__callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'status',
+            value = value,
+            objectIdentifier = ticketID,
+            comment = comment
+        )
+
+    def updateTicketPriority(self, ticketID, value, comment):
+        return self.__callEndpoint(
+            path = '/api/maniphest.edit',
+            key = 'priority',
+            value = value,
+            objectIdentifier = ticketID,
+            comment = comment
+        )

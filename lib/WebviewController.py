@@ -282,50 +282,36 @@ class WebviewController:
         return comment if len(comment.strip()) else None
 
     def addTicketToProject(self, ticketID, projectPHID):
-        return self.fetcher.callEndpoint(
-            path = '/api/maniphest.edit',
-            key = 'projects.add',
-            value = projectPHID,
-            objectIdentifier = ticketID,
-            comment = None,
-            needsValueArgumentInArray = True
+        return self.fetcher.addTicketToProject(
+            ticketID = ticketID,
+            projectPHID = projectPHID
         )
 
     def removeTicketFromProject(self, ticketID, projectPHID):
-        return self.fetcher.callEndpoint(
-            path = '/api/maniphest.edit',
-            key = 'projects.remove',
-            value = projectPHID,
-            objectIdentifier = ticketID,
-            comment = self.__getComment(ticketID),
-            needsValueArgumentInArray = True
+        return self.fetcher.removeTicketFromProject(
+            ticketID = ticketID,
+            projectPHID = projectPHID,
+            comment = self.__getComment(ticketID)
         )
 
     def addTicketToColumn(self, ticketID, columnPHID):
-        return self.fetcher.callEndpoint(
-            path = '/api/maniphest.edit',
-            key = 'column',
-            value = columnPHID,
-            objectIdentifier = ticketID,
-            comment = self.__getComment(ticketID),
-            needsValueArgumentInArray = True
+        return self.fetcher.addTicketToColumn(
+            ticketID = ticketID,
+            columnPHID = columnPHID,
+            comment = self.__getComment(ticketID)
         )
 
     def updateTicketStatus(self, ticketID, value):
-        return self.fetcher.callEndpoint(
-            path = '/api/maniphest.edit',
-            key = 'status',
+        return self.fetcher.updateTicketStatus(
+            ticketID = ticketID,
             value = value,
-            objectIdentifier = ticketID,
             comment = self.__getComment(ticketID)
         )
 
     def updateTicketPriority(self, ticketID, value):
-        return self.fetcher.callEndpoint(
-            path = '/api/maniphest.edit',
-            key = 'priority',
+        return self.fetcher.updateTicketPriority(
+            ticketID = ticketID,
             value = value,
-            objectIdentifier = ticketID,
             comment = self.__getComment(ticketID)
         )
 
