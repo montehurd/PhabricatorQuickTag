@@ -72,7 +72,7 @@
           <div class=project_configuration_heading onmouseover="__configurationProjectMouseOver(this)"  onmouseout="__configurationProjectMouseOut(this)">
               <div id=sources_right_menu></div>
               <span class="project_configuration_title">Ticket Sources:</span>
-              <span class="project_configuration_description">Tickets are shown from the project columns selected here.</span>
+              <span class="project_configuration_description">Tickets having tags, or in project columns selected here, are shown.</span>
           </div>
           <div id=projects_configuration_sources>
           </div>
@@ -104,7 +104,7 @@
         <input type="hidden" id="projects_search_project_type_name">
         <input type="text"
           id="projects_search_textbox"
-          placeholder="Enter project title search term here"
+          placeholder="Enter project or tag search term here"
           onchange="pywebview.api.projectSearchTermEntered(this.value, document.querySelector('input#projects_search_project_type_name').value)"
           onpaste="this.onchange()"
           oninput="this.onchange()"

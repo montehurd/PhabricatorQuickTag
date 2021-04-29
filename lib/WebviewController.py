@@ -55,7 +55,7 @@ class WebviewController:
 
     def __setConfigurationHTML(self):
         self.__setInnerHTML('div#projects_configuration_body_buttons', self.buttonFactory.reloadButtonHTML())
-        self.__setInnerHTML('div#sources_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Source Project', projectType = ProjectType.SOURCE))
+        self.__setInnerHTML('div#sources_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Source Project or Tag', projectType = ProjectType.SOURCE))
         self.__setInnerHTML('div#destination_right_menu', self.buttonFactory.showProjectSearchButtonHTML(title = 'Add a Destination Project', projectType = ProjectType.DESTINATION))
         sourceProjectsMenuButtonsHTML = ''.join(map(lambda project: self.buttonFactory.toggleProjectColumnInConfigurationButtonMenuHTML(project.name, project.buttonsMenuColumns, project.phid, ProjectType.SOURCE, project.status, project.icon), self.sourceProjects))
         self.__setInnerHTML('div#projects_configuration_sources', sourceProjectsMenuButtonsHTML)
@@ -149,12 +149,19 @@ class WebviewController:
             # make column object for each column name
             project.columns = list(map(lambda columnPHID: Column(name = None, project = project, phid = columnPHID), project.columnPHIDs))
 
+            # if the project is a tag (with no columns) stub out a single column for its tickets
+            if project.isTag() and len(project.columns) == 0:
+                project.columns.append(Column(name = 'Tag', project = project, phid = None, isPlaceholderForTagProject = True))
+
             for column in project.columns:
                 if column.phid in namesAndStatusesByPHID.keys():
                     column.status = namesAndStatusesByPHID[column.phid]['status']
                     column.name = namesAndStatusesByPHID[column.phid]['name']
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets")
-                tickets = list(self.fetcher.fetchColumnTickets(column.phid))
+                if column.isPlaceholderForTagProject == False:
+                    tickets = list(self.fetcher.fetchColumnTickets(column.phid))
+                else:
+                    tickets = list(self.fetcher.fetchProjectTickets(project.phid))
                 ticketsByID = dict((ticket['id'], ticket) for ticket in tickets if self.__shouldShowTicket(ticket, project.phid, column.phid))
                 column.ticketsByID = ticketsByID
                 column.tickets = column.ticketsByID.values()

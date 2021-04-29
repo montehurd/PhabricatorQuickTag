@@ -250,6 +250,8 @@ class ButtonFactory:
         )
 
     def ticketAddToColumnButtonMenuHTML(self, menuTitle, ticketID, ticketJSON, columns, projectPHID):
+        if len(columns) == 0:
+            return ''
         buttonManifests = list(map(lambda column: self.__ticketToggleColumnButtonManifest(
             buttonID = Utilities.cssSafeGUID(),
             title = column.name,

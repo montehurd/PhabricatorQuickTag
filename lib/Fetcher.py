@@ -84,6 +84,16 @@ class Fetcher:
         })
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
 
+    def fetchProjectTickets(self, projectPHID):
+        result = self.fetchJSON('/api/maniphest.search', {
+            'api.token' : self.apiToken,
+            'constraints[projects][0]' : projectPHID,
+            'constraints[statuses][0]' : 'open',
+            'attachments[projects]' : 'true',
+            'attachments[columns]' : 'true'
+        })
+        return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
+
     def __fetchHTMLFromColumnTicketsRemarkup(self, ticketsRemarkup):
         if len(ticketsRemarkup) == 0:
             return []

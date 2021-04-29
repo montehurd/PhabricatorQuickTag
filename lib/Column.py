@@ -3,7 +3,7 @@
 import Utilities
 
 class Column:
-    def __init__(self, name=None, project=None, phid=None):
+    def __init__(self, name=None, project=None, phid=None, isPlaceholderForTagProject=False):
         self.name = name
         self.phid = phid
         self.tickets = []
@@ -16,13 +16,16 @@ class Column:
         self.priorityMenuHTMLLambda = None
         self.userNames = {}
         self.status = None
+        self.isPlaceholderForTagProject = isPlaceholderForTagProject
 
     def __title(self):
-        return f'''{self.project.name} > {self.name} {'' if self.project.status != 'closed' else ' (CLOSED)'}'''
+        columnNameString = '' if self.isPlaceholderForTagProject else f' > {self.name}'
+        return f'''{self.project.name}{columnNameString} {'' if self.project.status != 'closed' else ' (CLOSED)'}'''
 
     def __subtitle(self, destinationProjectsCount):
         destinationProjectName = 'Ticket Destination' if destinationProjectsCount > 0 else None
-        ticketsInSourceProjectString = f"""{len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} currently in <b>{self.project.name} > {self.name}</b>"""
+        projectOrTagString = f"""tagged with <b>{self.project.name}""" if self.isPlaceholderForTagProject else f"""currently in <b>{self.project.name} > {self.name}"""
+        ticketsInSourceProjectString = f"""{len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} {projectOrTagString}</b>"""
         destinationProjectString = f" not already appearing in a <b>{destinationProjectName}</b> column" if destinationProjectName != None else ''
         return f"{ticketsInSourceProjectString}{destinationProjectString}"
 

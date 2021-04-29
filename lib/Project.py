@@ -10,6 +10,9 @@ class Project:
         self.status = None
         self.icon = None
 
+    def isTag(self):
+        return self.icon['key'] == 'tag'
+        
     def html(self, destinationProjectsCount):
         return f'''
             <div class="project_columns" id="_{self.phid}">
