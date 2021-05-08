@@ -182,9 +182,12 @@ class ButtonFactory:
         selectAllButtonHTML = self.__selectProjectColumnsButtonHTML('', 'Select all', projectPHID, projectType, ColumnsSelectionType.ALL)
         deselectAllButtonHTML = self.__selectProjectColumnsButtonHTML('', 'Select none', projectPHID, projectType, ColumnsSelectionType.NONE)
 
+        showTicketsWithNoColumnButtonHTML = self.__toggleProjectShowTicketsWithNoColumnInConfigurationJSONButtonHTML(projectPHID, projectType) if projectType == ProjectType.SOURCE else ''
+
         return self.__wrapWithButtonMenuTag(
             menuTitle = f'''&nbsp;{menuTitle} {'' if status != 'closed' else ' (CLOSED)'}''',
             menuButtons = f'''
+                {showTicketsWithNoColumnButtonHTML}
                 {' '.join(map(lambda buttonManifest: buttonManifest.html(), buttonManifests))}
             ''',
             menuTitleIconCSSClass = icon['icon'],
@@ -449,3 +452,38 @@ class ButtonFactory:
         ButtonManifestRegistry.add([buttonManifest])
 
         return buttonManifest.html(cssClass = ('select-all' if columnsSelectionType == ColumnsSelectionType.ALL else 'select-none'))
+
+    def __toggleProjectShowTicketsWithNoColumnInConfigurationJSONButtonManifest(self, buttonID, projectPHID, projectType, isInitiallySelected = False):
+        return ButtonManifest(
+            id = buttonID,
+            title = 'In no column',
+            tooltip = 'Shows tickets tagged with this project but not in any of its columns',
+            isInitiallySelected = isInitiallySelected,
+            clickActions = [
+                self.buttonActions.showLoadingIndicator,
+                self.buttonActions.hideTickets,
+                lambda projectPHID=projectPHID, projectType=projectType :
+                    self.buttonActions.toggleProjectShowTicketsWithNoColumnInConfigurationJSON(projectPHID, projectType)
+            ],
+            successActions = [
+                self.buttonActions.hideLoadingIndicator,
+                lambda buttonID=buttonID :
+                    self.buttonActions.toggleButton(buttonID)
+            ],
+            failureActions = [
+                self.buttonActions.hideLoadingIndicator,
+                self.buttonActions.printFailure
+            ]
+        )
+        
+    def __toggleProjectShowTicketsWithNoColumnInConfigurationJSONButtonHTML(self, projectPHID, projectType):
+        buttonManifest = self.__toggleProjectShowTicketsWithNoColumnInConfigurationJSONButtonManifest(
+            buttonID = Utilities.cssSafeGUID(),
+            projectPHID = projectPHID,
+            projectType = projectType,
+            isInitiallySelected = DataStore.isProjectShowTicketsWithNoColumnPresentInConfigurationJSON(projectPHID, projectType)
+        )
+
+        ButtonManifestRegistry.add([buttonManifest])
+
+        return buttonManifest.html()

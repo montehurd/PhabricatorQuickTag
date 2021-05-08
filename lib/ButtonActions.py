@@ -194,3 +194,14 @@ class ButtonActions:
     def selectConfigurationProjectColumns(self, projectPHID, projectType, columnsSelectionType):
         containerSelector = f'''div#projects_configuration_{'sources' if projectType == ProjectType.SOURCE else 'destinations'}'''
         return self.window.evaluate_js(f'''__selectConfigurationProjectColumns("{containerSelector} > div.menu#_{projectPHID}", "{columnsSelectionType.name}")''')
+
+    def toggleProjectShowTicketsWithNoColumnInConfigurationJSON(self, projectPHID, projectType):
+        dataStoreKey = DataStore.dataStoreKeyForProjectType(projectType)
+        projects = DataStore.getConfigurationValue(dataStoreKey)
+        project = next(project for project in projects if project['phid'] == projectPHID)
+        if DataStore.isProjectShowTicketsWithNoColumnPresentInConfigurationJSON(projectPHID, projectType):
+            del project['showTicketsWithNoColumn']
+        else:
+            project['showTicketsWithNoColumn'] = True
+        DataStore.saveCurrentConfiguration()
+        return True

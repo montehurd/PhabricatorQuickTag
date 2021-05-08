@@ -82,7 +82,7 @@ class Fetcher:
         })
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
 
-    def fetchProjectTickets(self, projectPHID):
+    def __fetchProjectTickets(self, projectPHID):
         result = self.fetchJSON('/api/maniphest.search', {
             'api.token' : self.apiToken,
             'constraints[projects][0]' : projectPHID,
@@ -91,6 +91,13 @@ class Fetcher:
             'attachments[columns]' : 'true'
         })
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
+
+    def __isTicketInAnyColumnOnProject(self, ticket, projectPHID):
+        return projectPHID in ticket['attachments']['columns']['boards']
+
+    def fetchNoColumnProjectTickets(self, projectPHID):
+        tickets = self.__fetchProjectTickets(projectPHID)
+        return filter(lambda ticket: not self.__isTicketInAnyColumnOnProject(ticket, projectPHID), tickets)
 
     def __fetchHTMLFromColumnTicketsRemarkup(self, ticketsRemarkup):
         if len(ticketsRemarkup) == 0:
@@ -220,7 +227,7 @@ class Fetcher:
         for item in results:
             output[item['phid']] = item['fields']['username']
         return output
-    
+
     def addTicketToProject(self, ticketID, projectPHID):
         return self.__callEndpoint(
             path = '/api/maniphest.edit',

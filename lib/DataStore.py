@@ -52,3 +52,9 @@ def moveProject(projectPHID, projectType, directionType):
         return False
     projects.insert(oldIndex + offset, projects.pop(oldIndex))
     return True
+
+def isProjectShowTicketsWithNoColumnPresentInConfigurationJSON(projectPHID, projectType):
+    dataStoreKey = dataStoreKeyForProjectType(projectType)
+    projects = getConfigurationValue(dataStoreKey)
+    project = next(project for project in projects if project['phid'] == projectPHID)
+    return project.get('showTicketsWithNoColumn', False)

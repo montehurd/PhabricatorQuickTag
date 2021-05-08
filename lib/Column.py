@@ -3,7 +3,7 @@
 import Utilities
 
 class Column:
-    def __init__(self, name=None, project=None, phid=None, isPlaceholderForTagProject=False):
+    def __init__(self, name=None, project=None, phid=None, isNoColumnTicketsPlaceholder=False):
         self.name = name
         self.phid = phid
         self.tickets = []
@@ -16,16 +16,15 @@ class Column:
         self.priorityMenuHTMLLambda = None
         self.userNames = {}
         self.status = None
-        self.isPlaceholderForTagProject = isPlaceholderForTagProject
+        self.isNoColumnTicketsPlaceholder = isNoColumnTicketsPlaceholder
 
     def __title(self):
-        columnNameString = '' if self.isPlaceholderForTagProject else f' > {self.name}'
-        return f'''{self.project.name}{columnNameString} {'' if self.project.status != 'closed' else ' (CLOSED)'}'''
+        return f'''{self.project.name} > {self.name} {'' if self.project.status != 'closed' else ' (CLOSED)'}'''
 
     def __subtitle(self, destinationProjectsCount):
         destinationProjectName = 'Ticket Destination' if destinationProjectsCount > 0 else None
-        projectOrTagString = f"""tagged with <b>{self.project.name}""" if self.isPlaceholderForTagProject else f"""currently in <b>{self.project.name} > {self.name}"""
-        ticketsInSourceProjectString = f"""{len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} {projectOrTagString}</b>"""
+        projectOrTagString = f"""tagged with <b>{self.project.name}</b> (but in none of its columns)""" if self.isNoColumnTicketsPlaceholder else f"""currently in <b>{self.project.name} > {self.name}</b>"""
+        ticketsInSourceProjectString = f"""{len(self.tickets)} ticket{'' if len(self.tickets) == 1 else 's'} {projectOrTagString}"""
         destinationProjectString = f" not already appearing in a <b>{destinationProjectName}</b> column" if destinationProjectName != None else ''
         return f"{ticketsInSourceProjectString}{destinationProjectString}"
 
@@ -78,7 +77,7 @@ class Column:
               </div>
             </div>
         '''
-        
+
     def html(self, destinationProjectsCount):
         return f'''
             <div class="column_source">
