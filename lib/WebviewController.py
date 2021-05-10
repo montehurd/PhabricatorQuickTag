@@ -159,7 +159,7 @@ class WebviewController:
                     column.name = namesAndStatusesByPHID[column.phid]['name']
                 self.__setLoadingMessage(f"Fetching '{project.name} > {column.name}' tickets")
                 if column.isNoColumnTicketsPlaceholder == False:
-                    tickets = list(self.fetcher.fetchColumnTickets(column.phid))
+                    tickets = list(self.fetcher.fetchColumnTickets(column.phid, project.phid))
                 else:
                     tickets = list(self.fetcher.fetchNoColumnProjectTickets(project.phid))
 

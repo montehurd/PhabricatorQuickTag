@@ -72,7 +72,7 @@ class Fetcher:
             return {}
         return { project['phid']:project['fields']['icon'] for project in result['result']['data'] }
 
-    def fetchColumnTickets(self, columnPHID):
+    def __fetchColumnTickets(self, columnPHID):
         result = self.fetchJSON('/api/maniphest.search', {
             'api.token' : self.apiToken,
             'constraints[columnPHIDs][0]' : columnPHID,
@@ -81,6 +81,11 @@ class Fetcher:
             'attachments[columns]' : 'true'
         })
         return filter(lambda x: x['type'] == 'TASK', result['result']['data'])
+
+    def fetchColumnTickets(self, columnPHID, projectPHID):
+        tickets = self.__fetchColumnTickets(columnPHID)
+        # filter below removes tickets if the column's workboard is disabled
+        return filter(lambda ticket: self.__isTicketInAnyColumnOnProject(ticket, projectPHID), tickets)
 
     def __fetchProjectTickets(self, projectPHID):
         result = self.fetchJSON('/api/maniphest.search', {
