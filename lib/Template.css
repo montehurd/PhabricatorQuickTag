@@ -454,3 +454,7 @@ div.selected_ticket {
   border-style: dashed;
   border-width: 2px;
 }
+
+div.paste-embed-body {
+  overflow-y: scroll;
+}
