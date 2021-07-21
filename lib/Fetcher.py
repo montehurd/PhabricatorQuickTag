@@ -51,7 +51,8 @@ class Fetcher:
     def fetchProjectsMatchingSearchTerm(self, searchTerm):
         result = self.fetchJSON('/api/project.search', {
             'api.token' : self.apiToken,
-            'constraints[query]' : f'title:"{searchTerm}"'
+            'constraints[name]' : searchTerm
+            # 'constraints[query]' : f'title:"{searchTerm}"'
         })
         if result['result'] == None:
             return []
