@@ -18,7 +18,7 @@ class WebviewController:
         self.destinationProjects = []
         self.window = window
         self.buttonFactory = ButtonFactory(buttonActions = ButtonActions(window = self.window, delegate = self))
-        self.window.loaded += self.__onDOMLoaded
+        self.window.events.loaded += self.__onDOMLoaded
         self.prioritiesData, self.statusesData = self.__fetchPrioritiesAndStatuses()
 
     def __getFetcher(self):
@@ -227,7 +227,7 @@ class WebviewController:
         return True
 
     def __onDOMLoaded(self):
-        self.window.loaded -= self.__onDOMLoaded # unsubscribe event listener
+        self.window.events.loaded -= self.__onDOMLoaded # unsubscribe event listener
         self.window.load_html(self.__getTemplateHTML())
         time.sleep(1.0)
         self.load()
